@@ -1,5 +1,6 @@
 bin
 build
+build.number
 README.txt
 .classpath
 .settings
