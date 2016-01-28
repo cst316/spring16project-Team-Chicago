@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import nu.xom.Document;
 
 //The ContactList object maintains an ordered list of Contacts by first name, last name, and nickname in the String format
-//"{firstName} {lastName} {nickname}". To ensure preservation the ordering of the list, the list adds copies of input
+//"{firstName} {lastName}". To ensure preservation the ordering of the list, the list adds copies of input
 //contacts rather so the contact in the list cannot be modified. To edit a contact in the list, the contact must first be
 //removed by the ID given when the contact was added, and then re-copied into the list. The ContactList also contains
 //a method for searching the list by a string. The search returns a list of contacts where
-//"{firstName} {lastName} {nickname}" starts with the input string (eg. instant search).
+//"{firstName} {lastName}" starts with the input string (eg. instant search).
 public interface ContactList {
 	
 	//General constructor with an empty list
@@ -49,7 +49,7 @@ public interface ContactList {
 	
 	
 	//A search method which returns an ArrayList of copied Contacts whose name starts with the input String. The format
-	//which the input string is matched against is "{firstName} {lastName} {nickname}". The copied contacts will retain
+	//which the input string is matched against is "{firstName} {lastName}". The copied contacts will retain
 	//the ids associated with the actual Contacts in the ContactList.
 	//
 	//@param searchString The String to be used to search for Contacts
