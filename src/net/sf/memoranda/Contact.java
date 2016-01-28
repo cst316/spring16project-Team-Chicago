@@ -2,6 +2,7 @@ package net.sf.memoranda;
 
 import net.sf.memoranda.util.Util;
 import nu.xom.Element;
+import nu.xom.Elements;
 /**
  * Contact class 
  * 
@@ -44,8 +45,49 @@ public class Contact {
 		this.id = obtainId();
 	}
 	
+	/**
+	 * Reads in an XML element and constructs a Contact
+	 * Sets empty fields to an Empty String
+	 * If id exists uses it else generates new id
+	 * @param element
+	 */
 	public Contact(Element element) {
-		//TODO: parse Element to reconstruct Contact
+		
+
+		Elements children = element.getChildElements();
+		Element firstName = children.get(0);
+		Element lname =children.get(1);
+		Element phone = children.get(2);
+		Element email = children.get(3);
+		Element org = children.get(4);
+		Element id = children.get(5);
+	
+		this.firstName = firstName.getValue();
+		this.lastName = lname.getValue();
+		
+		if(phone.getValue() == null){
+			this.phoneNumber = "";
+		}else{
+			this.phoneNumber = phone.getValue();
+		}
+		
+		if(email.getValue() == null){
+			this.emailAddress = "";
+		}else{
+			this.emailAddress = email.getValue();
+		}
+		
+		if(org.getValue() == null){
+			this.organization = "";
+		}else{
+			this.organization = org.getValue();
+		}
+		if(id.getValue() == null){
+			this.id = obtainId();
+		}else{
+			this.id = id.getValue();
+		}
+		
 	}
 
 // Getters and Setters for the attributes - No Public method to set the ID - ensures can't be changed
@@ -120,13 +162,41 @@ public class Contact {
 	//Copies the contact in to a new contact and returns copy
 	public Contact copy(){
 		Contact copy = new Contact(this.getFirstName(),this.getLastName(), this.getPhoneNumber(),this.getEmailAddress());
+		copy.organization = this.organization;
 		copy.id = this.id;
 		return copy;
 	}
 	
+	/**
+	 * Converts A Contact Object to XML Element 
+	 * uses nu.xom
+	 * 
+	 * @return XML Element of Contact
+	 */
 	public Element toElement() {
-		//TODO: returns the XML element
-		return null;
+		Element root = new Element("Contact");
+		Element firstName = new Element("FirstName");
+		Element lastName = new Element("LastName");
+		Element phone = new Element("PhoneNumber");
+		Element email = new Element("E-Mail");
+		Element org = new Element("Organization");
+		Element id = new Element("ID");
+		
+		firstName.appendChild(this.getFirstName());
+		lastName.appendChild(this.getLastName());
+		phone.appendChild(this.getPhoneNumber());
+		email.appendChild(this.getEmailAddress());
+		org.appendChild(this.getOrganization());
+		id.appendChild(this.getId());
+
+		root.appendChild(firstName);
+		root.appendChild(lastName);
+		root.appendChild(phone);
+		root.appendChild(email);
+		root.appendChild(org);
+		root.appendChild(id);
+		
+		return root;
 	}
 	
 }
