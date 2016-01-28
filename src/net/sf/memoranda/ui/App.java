@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.UIManager;
 
+import net.sf.memoranda.EventsManager;
 import net.sf.memoranda.EventsScheduler;
 import net.sf.memoranda.util.Configuration;
 
@@ -135,7 +136,9 @@ public class App {
 		frame.setVisible(true);
 		frame.toFront();
 		frame.requestFocus();
-
+		
+        EventsManager.checkOverdueEvents();
+		
 	}
 
 	public static void closeWindow() {

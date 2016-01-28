@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.util.Map;
 import java.util.Collections;
-
+//import java.util.GregorianCalendar;
 
 import net.sf.memoranda.date.CalendarDate;
 import net.sf.memoranda.util.CurrentStorage;
@@ -100,7 +100,7 @@ public class EventsManager {
 		Day d = getDay(date);
 		if (d != null) {
 			Elements els = d.getElement().getChildElements("event");
-			for (int i = 0; i < els.size(); i++)
+			for (int i = 0; i < els.size(); i++) 
 				v.add(new EventImpl(els.get(i)));
 		}
 		Collection r = getRepeatableEventsForDate(date);
@@ -110,6 +110,44 @@ public class EventsManager {
 		Collections.sort(v);
 		return v;
 	}
+
+	/**
+	 * Checks if loaded events are past their entered notification date.
+	 * @author Larry Naron
+	 */
+	public static void checkOverdueEvents() {	
+		//System.out.println("[DEBUG] This is where the check will occur");
+		//System.out.println("[DEBUG] Element " + events.toString());
+		//System.out.println("[DEBUG] Event name " + ((EventImpl) events.elementAt(1)).getText());
+ 
+		// set date and time check
+		CalendarDate date = new CalendarDate();			  
+		Calendar time = Calendar .getInstance();           
+		int currentHour = time.get(Calendar.HOUR_OF_DAY);
+		int currentMinute = time.get(Calendar.MINUTE);
+ 
+		Vector events = new Vector();					  // new vector to hold today's events
+		events = (Vector) getEventsForDate(date);	      // store events, cast to vector from collection
+		
+		// performs check of each event
+		for (int j = 0; j < events.size(); j ++) {
+			//System.out.println("[DEBUG]hour: " + ((EventImpl) events.elementAt(j)).getHour());
+			//System.out.println("[DEBUG]minute: " + ((EventImpl) events.elementAt(j)).getMinute());
+			//System.out.println("[DEBUG]current hour: " + currentHour);				
+			
+			if (((EventImpl)events.elementAt(j)).getHour() < currentHour ) {
+				// Trigger overdue notice here
+				System.out.println("[DEBUG] Notification " + ((EventImpl) events.elementAt(j)).getText() + " is overdue");
+			} 	
+			else if (((EventImpl)events.elementAt(j)).getHour() == currentHour &&
+					       ((EventImpl)events.elementAt(j)).getMinute() < currentMinute) {
+				// Trigger overdue notice here
+				System.out.println("[DEBUG] Notification " + ((EventImpl) events.elementAt(j)).getText() + " is overdue");
+			} 
+			
+		} // end for	
+		
+	} // end checkOverdueEvents
 
 	public static Event createEvent(
 		CalendarDate date,
@@ -233,8 +271,9 @@ public class EventsManager {
 			if ((new Integer(el.getAttribute("hour").getValue()).intValue()
 				== hh)
 				&& (new Integer(el.getAttribute("min").getValue()).intValue()
-					== mm))
+					== mm)) 
 				return new EventImpl(el);
+			
 		}
 		return null;
 	}
@@ -412,54 +451,5 @@ public class EventsManager {
 			return dEl;
 		}
 	}
-/*
-	static class EventsVectorSorter {
 
-		private static Vector keys = null;
-
-		private static int toMinutes(Object obj) {
-			Event ev = (Event) obj;
-			return ev.getHour() * 60 + ev.getMinute();
-		}
-
-		private static void doSort(int L, int R) { // Hoar's QuickSort
-			int i = L;
-			int j = R;
-			int x = toMinutes(keys.get((L + R) / 2));
-			Object w = null;
-			do {
-				while (toMinutes(keys.get(i)) < x) {
-					i++;
-				}
-				while (x < toMinutes(keys.get(j))) {
-					j--;
-				}
-				if (i <= j) {
-					w = keys.get(i);
-					keys.set(i, keys.get(j));
-					keys.set(j, w);
-					i++;
-					j--;
-				}
-			}
-			while (i <= j);
-			if (L < j) {
-				doSort(L, j);
-			}
-			if (i < R) {
-				doSort(i, R);
-			}
-		}
-
-		public static void sort(Vector theKeys) {
-			if (theKeys == null)
-				return;
-			if (theKeys.size() <= 0)
-				return;
-			keys = theKeys;
-			doSort(0, keys.size() - 1);
-		}
-
-	}
-*/
 }
