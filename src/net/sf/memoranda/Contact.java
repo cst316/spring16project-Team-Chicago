@@ -1,6 +1,7 @@
 package net.sf.memoranda;
 
 import net.sf.memoranda.util.Util;
+import nu.xom.Element;
 /**
  * Contact class 
  * 
@@ -15,9 +16,9 @@ public class Contact {
 	private String organization;
 	private String id;
 	
-	//private method to set the unique id - Called in both constructors
+	//public method to set the unique id - Called in both constructors
 	//Utilizes the generateId method in net.sf.memoranda.util.Util
-	private String obtainId(){
+	public String obtainId(){
 		String id = Util.generateId();
 		return id;
 	}
@@ -42,20 +43,28 @@ public class Contact {
 		this.emailAddress = "";
 		this.id = obtainId();
 	}
+	
+	public Contact(Element element) {
+		//TODO: parse Element to reconstruct Contact
+	}
 
 // Getters and Setters for the attributes - No Public method to set the ID - ensures can't be changed
 	
 	public String getId() {
 		return id;
 	}
+	
+	public void setId(String id) {
+		this.id = id;
+	}
 
 
-	public String getfirstName() {
+	public String getFirstName() {
 		return firstName;
 	}
 
 
-	public void setfirstName(String name) {
+	public void setFirstName(String name) {
 		this.firstName = name;
 	}
 
@@ -102,7 +111,7 @@ public class Contact {
 	// Returns a string of the Contact
 	public String toString(){
 		
-		String contact = "Name: " +this.getfirstName() + " " +this.getLastName();
+		String contact = "Name: " +this.getFirstName() + " " +this.getLastName();
 		contact += ", Phone Number: " +this.getPhoneNumber();
 		contact += ", Email Address: "  +this.getEmailAddress();
 		return contact;
@@ -110,9 +119,14 @@ public class Contact {
 	
 	//Copies the contact in to a new contact and returns copy
 	public Contact copy(){
-		Contact copy = new Contact(this.getfirstName(),this.getLastName(), this.getPhoneNumber(),this.getEmailAddress());
+		Contact copy = new Contact(this.getFirstName(),this.getLastName(), this.getPhoneNumber(),this.getEmailAddress());
 		copy.id = this.id;
 		return copy;
+	}
+	
+	public Element toElement() {
+		//TODO: returns the XML element
+		return null;
 	}
 	
 }

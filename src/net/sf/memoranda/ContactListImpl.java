@@ -1,8 +1,6 @@
 package net.sf.memoranda;
 
-//Commented out till properly matched with Contacts
-
-/*import java.text.CollationKey;
+import java.text.CollationKey;
 import java.text.Collator;
 import java.util.ArrayList;
 
@@ -66,9 +64,9 @@ public class ContactListImpl implements ContactList{
 		contactList.put(cLD, cLD.contact);
 		Element el = contactCopy.toElement();
 		_root.appendChild(el);
-		String id = contactCopy.getID();
+		String id = contactCopy.getId();
 		idList.put(id, cLD);
-		return contactCopy.getID();
+		return contactCopy.getId();
 	}
 	
 	@Override
@@ -141,11 +139,12 @@ public class ContactListImpl implements ContactList{
 			String compName = "";
 			String firstName = contact.getFirstName();
 			String lastName = contact.getLastName();
-			String nickname = contact.getNickname();
-			if(firstName == null || lastName == null || nickname == null) throw new NullPointerException();
+			//String nickname = contact.getNickname();
+			//if(firstName == null || lastName == null || nickname == null) throw new NullPointerException();
+			if(firstName == null || lastName == null) throw new NullPointerException();
 			if(firstName.length() > 0) compName += firstName + " ";
 			if(lastName.length() > 0) compName += lastName + " ";
-			if(nickname.length() > 0) compName += nickname;
+			//if(nickname.length() > 0) compName += nickname;
 			compName.trim();
 			return contactListImpl.getCollator().getCollationKey("compName");
 		}
@@ -153,4 +152,3 @@ public class ContactListImpl implements ContactList{
 	}
 	
 }
-*/
