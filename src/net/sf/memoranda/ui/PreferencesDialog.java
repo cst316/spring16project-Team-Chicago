@@ -292,15 +292,6 @@ public class PreferencesDialog extends JDialog {
 		gbc.insets = new Insets(2, 0, 0, 10);
 		gbc.anchor = GridBagConstraints.WEST;
 
-		lfGroup.add(lfSystemRB);
-		lfSystemRB.setText("System");
-		lfSystemRB.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-				lfSystemRB_actionPerformed(e);
-			}
-			
-		});
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
 		gbc.gridy = 5;
@@ -308,30 +299,18 @@ public class PreferencesDialog extends JDialog {
 		gbc.anchor = GridBagConstraints.WEST;
 		GeneralPanel.add(lfSystemRB, gbc);
 
-		lfGroup.add(lfJavaRB);
-		lfJavaRB.setText("Cross-Platform");
-		lfJavaRB.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-				lfJavaRB_actionPerformed(e);
-			}
-			
-		});
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
 		gbc.gridy = 6;
 		gbc.insets = new Insets(2, 0, 0, 10);
 		gbc.anchor = GridBagConstraints.WEST;
 		GeneralPanel.add(lfJavaRB, gbc);
-		
 		lfGroup.add(lfCustomRB);
 		lfCustomRB.setText(Local.getString("Custom"));
 		lfCustomRB.addActionListener(new java.awt.event.ActionListener() {
-			
 			public void actionPerformed(ActionEvent e) {
 				lfCustomRB_actionPerformed(e);
 			}
-			
 		});
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
