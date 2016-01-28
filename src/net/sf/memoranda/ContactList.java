@@ -56,4 +56,12 @@ public interface ContactList {
 	//@return An ArrayList containing the Contacts which start with the input searchString.
 	public ArrayList<Contact> searchByName(String searchString);
 	
+	
+	//Creates a nu.xom.Document object that can be used for translating the ContactList into an XML file
+	public Document toDocument();
+	
+	
+	//Creates an ArrayList with an ordered copy of the ContactList
+	public ArrayList<Contact> toArrayList();
+	
 }
