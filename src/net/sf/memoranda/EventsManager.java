@@ -112,37 +112,34 @@ public class EventsManager {
 	}
 
 	/**
-	 * Checks if loaded events are past their entered notification date.
+	 * Checks if current day events are past their user-set notification date. Called in App.java
+	 * at startup. Occurs during app initialization.
 	 * @author Larry Naron
 	 */
 	public static void checkOverdueEvents() {	
-		//System.out.println("[DEBUG] This is where the check will occur");
-		//System.out.println("[DEBUG] Element " + events.toString());
-		//System.out.println("[DEBUG] Event name " + ((EventImpl) events.elementAt(1)).getText());
  
-		// set date and time check
+		// sets date and time values to check
 		CalendarDate date = new CalendarDate();			  
 		Calendar time = Calendar .getInstance();           
 		int currentHour = time.get(Calendar.HOUR_OF_DAY);
 		int currentMinute = time.get(Calendar.MINUTE);
  
-		Vector events = new Vector();					  // new vector to hold today's events
-		events = (Vector) getEventsForDate(date);	      // store events, cast to vector from collection
+		Vector events = new Vector();  // new vector to hold today's events
+		events = (Vector) getEventsForDate(date); // store events, cast to vector from collection
 		
 		// performs check of each event
-		for (int j = 0; j < events.size(); j ++) {
-			//System.out.println("[DEBUG]hour: " + ((EventImpl) events.elementAt(j)).getHour());
-			//System.out.println("[DEBUG]minute: " + ((EventImpl) events.elementAt(j)).getMinute());
-			//System.out.println("[DEBUG]current hour: " + currentHour);				
-			
+		for (int j = 0; j < events.size(); j ++) {			
+			// checks event hour and minute against current system time
 			if (((EventImpl)events.elementAt(j)).getHour() < currentHour ) {
-				// Trigger overdue notice here
-				System.out.println("[DEBUG] Notification " + ((EventImpl) events.elementAt(j)).getText() + " is overdue");
+				new OverdueEventNotifier().eventIsOccured(((EventImpl)events.elementAt(j)));
+				System.out.println("[DEBUG] Notification " + 
+				            ((EventImpl) events.elementAt(j)).getText() + " is overdue");
 			} 	
 			else if (((EventImpl)events.elementAt(j)).getHour() == currentHour &&
 					       ((EventImpl)events.elementAt(j)).getMinute() < currentMinute) {
-				// Trigger overdue notice here
-				System.out.println("[DEBUG] Notification " + ((EventImpl) events.elementAt(j)).getText() + " is overdue");
+				new OverdueEventNotifier().eventIsOccured(((EventImpl)events.elementAt(j)));
+				System.out.println("[DEBUG] Notification " + 
+				            ((EventImpl) events.elementAt(j)).getText() + " is overdue");
 			} 
 			
 		} // end for	

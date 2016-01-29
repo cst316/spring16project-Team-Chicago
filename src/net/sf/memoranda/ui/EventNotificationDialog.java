@@ -27,7 +27,9 @@ import java.net.URL;
 public class EventNotificationDialog extends JFrame {
   JPanel panel1 = new JPanel();
   BorderLayout borderLayout1 = new BorderLayout();
-  JButton jButton1 = new JButton();
+  JButton jButton1 = new JButton();  // "OK" button
+  JButton jButton2 = new JButton();	 // "Remove" button
+  JButton jButton3 = new JButton();	 // "Edit" button
   Border border1;
   Border border2;
   Border border3;
@@ -73,7 +75,7 @@ public class EventNotificationDialog extends JFrame {
     
     jButton1.setText(Local.getString("Ok"));
     jButton1.setBounds(150, 415, 95, 30);
-    jButton1.setPreferredSize(new Dimension(95, 30));
+    jButton1.setPreferredSize(new Dimension(80, 30));
     jButton1.setBackground(new Color(69, 125, 186));
     jButton1.setForeground(Color.white);
     jButton1.setDefaultCapable(true);
@@ -82,6 +84,33 @@ public class EventNotificationDialog extends JFrame {
         jButton1_actionPerformed(e);
       }
     });
+    
+    // "Remove" button on event notification
+    jButton2.setText(Local.getString("Remove"));
+    jButton2.setBounds(150, 415, 95, 30);
+    jButton2.setPreferredSize(new Dimension(80, 30));
+    jButton2.setBackground(new Color(69, 125, 186));
+    jButton2.setForeground(Color.white);
+    jButton2.setDefaultCapable(true);
+    jButton2.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jButton2_actionPerformed(e);
+      }
+    });
+    
+    // "Edit" button on event notification
+    jButton3.setText(Local.getString("Edit"));
+    jButton3.setBounds(150, 415, 95, 30);
+    jButton3.setPreferredSize(new Dimension(80, 30));
+    jButton3.setBackground(new Color(69, 125, 186));
+    jButton3.setForeground(Color.white);
+    jButton3.setDefaultCapable(true);
+    jButton3.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jButton3_actionPerformed(e);
+      }
+    });
+    
     panel1.setBorder(border4);
     panel1.setMinimumSize(new Dimension(300, 200));
     panel1.setPreferredSize(new Dimension(300, 200));
@@ -90,15 +119,41 @@ public class EventNotificationDialog extends JFrame {
     textLabel.setHorizontalAlignment(SwingConstants.CENTER);
     getContentPane().add(panel1);
     panel1.add(jPanel1,  BorderLayout.SOUTH);
-    jPanel1.add(jButton1, null);
+    jPanel1.add(jButton1, null);  // adds ok button
+    jPanel1.add(jButton2, null);  // adds remove button
+    jPanel1.add(jButton3, null);  // adds edit button
     jPanel1.setBackground(new Color(251, 197, 63));
     panel1.add(textLabel, BorderLayout.CENTER);
     panel1.add(timeLabel, BorderLayout.NORTH);
     playSoundNotification();
   }
-
+  
+  /**
+   * Closes the notice window if ok button pressed
+   * @param e
+   */
   void jButton1_actionPerformed(ActionEvent e) {
        this.dispose();
+  }
+  
+  /**
+   * Calls method to delete event if remove button pressed
+   * @param e
+   */
+  void jButton2_actionPerformed(ActionEvent e) {
+      System.out.println("[DEBUG] Event notice remove button pressed");
+      // add code to remove 
+      this.dispose();
+  }
+  
+  /**
+   * Calls method to bring up edit event if edit button pressed
+   * @param e
+   */
+  void jButton3_actionPerformed(ActionEvent e) {
+      System.out.println("[DEBUG] Event notice edit button pressed");
+      // add code to pop up editor
+      this.dispose();
   }
   
   private void playSoundNotification() {

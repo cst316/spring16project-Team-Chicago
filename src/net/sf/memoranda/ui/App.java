@@ -137,6 +137,7 @@ public class App {
 		frame.toFront();
 		frame.requestFocus();
 		
+		// run startup check for any overdue events for current day
         EventsManager.checkOverdueEvents();
 		
 	}
