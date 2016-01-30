@@ -19,6 +19,7 @@ import java.net.URL;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
+import net.sf.memoranda.ContactManager;
 import net.sf.memoranda.EventsManager;
 import net.sf.memoranda.Note;
 import net.sf.memoranda.NoteList;
@@ -436,6 +437,35 @@ public class FileStorage implements Storage {
         saveDocument(
             rl.getXMLContent(),
             JN_DOCPATH + prj.getID() + File.separator + ".resources");
+    }
+    /**
+     * @see net.sf.memoranda.util.Storage#openResourcesList(net.sf.memoranda.Project)
+     */
+    public void openContactList() {
+        String fn = JN_DOCPATH + ".contactlist";
+        if (documentExists(fn)) {
+            /*DEBUG*/
+            System.out.println("[DEBUG] Open contact list: " + fn);
+            ContactManager.setDoc(openDocument(fn));
+        }
+        else {
+            /*DEBUG*/
+            System.out.println("[DEBUG] New contact list created");
+            ContactManager.setDoc(null);
+        }
+    }
+    /**
+     * @see net.sf.memoranda.util.Storage#storeResourcesList(net.sf.memoranda.ResourcesList, net.sf.memoranda.Project)
+     */
+    public void storeContactList() {
+        /*DEBUG*/
+        System.out.println(
+            "[DEBUG] Save contact list: "
+                + JN_DOCPATH
+                + ".contactlist");
+        saveDocument(
+            ContactManager.getDoc(),
+            JN_DOCPATH + ".contactlist");
     }
     /**
      * @see net.sf.memoranda.util.Storage#restoreContext()
