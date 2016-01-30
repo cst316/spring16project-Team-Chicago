@@ -4,26 +4,36 @@ import static org.junit.Assert.*;
 
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import net.sf.memoranda.Contact;
-import net.sf.memoranda.ContactListImpl;
+import net.sf.memoranda.ContactList;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
 
 
-public class ContactListImplTest {
+public class ContactListTest {
 	
-	private ContactListImpl setupContactList;
+	private ContactList setupContactList;
 	private Contact[] setupContacts;
 	private String[] setupContactIDs;
+	private char[] alphaChar;
+	
+	public void setupCharArray() {
+		alphaChar = new char[26];
+		char ch = 'a';
+		for(int i = 0; i < 26; i++){
+			alphaChar[i] = ch++;
+		}
+	}
 	
 	@Before
 	public void setup() {
-		setupContactList = new ContactListImpl();
+		setupContactList = new ContactList();
 		this.setupContacts = new Contact[]{
 			new Contact("Tim","Johnson","111-999-9999","tim.johnson@fakeemail.com"),
 			new Contact("Tim","Johnson","111-999-9999","tim.johnson@fakeemail.com"),
@@ -49,8 +59,8 @@ public class ContactListImplTest {
 	}
 
 	@Test
-	public void contactListConstructor1Test() {
-		ContactListImpl contactList = new ContactListImpl();
+	public void contactListConstructorTest() {
+		ContactList contactList = new ContactList();
 		Document mockDoc = new Document(new Element("contactlist"));
 		Document cLDoc = contactList.toDocument();
 		assertEquals(mockDoc.toXML(), cLDoc.toXML());
@@ -77,6 +87,7 @@ public class ContactListImplTest {
 	public void removeContactTest() {
 		Contact removedContact = setupContactList.removeContact(setupContactIDs[2]);
 		assertTrue(removedContact != null);
+		assertEquals(setupContacts.length-1,setupContactList.size());
 		setupContactList.toArrayList().forEach(contact -> {
 			if(contact.equals(removedContact)) fail();
 		});
@@ -95,7 +106,7 @@ public class ContactListImplTest {
 		Builder builder = new Builder();
 		try {
 			Document newXMLDoc = builder.build(xmlDoc, "utf-8");
-			ContactListImpl newContactList = new ContactListImpl(newXMLDoc);
+			ContactList newContactList = new ContactList(newXMLDoc);
 			ArrayList<Contact> oldContacts = setupContactList.toArrayList();
 			ArrayList<Contact> newContacts = newContactList.toArrayList();
 			assertEquals(oldContacts.size(), newContacts.size());
@@ -131,5 +142,36 @@ public class ContactListImplTest {
 		}
 	}
 	
+	@Test
+	public void addRemoveEditAddTest() {
+		Contact removedContact = setupContactList.removeContact(setupContactIDs[3]);
+		String id = removedContact.getId();
+		removedContact.setOrganization("ASU");
+		String newID = setupContactList.addCopy(removedContact);
+		assertTrue(id != newID);
+		Contact editedContact = setupContactList.getCopy(newID);
+		assertEquals(editedContact.getId(), newID);
+		assertEquals(setupContacts.length, setupContactList.size());
+	}
 	
+	@Test
+	public void largeContactListTest() {
+		setupCharArray();
+		ContactList contactList = new ContactList();
+		for(int i = 0; i < 1000; i++) {
+			contactList.addCopy(new Contact(randomString(),randomString()));
+		}
+		assertEquals(contactList.getAllIDs().length,1000);
+		
+	}
+	
+	public String randomString() {
+		String string = "";
+		Random r = new Random();
+		int size = r.nextInt(10);
+		for(int i = 0; i < size; i++) {
+			string += alphaChar[r.nextInt(alphaChar.length)];
+		}
+		return string;
+	}
 }
