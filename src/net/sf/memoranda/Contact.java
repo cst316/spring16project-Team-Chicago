@@ -29,6 +29,7 @@ public class Contact {
 	public Contact(String fname, String lname, String phoneNumber, String emailAddress) {
 		
 		this.firstName = fname;
+		this.lastName = lname;
 		this.phoneNumber = phoneNumber;
 		this.emailAddress = emailAddress;
 		this.id = obtainId();

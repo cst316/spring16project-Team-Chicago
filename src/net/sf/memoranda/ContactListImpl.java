@@ -7,31 +7,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.NavigableSet;
 import java.util.TreeMap;
 
 import nu.xom.Document;
 import nu.xom.Element;
+import nu.xom.NoSuchChildException;
 
 //Sorry no methods have comments explaining them yet, I'll add them tomorrow.
 public class ContactListImpl implements ContactList{
 
-	private Document _doc;
-	private Element _root;
 	private TreeMap<ContactLocaleDecorator, Contact> contactList;
 	private HashMap<String, ContactLocaleDecorator> idList;
 	private Collator collator;
 	
 	public ContactListImpl() {
-		_root = new Element("contactlist");
-		_doc = new Document(_root);
 		init();
 	}
 	
-	public ContactListImpl(Document _doc) {
-		this._doc = _doc;
-		this._root = _doc.getRootElement();
+	public ContactListImpl(Document doc) {
+		if(doc == null) throw new NullPointerException();
 		init();
-		buildElements(_root);
+		buildElements(doc);
 	}
 	
 	private void init() {
@@ -41,14 +38,21 @@ public class ContactListImpl implements ContactList{
 		idList = new HashMap<String, ContactLocaleDecorator>(100);
 	}
 	
-	private void buildElements(Element parent) {
-		//TODO add XML parser for rebuilding the Contact Tree
+	private void buildElements(Document doc) {
+		Element root = doc.getRootElement();
+		if(!root.getLocalName().equals("contactlist")) throw new NoSuchChildException("contactlist");
+		int size = root.getChildElements().size();
+		for(int i = 0; i < size; i++) {
+			Contact importedContact = new Contact(root.getChildElements().get(i));
+			addCopy(importedContact);
+		}
 	}
 	
 	public void setCollator(Collator collator) {
 		if(collator == null) throw new NullPointerException();
 		this.collator = collator;
 		rebuildListCollatorKeys();
+		sort();
 	}
 	
 	private void rebuildListCollatorKeys() {
@@ -59,12 +63,12 @@ public class ContactListImpl implements ContactList{
 
 	@Override
 	public String addCopy(Contact contact) {
+		if(contact == null) throw new NullPointerException();
 		Contact contactCopy = contact.copy();
+		String id = contactCopy.getId();
+		contactCopy.setId(id);
 		ContactLocaleDecorator cLD = new ContactLocaleDecorator(contactCopy, this);
 		contactList.put(cLD, cLD.contact);
-		Element el = contactCopy.toElement();
-		_root.appendChild(el);
-		String id = contactCopy.getId();
 		idList.put(id, cLD);
 		return contactCopy.getId();
 	}
@@ -87,13 +91,24 @@ public class ContactListImpl implements ContactList{
 	
 	@Override
 	public ArrayList<Contact> searchByName(String searchString) {
-		// TODO Auto-generated method stub
-		return null;
+		NavigableSet<ContactLocaleDecorator> contacts = contactList.navigableKeySet();
+		ArrayList<Contact> foundContacts = new ArrayList<Contact>();
+		contacts.forEach(cLD -> {
+			if(cLD.keyString.startsWith(searchString.toLowerCase())) {
+				foundContacts.add(cLD.contact);
+			}
+		});
+		return foundContacts;
 	}
 
 	@Override
 	public Document toDocument() {
-		return _doc;
+		Element root = new Element("contactlist");
+		Document doc = new Document(root);
+		contactList.values().forEach(contact -> {
+			root.appendChild(contact.toElement());
+		});
+		return doc;
 	}
 
 	@Override
@@ -106,20 +121,29 @@ public class ContactListImpl implements ContactList{
 		return arrayContacts;
 	}
 	
-	private Collator getCollator() {
-		return collator;
+	public Collator getCollatorCopy() {
+		return (Collator) collator.clone();
 	}
 	
-	class ContactLocaleDecorator {
+	private void sort() {
+		TreeMap<ContactLocaleDecorator, Contact> newContactList = new TreeMap<ContactLocaleDecorator, Contact>();
+		contactList.forEach((cLD, contact) -> {
+			newContactList.put(cLD, contact);
+		});
+		this.contactList = newContactList;
+	}
+	
+	class ContactLocaleDecorator implements Comparable<ContactLocaleDecorator>{
 		
 		Contact contact;
 		ContactListImpl contactListImpl;
 		CollationKey collationKey;
+		String keyString;
 		
 		public ContactLocaleDecorator(Contact contact, ContactListImpl contactListImpl) {
 			this.contact = contact;
 			this.contactListImpl = contactListImpl;
-			this.collationKey = createComparableNameKey(contact);
+			generateNewCollationKey();
 		}
 
 		public boolean equals(ContactLocaleDecorator cLD) {
@@ -127,15 +151,14 @@ public class ContactListImpl implements ContactList{
 			return false;
 		}
 		
+		@Override
 		public int compareTo(ContactLocaleDecorator cLD) {
-			return this.collationKey.compareTo(cLD.collationKey);
+			int comparison = this.collationKey.compareTo(cLD.collationKey);
+			if(comparison == 0) comparison = 1;
+			return comparison;
 		}
 		
 		public void generateNewCollationKey() {
-			this.collationKey = createComparableNameKey(this.contact);
-		}
-		
-		private CollationKey createComparableNameKey(Contact contact) {
 			String compName = "";
 			String firstName = contact.getFirstName();
 			String lastName = contact.getLastName();
@@ -146,7 +169,8 @@ public class ContactListImpl implements ContactList{
 			if(lastName.length() > 0) compName += lastName + " ";
 			//if(nickname.length() > 0) compName += nickname;
 			compName.trim();
-			return contactListImpl.getCollator().getCollationKey("compName");
+			this.keyString = compName.toLowerCase();
+			this.collationKey = contactListImpl.getCollatorCopy().getCollationKey(compName);
 		}
 		
 	}
