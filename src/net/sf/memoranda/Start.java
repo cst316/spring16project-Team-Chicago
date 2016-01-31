@@ -20,7 +20,7 @@ import net.sf.memoranda.util.Configuration;
 /*$Id: Start.java,v 1.7 2004/11/22 10:02:37 alexeya Exp $*/
 public class Start {
     
-    public static App app = null;
+    static App app = null;
     
     static int DEFAULT_PORT = 19432;
     static boolean checkIfAlreadyStartet = true;
