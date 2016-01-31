@@ -1,14 +1,21 @@
 package net.sf.memoranda.ui;
 
 import java.awt.AWTEvent;
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.MenuItem;
 import java.awt.Point;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Collection;
@@ -28,6 +35,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
@@ -80,6 +88,7 @@ public class AppFrame extends JFrame {
     BorderLayout borderLayout1 = new BorderLayout();
     JSplitPane splitPane = new JSplitPane();
     ProjectsPanel projectsPanel = new ProjectsPanel();
+    TrayIcon trayIcon;
     boolean prPanelExpanded = false;
 
     JMenu jMenuEdit = new JMenu();
@@ -103,9 +112,9 @@ public class AppFrame extends JFrame {
         }
     };
 
-    public Action minimizeAction = new AbstractAction("Close the window") {
+    public Action minimizeToSystemTrayAction = new AbstractAction("Close the window") {
         public void actionPerformed(ActionEvent e) {
-            doMinimize();
+            doMinimizeToSystemTray();
         }
     };
 
@@ -147,7 +156,7 @@ public class AppFrame extends JFrame {
     JMenuItem jMenuFileImportNote = new JMenuItem(importOneNoteAction);
     JMenuItem jMenuFileExportNote = new JMenuItem(
             workPanel.dailyItemsPanel.editorPanel.exportAction);
-    JMenuItem jMenuFileMin = new JMenuItem(minimizeAction);
+    JMenuItem jMenuFileMin = new JMenuItem(minimizeToSystemTrayAction);
 
     JMenuItem jMenuItem1 = new JMenuItem();
     JMenuItem jMenuEditUndo = new JMenuItem(editor.undoAction);
@@ -259,6 +268,39 @@ public class AppFrame extends JFrame {
         this.setIconImage(new ImageIcon(AppFrame.class.getResource(
                 "resources/icons/jnotes16.png"))
                 .getImage());
+        trayIcon = new TrayIcon(this.getIconImage());
+        trayIcon.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					SystemTray.getSystemTray().remove(trayIcon);
+					App.restoreWindow();
+				}
+				catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+        	
+        });
+        PopupMenu trayPopup = new PopupMenu();
+        MenuItem trayExitMenuItem = new MenuItem("Exit");
+        trayExitMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					doExit();
+				}
+				catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+        	
+        });
+        trayPopup.add(trayExitMenuItem);
+        trayIcon.setPopupMenu(trayPopup);
+
         contentPane = (JPanel) this.getContentPane();
         contentPane.setLayout(borderLayout1);
         //this.setSize(new Dimension(800, 500));
@@ -664,9 +706,20 @@ public class AppFrame extends JFrame {
         System.exit(0);
     }
 
-    public void doMinimize() {
-        exitNotify();
-        App.closeWindow();
+    public void doMinimizeToSystemTray() {
+        if(SystemTray.isSupported()) {
+        	try {
+	        	SystemTray.getSystemTray().add(trayIcon);
+	        	exitNotify();
+	        	App.closeWindow();
+        	}
+        	catch (AWTException e) {
+        		e.printStackTrace();
+        	}
+        }
+        else {
+        	this.setState(Frame.ICONIFIED);
+        }
     }
 
     //Help | About action performed
@@ -685,12 +738,11 @@ public class AppFrame extends JFrame {
             if (Configuration.get("ON_CLOSE").equals("exit"))
                 doExit();
             else
-                doMinimize();
+                doMinimizeToSystemTray();
         }
         else if ((e.getID() == WindowEvent.WINDOW_ICONIFIED)) {
             super.processWindowEvent(new WindowEvent(this,
-                    WindowEvent.WINDOW_CLOSING));
-            doMinimize();
+                    WindowEvent.WINDOW_ICONIFIED));
         }
         else
             super.processWindowEvent(e);

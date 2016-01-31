@@ -12,6 +12,7 @@ import javax.swing.UIManager;
 
 import net.sf.memoranda.EventsManager;
 import net.sf.memoranda.EventsScheduler;
+import net.sf.memoranda.Start;
 import net.sf.memoranda.util.Configuration;
 
 /**
@@ -178,5 +179,11 @@ public class App {
 			(screenSize.height - 300) / 2);
 		splash.setUndecorated(true);
 		splash.setVisible(true);
+	}
+
+	public static void restoreWindow() {
+		if (frame == null) return;
+		frame.setVisible(true);
+		
 	}
 }
