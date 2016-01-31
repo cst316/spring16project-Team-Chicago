@@ -54,41 +54,40 @@ public class Contact {
 	 */
 	public Contact(Element element) {
 		
-
 		Elements children = element.getChildElements();
-		Element firstName = children.get(0);
-		Element lname =children.get(1);
-		Element phone = children.get(2);
-		Element email = children.get(3);
-		Element org = children.get(4);
-		Element id = children.get(5);
-	
-		this.firstName = firstName.getValue();
-		this.lastName = lname.getValue();
+		int numelems = element.getChildCount();
 		
-		if(phone.getValue() == null){
-			this.phoneNumber = "";
-		}else{
-			this.phoneNumber = phone.getValue();
-		}
-		
-		if(email.getValue() == null){
-			this.emailAddress = "";
-		}else{
-			this.emailAddress = email.getValue();
-		}
-		
-		if(org.getValue() == null){
-			this.organization = "";
-		}else{
-			this.organization = org.getValue();
-		}
-		if(id.getValue() == null){
-			this.id = obtainId();
-		}else{
-			this.id = id.getValue();
-		}
-		
+		for(int i=0;i<numelems;i++){
+			if(children.get(i).getLocalName().equals("FirstName")){
+				this.firstName = children.get(i).getValue();
+			}else if(children.get(i).getLocalName().equals("LastName")){
+				this.lastName = children.get(i).getValue();
+			}else if(children.get(i).getLocalName().equals("PhoneNumber")){
+				if(children.get(i).getValue() == null){
+					this.phoneNumber = "";
+				}else{
+					this.phoneNumber = children.get(i).getValue();
+				}
+			}else if(children.get(i).getLocalName().equals("E-Mail")){
+				if(children.get(i).getValue() == null){
+					this.emailAddress = "";
+				}else{
+					this.emailAddress = children.get(i).getValue();
+				}
+			}else if(children.get(i).getLocalName().equals("Organization")){
+				if(children.get(i).getValue() == null){
+					this.organization = "";
+				}else{
+					this.organization = children.get(i).getValue();
+				}
+			}else if(children.get(i).getLocalName().equals("ID")){
+				if(children.get(i).getValue() == null){
+					this.id = "";
+				}else{
+					this.id = children.get(i).getValue();
+				}
+			}
+		}// end for loop
 	}
 
 // Getters and Setters for the attributes - No Public method to set the ID - ensures can't be changed
