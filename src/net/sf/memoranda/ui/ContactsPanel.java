@@ -217,8 +217,8 @@ public class ContactsPanel extends JPanel{
         if (dlg.CANCELLED) return;
         contact.setFirstName(dlg.txtFirstName.getText());
         contact.setLastName(dlg.txtLastName.getText());
-        contact.setEmailAddress(dlg.txtEmailAddress.getText());
         contact.setPhoneNumber(dlg.txtTelephone.getText());
+        contact.setEmailAddress(dlg.txtEmailAddress.getText());
         contact.setOrganization(dlg.txtOrganization.getText());
         ContactManager.updateContact(contact);
 	    saveContacts();
@@ -236,8 +236,9 @@ public class ContactsPanel extends JPanel{
     	Contact newContact = new Contact(
     			dlg.txtFirstName.getText(), 
     			dlg.txtLastName.getText(),
-    			dlg.txtEmailAddress.getText(),
-    			dlg.txtTelephone.getText()
+    			dlg.txtTelephone.getText(),
+    			dlg.txtEmailAddress.getText()
+    			
     		);
     	newContact.setOrganization(dlg.txtOrganization.getText());
     	ContactManager.addContact(newContact);
