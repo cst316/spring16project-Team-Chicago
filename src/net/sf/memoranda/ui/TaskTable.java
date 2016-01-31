@@ -524,7 +524,6 @@ public class TaskTable extends JTable {
 			while(iter.hasNext()){
 				tree.expandPath( (TreePath) iter.next() );
 			}
-			System.out.println(expanded.size());
 		}
 		
 	} // }}}	

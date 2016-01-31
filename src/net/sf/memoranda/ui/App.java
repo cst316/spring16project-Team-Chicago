@@ -23,6 +23,11 @@ import net.sf.memoranda.util.Configuration;
 public class App {
 	// boolean packFrame = false;
 
+	public static DEBUG_MODE DEBUG;
+	public static enum DEBUG_MODE {
+		CONSOLE,
+		OFF
+	}
 	static AppFrame frame = null;
 	
 	public static final String GUIDE_URL = "http://memoranda.sourceforge.net/guide.html";
@@ -40,6 +45,13 @@ public class App {
 	public static final String BUILD_INFO = "@BUILD@";
 	
 	/*========================================================================*/
+	
+	static {
+		String debug = (String)Configuration.get("DEBUG_MODE");
+		if(debug == null) DEBUG = DEBUG_MODE.CONSOLE;
+		else if(debug.equals("console")) DEBUG = DEBUG_MODE.CONSOLE;
+		else DEBUG = DEBUG_MODE.OFF;
+	}
 
 	public static AppFrame getFrame() {
 		return frame;

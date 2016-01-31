@@ -35,6 +35,7 @@ public class ContactManager {
 		else {
 			contactList = new ContactList(doc, collator);
 		}
+		doc = contactList.toDocument();
 	}
 	
 	
@@ -59,7 +60,7 @@ public class ContactManager {
 	 * @return nu.xom.Document object containing an XML representation of the ContactList
 	 */
 	public static Document getDoc() {
-		return doc;
+		return contactList.toDocument();
 	}
 	
 	
