@@ -26,7 +26,8 @@ public class OverdueEventNotifier extends DefaultEventNotifier {
  		new EventNotificationDialog( 
  			"Memoranda event", 
  			ev.getTimeString(), 
- 			"OVERDUE: " + ev.getText()); 
+ 			"OVERDUE: " + ev.getText(),
+ 			ev); 
  	}
 
 }

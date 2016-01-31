@@ -3,6 +3,7 @@ package net.sf.memoranda.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 
 import javax.swing.BorderFactory;
@@ -14,6 +15,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import net.sf.memoranda.Event;
+import net.sf.memoranda.EventsManager;
+import net.sf.memoranda.date.CurrentDate;
 import net.sf.memoranda.util.Configuration;
 import net.sf.memoranda.util.Local;
 
@@ -21,6 +25,9 @@ import java.applet.Applet;
 import java.applet.AudioClip;
 import java.io.File;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 
 /*$Id: EventNotificationDialog.java,v 1.8 2004/10/18 19:08:56 ivanrise Exp $*/
@@ -37,8 +44,9 @@ public class EventNotificationDialog extends JFrame {
   JLabel textLabel = new JLabel();
   JLabel timeLabel = new JLabel();
   Border border4;
+  Event ev; 
 
-  public EventNotificationDialog(String title, String time, String text) {
+  public EventNotificationDialog(String title, String time, String text, Event ev) {
     super();
     this.setTitle(title);
     try {
@@ -58,10 +66,11 @@ public class EventNotificationDialog extends JFrame {
     this.toFront();
     this.requestFocus();
     //jButton1.requestFocus();
+    this.ev = ev; 
   }
 
   public EventNotificationDialog() {
-    this("", "", "");
+    this("", "", "", null);
   }
   void jbInit() throws Exception {
     this.setResizable(false);
@@ -137,12 +146,11 @@ public class EventNotificationDialog extends JFrame {
   }
   
   /**
-   * Calls method to delete event if remove button pressed
+   * Calls method to delete event if remove button pressed.
    * @param e
    */
   void jButton2_actionPerformed(ActionEvent e) {
-      System.out.println("[DEBUG] Event notice remove button pressed");
-      // add code to remove 
+      EventsPanel.removeEventB_actionPerformed(e, ev);
       this.dispose();
   }
   
@@ -151,8 +159,7 @@ public class EventNotificationDialog extends JFrame {
    * @param e
    */
   void jButton3_actionPerformed(ActionEvent e) {
-      System.out.println("[DEBUG] Event notice edit button pressed");
-      // add code to pop up editor
+      EventsPanel.editEventB_actionPerformed(e, ev);
       this.dispose();
   }
   
