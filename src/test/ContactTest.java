@@ -5,14 +5,13 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import net.sf.memoranda.Contact;
-import nu.xom.Element;
-import nu.xom.Elements;
+
 import nu.xom.Document;
 
 public class ContactTest {
 
 	private Contact[] testContacts;
-	private Element[] testXML;
+	
 	
 	
 	@Before
@@ -80,7 +79,7 @@ public class ContactTest {
 		assertEquals(doc1.getRootElement().getChildCount(),6);
 		assertEquals(doc1.getRootElement().getChild(0).getValue(),"Tom");
 		
-		//fail("Not yet implemented"); // TODO
+		
 	}
 
 }
