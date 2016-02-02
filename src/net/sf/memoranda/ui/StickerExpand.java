@@ -13,6 +13,8 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -25,7 +27,8 @@ import net.sf.memoranda.ui.StickerDialog.ComboBoxRenderer;
 import net.sf.memoranda.util.Context;
 import net.sf.memoranda.util.Local;
 
-public class StickerExpand extends JDialog{
+//Switched to JFrame from Jdialog
+public class StickerExpand extends JFrame{
 	String txt;
 	Color backGroundColor, foreGroundColor;
 	public boolean CANCELLED = true;
@@ -40,14 +43,18 @@ public class StickerExpand extends JDialog{
 	JLabel stickerText = new JLabel();
 	JLabel jLabel1 = new JLabel();
 	BorderLayout borderLayout3 = new BorderLayout();
+	JMenu menu = new JMenu();
 
 	Border border1;
 	Border border2;
 	public StickerExpand(Frame frame,String txt, String backcolor, String fontcolor, String priority) {
-		super(frame, Local.getString("Sticker")+" ["+priority+"]" , true);
+		//super(frame, Local.getString("Sticker")+" ["+priority+"]" , true);
 		this.txt=txt;
 		this.backGroundColor=Color.decode(backcolor);
 		this.foreGroundColor=Color.decode(fontcolor);
+		//Title on menu bar uses priortity
+		setTitle(priority);
+	
 		try {
 			jbInit();
 			pack();
@@ -71,6 +78,8 @@ public class StickerExpand extends JDialog{
 		topPanel.setBorder(new EmptyBorder(new Insets(0, 5, 0, 5)));
 		topPanel.setBackground(Color.WHITE);
 
+		
+		
 		jPanel1.setLayout(borderLayout3);
 		panel1.setBorder(border1);
 		jPanel1.setBorder(border2);

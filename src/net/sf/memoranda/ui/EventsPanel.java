@@ -24,6 +24,7 @@ import javax.swing.JToolBar;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import net.sf.memoranda.Event;
 import net.sf.memoranda.EventsManager;
 import net.sf.memoranda.EventsScheduler;
 import net.sf.memoranda.History;
@@ -45,12 +46,12 @@ public class EventsPanel extends JPanel {
     JButton editEventB = new JButton();
     JButton removeEventB = new JButton();
     JScrollPane scrollPane = new JScrollPane();
-    EventsTable eventsTable = new EventsTable();
+    static private EventsTable eventsTable = new EventsTable();
     JPopupMenu eventPPMenu = new JPopupMenu();
     JMenuItem ppEditEvent = new JMenuItem();
     JMenuItem ppRemoveEvent = new JMenuItem();
     JMenuItem ppNewEvent = new JMenuItem();
-    DailyItemsPanel parentPanel = null;
+    static private DailyItemsPanel parentPanel = null;
 
     public EventsPanel(DailyItemsPanel _parentPanel) {
         try {
@@ -303,6 +304,77 @@ public class EventsPanel extends JPanel {
 	}    
 	saveEvents();
     }
+    
+    /**
+     * Overloaded edit event method that allows the user to edit an event from the 
+     * notification dialog.
+     * @param e 
+     * @param ev Event object
+     */
+    static void editEventB_actionPerformed(ActionEvent e, Event ev) {
+        EventDialog dlg = new EventDialog(App.getFrame(), Local.getString("Event"));        
+        dlg.timeSpin.getModel().setValue(ev.getTime());   
+        dlg.textField.setText(ev.getText());
+        int rep = ev.getRepeat();
+        if (rep > 0) {
+            dlg.startDate.getModel().setValue(ev.getStartDate().getDate());
+            if (rep == EventsManager.REPEAT_DAILY) {
+                dlg.dailyRepeatRB.setSelected(true);
+                dlg.dailyRepeatRB_actionPerformed(null);
+                dlg.daySpin.setValue(new Integer(ev.getPeriod()));
+            }
+            else if (rep == EventsManager.REPEAT_WEEKLY) {
+                dlg.weeklyRepeatRB.setSelected(true);
+                dlg.weeklyRepeatRB_actionPerformed(null);
+		int d = ev.getPeriod() - 1;
+		if(Configuration.get("FIRST_DAY_OF_WEEK").equals("mon")) {
+		    d--;
+		    if(d<0) d=6;
+		}
+                dlg.weekdaysCB.setSelectedIndex(d);
+            }
+            else if (rep == EventsManager.REPEAT_MONTHLY) {
+                dlg.monthlyRepeatRB.setSelected(true);
+                dlg.monthlyRepeatRB_actionPerformed(null);
+                dlg.dayOfMonthSpin.setValue(new Integer(ev.getPeriod()));
+            }
+	    else if (rep == EventsManager.REPEAT_YEARLY) {
+		dlg.yearlyRepeatRB.setSelected(true);
+		dlg.yearlyRepeatRB_actionPerformed(null);
+		dlg.dayOfMonthSpin.setValue(new Integer(ev.getPeriod()));
+	    }
+        if (ev.getEndDate() != null) {
+           dlg.endDate.getModel().setValue(ev.getEndDate().getDate());
+           dlg.enableEndDateCB.setSelected(true);
+           dlg.enableEndDateCB_actionPerformed(null);
+        }
+		if(ev.getWorkingDays()) {
+			dlg.workingDaysOnlyCB.setSelected(true);
+		}
+		
+        }
+
+        Dimension frmSize = App.getFrame().getSize();
+        Point loc = App.getFrame().getLocation();
+        dlg.setLocation((frmSize.width - dlg.getSize().width) / 2 + loc.x, (frmSize.height - dlg.getSize().height) / 2 + loc.y);
+        dlg.setVisible(true);
+        if (dlg.CANCELLED)
+            return;
+        EventsManager.removeEvent(ev);
+        
+		Calendar calendar = new GregorianCalendar(Local.getCurrentLocale()); //Fix deprecated methods to get hours
+		calendar.setTime(((Date)dlg.timeSpin.getModel().getValue()));//Fix deprecated methods to get hours
+		int hh = calendar.get(Calendar.HOUR_OF_DAY);//Fix deprecated methods to get hours
+		int mm = calendar.get(Calendar.MINUTE);//Fix deprecated methods to get hours
+
+        String text = dlg.textField.getText();
+        if (dlg.noRepeatRB.isSelected())
+   	    EventsManager.createEvent(CurrentDate.get(), hh, mm, text);
+        else {
+	     updateEvents(dlg,hh,mm,text);
+	}    
+	saveEvents();
+    }
 
     void newEventB_actionPerformed(ActionEvent e) {
         Calendar cdate = CurrentDate.get().getCalendar();
@@ -352,7 +424,7 @@ public class EventsPanel extends JPanel {
     	saveEvents();
     }
 
-    private void saveEvents() {
+    static private void saveEvents() {
 	CurrentStorage.get().storeEventsManager();
         eventsTable.refresh();
         EventsScheduler.init();
@@ -360,7 +432,7 @@ public class EventsPanel extends JPanel {
         parentPanel.updateIndicators();
     }
 
-    private void updateEvents(EventDialog dlg, int hh, int mm, String text) {
+    static private void updateEvents(EventDialog dlg, int hh, int mm, String text) {
 	int rtype;
         int period;
         CalendarDate sd = new CalendarDate((Date) dlg.startDate.getModel().getValue());
@@ -427,6 +499,17 @@ public class EventsPanel extends JPanel {
         parentPanel.updateIndicators();
 */ saveEvents();  
   }
+    
+    /**
+     * Overloaded removeEventB_actionPerformed method to allow users to remove an event from 
+     * the notification dialog.
+     * @param e
+     * @param ev Event object
+     */
+    static void removeEventB_actionPerformed(ActionEvent e, Event ev) {
+        EventsManager.removeEvent(ev);
+        saveEvents();  
+    }
 
     class PopupListener extends MouseAdapter {
 
@@ -459,4 +542,5 @@ public class EventsPanel extends JPanel {
     void ppNewEvent_actionPerformed(ActionEvent e) {
         newEventB_actionPerformed(e);
     }
+    
 }

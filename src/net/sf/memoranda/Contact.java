@@ -33,6 +33,7 @@ public class Contact {
 		this.phoneNumber = phoneNumber;
 		this.emailAddress = emailAddress;
 		this.id = obtainId();
+		this.organization = "";
 	}
 
 	//Constructor requiring just first and last name
@@ -44,6 +45,7 @@ public class Contact {
 		this.phoneNumber = "";
 		this.emailAddress = "";
 		this.id = obtainId();
+		this.organization ="";
 	}
 	
 	/**
@@ -58,31 +60,31 @@ public class Contact {
 		int numelems = element.getChildCount();
 		
 		for(int i=0;i<numelems;i++){
-			if(children.get(i).getLocalName().equals("FirstName")){
+			if(children.get(i).getLocalName().equalsIgnoreCase("FirstName")){
 				this.firstName = children.get(i).getValue();
-			}else if(children.get(i).getLocalName().equals("LastName")){
+			}else if(children.get(i).getLocalName().equalsIgnoreCase("LastName")){
 				this.lastName = children.get(i).getValue();
-			}else if(children.get(i).getLocalName().equals("PhoneNumber")){
+			}else if(children.get(i).getLocalName().equalsIgnoreCase("PhoneNumber")){
 				if(children.get(i).getValue() == null){
 					this.phoneNumber = "";
 				}else{
 					this.phoneNumber = children.get(i).getValue();
 				}
-			}else if(children.get(i).getLocalName().equals("E-Mail")){
+			}else if(children.get(i).getLocalName().equalsIgnoreCase("E-Mail")){
 				if(children.get(i).getValue() == null){
 					this.emailAddress = "";
 				}else{
 					this.emailAddress = children.get(i).getValue();
 				}
-			}else if(children.get(i).getLocalName().equals("Organization")){
+			}else if(children.get(i).getLocalName().equalsIgnoreCase("Organization")){
 				if(children.get(i).getValue() == null){
 					this.organization = "";
 				}else{
 					this.organization = children.get(i).getValue();
 				}
-			}else if(children.get(i).getLocalName().equals("ID")){
+			}else if(children.get(i).getLocalName().equalsIgnoreCase("ID")){
 				if(children.get(i).getValue() == null){
-					this.id = "";
+					this.id = obtainId();
 				}else{
 					this.id = children.get(i).getValue();
 				}
