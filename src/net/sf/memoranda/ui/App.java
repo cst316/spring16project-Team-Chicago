@@ -10,7 +10,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.UIManager;
 
+import net.sf.memoranda.EventsManager;
 import net.sf.memoranda.EventsScheduler;
+import net.sf.memoranda.Start;
 import net.sf.memoranda.util.Configuration;
 
 /**
@@ -22,6 +24,11 @@ import net.sf.memoranda.util.Configuration;
 public class App {
 	// boolean packFrame = false;
 
+	public static DEBUG_MODE DEBUG;
+	public static enum DEBUG_MODE {
+		CONSOLE,
+		OFF
+	}
 	static AppFrame frame = null;
 	
 	public static final String GUIDE_URL = "http://memoranda.sourceforge.net/guide.html";
@@ -39,6 +46,13 @@ public class App {
 	public static final String BUILD_INFO = "@BUILD@";
 	
 	/*========================================================================*/
+	
+	static {
+		String debug = (String)Configuration.get("DEBUG_MODE");
+		if(debug == null) DEBUG = DEBUG_MODE.CONSOLE;
+		else if(debug.equals("console")) DEBUG = DEBUG_MODE.CONSOLE;
+		else DEBUG = DEBUG_MODE.OFF;
+	}
 
 	public static AppFrame getFrame() {
 		return frame;
@@ -135,7 +149,10 @@ public class App {
 		frame.setVisible(true);
 		frame.toFront();
 		frame.requestFocus();
-
+		
+		// run startup check for any overdue events for current day
+        EventsManager.checkOverdueEvents();
+		
 	}
 
 	public static void closeWindow() {
@@ -162,5 +179,11 @@ public class App {
 			(screenSize.height - 300) / 2);
 		splash.setUndecorated(true);
 		splash.setVisible(true);
+	}
+
+	public static void restoreWindow() {
+		if (frame == null) return;
+		frame.setVisible(true);
+		
 	}
 }

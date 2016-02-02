@@ -9,7 +9,7 @@
 	<!--$Id: build.xml,v 1.18 2007/04/06 21:12:24 alexeya Exp $-->
 	<!-- set global properties for this build -->
 	<property name="name" value="memoranda"/>
-	<property name="version" value="1.0-rc3.1"/>
+	<property name="version" value="1.1"/>
 	<property name="source.dir" value="${basedir}/src"/>
 	<property name="lib.dir" value="${basedir}/lib"/>
 	<property name="build.dir" value="${basedir}/build"/>
@@ -63,7 +63,7 @@
 		<copy file="${source.dir}/net/sf/memoranda/ui/~~App.java" tofile="${source.dir}/net/sf/memoranda/ui/App.java"/>
 		<replace file="${source.dir}/net/sf/memoranda/ui/App.java" token="@VERSION@" value="${version}"/>
 		<replace file="${source.dir}/net/sf/memoranda/ui/App.java" token="@BUILD@" value="${DSTAMP}.${build.number}"/>
-		<javac srcdir="${source.dir}" destdir="${build.classes.dir}" excludes="**/Cvs/**,**/*.ini,**/~*" debug="${debug}" debuglevel="${debuglevel}" optimize="${optimize}" deprecation="${deprecation}" failonerror="false" source="1.8" target="1.8">
+		<javac srcdir="${source.dir}" destdir="${build.classes.dir}" excludes="**/Cvs/**,**/*.ini,**/~*,**/test/*" debug="${debug}" debuglevel="${debuglevel}" optimize="${optimize}" deprecation="${deprecation}" failonerror="false" source="1.8" target="1.8">
 			<!-- <compilerarg value="-Xlint:unchecked"/> -->
 			<classpath>
 				<path refid="classpath"/>

@@ -69,12 +69,12 @@ public class ExportSticker {
                         fwrite.write(contents);
                         
                         fwrite.close();
-                        JOptionPane.showMessageDialog(null,Local.getString("Documento creado con exito en su carpeta Memoranda =D"));
+                        JOptionPane.showMessageDialog(null,Local.getString("Document created with success in your wallet Memoranda"));
             
             
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null,Local.getString("NO Logramos crear su documento =(..."));
+            JOptionPane.showMessageDialog(null,Local.getString("failed to create your document"));
         }
                 
                 

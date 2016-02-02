@@ -111,6 +111,41 @@ public class EventsManager {
 		return v;
 	}
 
+	/**
+	 * Checks if current day events are past their user-set notification date. Called in App.java
+	 * at startup. Occurs during app initialization.
+	 * @author Larry Naron
+	 */
+	public static void checkOverdueEvents() {	
+ 
+		// sets date and time values to check
+		CalendarDate date = new CalendarDate();			  
+		Calendar time = Calendar .getInstance();           
+		int currentHour = time.get(Calendar.HOUR_OF_DAY);
+		int currentMinute = time.get(Calendar.MINUTE);
+ 
+		Vector events = new Vector();  // new vector to hold today's events
+		events = (Vector) getEventsForDate(date); // store events, cast to vector from collection
+		
+		// performs check of each event
+		for (int j = 0; j < events.size(); j ++) {			
+			// checks event hour and minute against current system time
+			if (((EventImpl)events.elementAt(j)).getHour() < currentHour ) {
+				new OverdueEventNotifier().eventIsOccured(((EventImpl)events.elementAt(j)));
+				System.out.println("[DEBUG] Notification " + 
+				            ((EventImpl) events.elementAt(j)).getText() + " is overdue");
+			} 	
+			else if (((EventImpl)events.elementAt(j)).getHour() == currentHour &&
+					       ((EventImpl)events.elementAt(j)).getMinute() < currentMinute) {
+				new OverdueEventNotifier().eventIsOccured(((EventImpl)events.elementAt(j)));
+				System.out.println("[DEBUG] Notification " + 
+				            ((EventImpl) events.elementAt(j)).getText() + " is overdue");
+			} 
+			
+		} // end for	
+		
+	} // end checkOverdueEvents
+
 	public static Event createEvent(
 		CalendarDate date,
 		int hh,

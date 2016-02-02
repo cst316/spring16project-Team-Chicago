@@ -643,7 +643,7 @@ public class PreferencesDialog extends JDialog {
 		if (this.closeExitRB.isSelected())
 			Configuration.put("ON_CLOSE", "exit");
 		else
-			Configuration.put("ON_CLOSE", "minimize");
+			Configuration.put("ON_CLOSE", "systemtray");
 
 		Configuration.put("ON_MINIMIZE", "normal");
 

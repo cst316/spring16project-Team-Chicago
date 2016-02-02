@@ -34,6 +34,9 @@ public interface Storage {
     void openProjectManager();    
     void storeProjectManager();
     
+    void openContactList();    
+    void storeContactList();
+    
     void openEventsManager();
     void storeEventsManager();
     

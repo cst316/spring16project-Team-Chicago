@@ -38,6 +38,7 @@ public class WorkPanel extends JPanel {
 	public JButton tasksB = new JButton();
 	public JButton eventsB = new JButton();
 	public JButton filesB = new JButton();
+	public JButton contactsB = new JButton();
 	JButton currentB = null;
 	Border border1;
 
@@ -171,6 +172,31 @@ public class WorkPanel extends JPanel {
 		notesB.setMargin(new Insets(0, 0, 0, 0));
 		notesB.setSelected(true);
 		this.setPreferredSize(new Dimension(1073, 300));
+		
+		contactsB.setBackground(Color.white);
+		contactsB.setMaximumSize(new Dimension(60, 80));
+		contactsB.setMinimumSize(new Dimension(30, 30));
+
+		contactsB.setFont(new java.awt.Font("Dialog", 1, 10));
+		contactsB.setPreferredSize(new Dimension(50, 50));
+		contactsB.setBorderPainted(false);
+		contactsB.setContentAreaFilled(false);
+		contactsB.setFocusPainted(false);
+		contactsB.setHorizontalTextPosition(SwingConstants.CENTER);
+		contactsB.setText(Local.getString("Contacts"));
+		contactsB.setVerticalAlignment(SwingConstants.TOP);
+		contactsB.setVerticalTextPosition(SwingConstants.BOTTOM);
+		contactsB.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				contactsB_actionPerformed(e);
+			}
+		});
+		contactsB.setIcon(
+			new ImageIcon(
+				net.sf.memoranda.ui.AppFrame.class.getResource(
+					"resources/icons/contacts.png")));
+		contactsB.setOpaque(false);
+		contactsB.setMargin(new Insets(0, 0, 0, 0));
 
 		filesB.setSelected(true);
 		filesB.setMargin(new Insets(0, 0, 0, 0));
@@ -204,6 +230,7 @@ public class WorkPanel extends JPanel {
 		toolBar.add(eventsB, null);
 		toolBar.add(tasksB, null);
 		toolBar.add(notesB, null);
+		toolBar.add(contactsB, null);
 		toolBar.add(filesB, null);
 		currentB = agendaB;
 		// Default blue color
@@ -225,6 +252,8 @@ public class WorkPanel extends JPanel {
 				tasksB_actionPerformed(null);
 			else if (pan.equals("EVENTS"))
 				eventsB_actionPerformed(null);
+			else if (pan.equals("CONTACTS"))
+				contactsB_actionPerformed(null);
 			else if (pan.equals("FILES"))
 				filesB_actionPerformed(null);
 		}
@@ -256,6 +285,13 @@ public class WorkPanel extends JPanel {
 		dailyItemsPanel.selectPanel("EVENTS");
 		setCurrentButton(eventsB);
 		Context.put("CURRENT_PANEL", "EVENTS");
+	}
+	
+	public void contactsB_actionPerformed(ActionEvent e) {
+		cardLayout1.show(panel, "DAILYITEMS");
+		dailyItemsPanel.selectPanel("CONTACTS");
+		setCurrentButton(contactsB);
+		Context.put("CURRENT_PANEL", "CONTACTS");
 	}
 
 	public void filesB_actionPerformed(ActionEvent e) {

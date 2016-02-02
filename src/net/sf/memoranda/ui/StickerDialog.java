@@ -46,7 +46,7 @@ public class StickerDialog extends JDialog {
 	JButton underlineButton= new JButton();
 	JButton unorderedListButton= new JButton();
 	
-	JPanel bottomPanel = new JPanel();
+	JPanel bottomPanel = new JPanel(); 
 	JPanel topPanel = new JPanel();
 	JLabel header = new JLabel();
 	JScrollPane jScrollPane1 = new JScrollPane();
