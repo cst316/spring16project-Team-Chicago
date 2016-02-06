@@ -10,6 +10,7 @@ import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -72,7 +73,7 @@ public class DailyItemsPanel extends JPanel {
     boolean expanded = true;
 
     Note currentNote;
-	CalendarDate currentDate;
+	static CalendarDate currentDate;
 
     boolean calendarIgnoreChange = false;
     boolean dateChangedByCalendar = false;
@@ -220,8 +221,10 @@ public class DailyItemsPanel extends JPanel {
         CurrentDate.addDateListener(new DateListener() {
             public void dateChange(CalendarDate d) {
                 currentDateChanged(d);
+                System.out.println("[DEBUG] Date changed to " + d);
             }
         });
+        
 
         CurrentProject.addProjectListener(new ProjectListener() {
             public void projectChange(Project p, NoteList nl, TaskList tl, ResourcesList rl) {
@@ -481,5 +484,18 @@ public class DailyItemsPanel extends JPanel {
 
     void alarmB_actionPerformed(ActionEvent e) {
         parentPanel.eventsB_actionPerformed(null);
+    }
+    
+    /**
+     * Method: getCurrentDate()
+     * Returns: String of current date selected on the calendar
+     * @return selectDate
+     * Description: Gets the date currently selected on the calendar. This is used to bypass the
+     * multiple continuity issues between Date and Calendar dates being used.
+     * Currently being used by EventsManager.java
+     */
+    public static String getCurrentDate() {
+    	String selectDate = CurrentDate.get().toString();
+    	return selectDate;
     }
 }
