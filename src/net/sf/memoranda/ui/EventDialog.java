@@ -488,7 +488,7 @@ public class EventDialog extends JDialog implements WindowListener {
      */
     void okB_actionPerformed(ActionEvent e) {
     	// checks if one of the repeat buttons is selected
-    	if (noRepeatRB.isSelected() == true /*&& editCheck == true*/) {
+    	if (noRepeatRB.isSelected() == true) {
     		JSpinner.DateEditor time = new JSpinner.DateEditor(timeSpin, "HHmm");
     		EventsManager.checkEventScheduleTime(time.getFormat().format(timeSpin.getValue()));
     	}

@@ -221,7 +221,6 @@ public class DailyItemsPanel extends JPanel {
         CurrentDate.addDateListener(new DateListener() {
             public void dateChange(CalendarDate d) {
                 currentDateChanged(d);
-                System.out.println("[DEBUG] Date changed to " + d);
             }
         });
         
@@ -398,6 +397,19 @@ public class DailyItemsPanel extends JPanel {
         CurrentDate.set(hi.getDate());
         changedByHistory = false;
     }
+    
+    /**
+     * Method: getCurrentDate()
+     * Returns: String of current date selected on the calendar
+     * @return selectDate
+     * Description: Gets the date currently selected on the calendar. This is used to bypass the
+     * multiple continuity issues between Date and Calendar dates being used.
+     * Currently being used by EventsManager.java
+     */
+    public static String getCurrentDate() {
+    	String selectDate = CurrentDate.get().toString();
+    	return selectDate;
+    }
 
     public void saveNote() {
         if (currentNote == null)
@@ -486,16 +498,5 @@ public class DailyItemsPanel extends JPanel {
         parentPanel.eventsB_actionPerformed(null);
     }
     
-    /**
-     * Method: getCurrentDate()
-     * Returns: String of current date selected on the calendar
-     * @return selectDate
-     * Description: Gets the date currently selected on the calendar. This is used to bypass the
-     * multiple continuity issues between Date and Calendar dates being used.
-     * Currently being used by EventsManager.java
-     */
-    public static String getCurrentDate() {
-    	String selectDate = CurrentDate.get().toString();
-    	return selectDate;
-    }
+
 }

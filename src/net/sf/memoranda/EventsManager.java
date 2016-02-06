@@ -117,14 +117,7 @@ public class EventsManager {
 		return v;
 	}
 	
-	/**
-	 * Method: checkEventSchedule
-	 * Inputs: schedTime - the time trying to be scheduled
-	 * Returns: void
-	 * Description: Checks if the non-repeated event being created is scheduled for a time that
-	 * has already past.
-	 */
-	public static void checkEventScheduleTime(String schedTime) {
+	public static String getFormattedLocalTime() {
 		// sets sysTime date and time values to check		  
 		Calendar time = Calendar.getInstance();           
 		int timeHour = time.get(Calendar.HOUR_OF_DAY);
@@ -133,19 +126,29 @@ public class EventsManager {
 		// concatenates system hour and minute for comparison with user scheduled event time
 		String hour = String.format("%02d", timeHour);
 		String minute = String.format("%02d", timeMinute);
-		String sysTime = hour + minute;	
+		String sysTime = hour + minute;
 		
-		// determines scheduled date		
+		return sysTime;
+	}
+	
+	/**
+	 * Method: checkEventSchedule
+	 * Inputs: schedTime - the time trying to be scheduled
+	 * @param schedTime
+	 * Returns: void
+	 * Description: Checks if the non-repeated event being created is scheduled for a time that
+	 * has already past.
+	 */
+	public static void checkEventScheduleTime(String schedTime) {
+		Calendar time = Calendar.getInstance(); 
+		
+		// gets scheduled event date		
 		String schedDate = DailyItemsPanel.getCurrentDate();
 		schedDate = eventDateConverter(schedDate);
 		
-		// gets current system date
+		// gets current system time and date
+		String sysTime = getFormattedLocalTime();
 		String sysDate = new SimpleDateFormat("yyyyMMdd").format(time.getTime());		
-		
-		System.out.println("[DEBUG] EventsManager sysTime: " + sysTime);
-		System.out.println("[DEBUG] EventsManager schedTime: " + schedTime);
-		System.out.println("[DEBUG] EventsManager sysDate: " + sysDate);
-		System.out.println("[DEBUG] EventsManager schedDate: " + schedDate);		
 		
 		// compare dates and times
 		if (sysDate.equals(schedDate)) {
@@ -193,8 +196,6 @@ public class EventsManager {
 		
 		// assembles date parts to new date format
 		convertedDate = year + month + day;
-				
-		System.out.println("[DEBUG] EventsManager Converted date " + convertedDate);
 		
 		return convertedDate;
 	}
