@@ -41,7 +41,7 @@ public class ContactManager {
 	
 	
 	/**Changes the language used for alphabetical ordering of the ContactList
-	 * @param locale The locale to be used for alhpabetical ordering of the ContactList.
+	 * @param locale The locale to be used for alphabetical ordering of the ContactList.
 	 */
 	public static void changeLanguage(Locale locale) {
 		Collator collator = getAppropriateCollator(locale);
@@ -51,7 +51,7 @@ public class ContactManager {
 	private static Collator getAppropriateCollator(Locale locale) {
 		if(locale == null) throw new NullPointerException();
 		Collator collator = Collator.getInstance(locale);
-		collator.setStrength(Collator.SECONDARY);
+		collator.setStrength(Collator.PRIMARY);
 		return collator;
 	}
 	
@@ -124,6 +124,30 @@ public class ContactManager {
 	 */
 	public static ArrayList<Contact> getAllContacts() {
 		return contactList.toArrayList();
+	}
+	
+	
+	/**Returns an ArrayList containing copies of all the Contacts in the ContactList
+	 * that are associated with the project given
+	 * @param A project to use for searching
+	 * @return An ArrayList containing copies of all the Contacts in the ContactList
+	 * associated with the project given
+	 */
+	public static ArrayList<Contact> getProjectContacts(Project project) {
+		ArrayList<Contact> returnContacts = null;
+		if(project != null) {
+			ArrayList<Contact> projectContacts = new ArrayList<Contact>();
+			getAllContacts().forEach(contact -> {
+				String[] ids = contact.getProjectIDs();
+				for(int i = 0; i < ids.length; i++) {
+					if(ids[i].equals(project.getID())) {
+						projectContacts.add(contact);
+					}
+				}
+			});
+			returnContacts = projectContacts;
+		}
+		return returnContacts;
 	}
 	
 	

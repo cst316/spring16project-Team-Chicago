@@ -1,5 +1,7 @@
 package net.sf.memoranda;
 
+import java.util.ArrayList;
+
 import net.sf.memoranda.util.Util;
 import nu.xom.Element;
 import nu.xom.Elements;
@@ -16,6 +18,7 @@ public class Contact {
 	private String emailAddress;
 	private String organization;
 	private String id;
+	private ArrayList<String> projectIDs = new ArrayList<String>();
 	
 	//public method to set the unique id - Called in both constructors
 	//Utilizes the generateId method in net.sf.memoranda.util.Util
@@ -87,6 +90,14 @@ public class Contact {
 					this.id = obtainId();
 				}else{
 					this.id = children.get(i).getValue();
+				}
+			}else if(children.get(i).getLocalName().equalsIgnoreCase("Projects")) {
+				Elements projects = children.get(i).getChildElements();
+				int size = projects.size();
+				for(int j = 0; j < size; j++) {
+					if(projects.get(j).getLocalName().equalsIgnoreCase("project")) {
+						projectIDs.add(projects.get(j).getValue());
+					}
 				}
 			}
 		}// end for loop
@@ -166,6 +177,9 @@ public class Contact {
 		Contact copy = new Contact(this.getFirstName(),this.getLastName(), this.getPhoneNumber(),this.getEmailAddress());
 		copy.organization = this.organization;
 		copy.id = this.id;
+		projectIDs.forEach(projectID -> {
+			copy.projectIDs.add(projectID);
+		});
 		return copy;
 	}
 	
@@ -183,6 +197,7 @@ public class Contact {
 		Element email = new Element("E-Mail");
 		Element org = new Element("Organization");
 		Element id = new Element("ID");
+		Element projects = new Element("projects");
 		
 		firstName.appendChild(this.getFirstName());
 		lastName.appendChild(this.getLastName());
@@ -190,6 +205,11 @@ public class Contact {
 		email.appendChild(this.getEmailAddress());
 		org.appendChild(this.getOrganization());
 		id.appendChild(this.getId());
+		this.projectIDs.forEach(projectID -> {
+			Element project = new Element("project");
+			project.appendChild(projectID);
+			projects.appendChild(project);
+		});
 
 		root.appendChild(firstName);
 		root.appendChild(lastName);
@@ -197,8 +217,41 @@ public class Contact {
 		root.appendChild(email);
 		root.appendChild(org);
 		root.appendChild(id);
+		root.appendChild(projects);
 		
 		return root;
+	}
+
+	public boolean addProject(Project project) {
+		boolean success = false;
+		if(!projectIDs.contains(project.getID())) {
+			projectIDs.add(project.getID());
+			success = true;
+		}
+		return success;
+	}
+
+	public boolean removeProject(Project project) {
+		return projectIDs.remove(project.getID());
+	}
+	
+	public String[] getProjectIDs() {
+		String[] projects = new String[projectIDs.size()];
+		projectIDs.toArray(projects);
+		return projects;
+	}
+
+	public boolean inProject(Project project) {
+		boolean exists = false;
+		if(project != null) {
+			for(int i = 0; i < projectIDs.size(); i++) {
+				String id = projectIDs.get(i);
+				if(id.equals(project.getID())) {
+					exists = true;
+				}
+			}
+		}
+		return exists;
 	}
 	
 }
