@@ -30,6 +30,17 @@ import net.sf.memoranda.ResourcesList;
 import net.sf.memoranda.TaskList;
 import net.sf.memoranda.util.Local;
 
+/**
+ * The ContactsTable class is used to display <code>Contact</code>s in the
+ * Memoranda application GUI. It can be used to display all <code>Contact</code>s
+ * within the application or to display <code>Contact</code>s associated with
+ * the <code>CurrentProject</code>.
+ * 
+ * @author Jonathan Hinkle
+ * @see {@link net.sf.memoranda.Contact }
+ * @see {@link net.sf.memoranda.CurrentProject }
+ *
+ */
 public class ContactsTable  extends JTable {
 
     public static final int CONTACT_ID = 101;
@@ -38,21 +49,26 @@ public class ContactsTable  extends JTable {
 		ALL,
 		PROJECT
 	}
-	private TransferableContacts transferableContacts = new TransferableContacts();
-	private Type type;
-	private NameFilter nameFilter = new NameFilter();
-	private TableRowSorter<ContactsTableModel> rowSorter;
-
-    ArrayList<Contact> contacts = new ArrayList<Contact>();
+	private TransferableContacts _transferableContacts = new TransferableContacts();
+	private Type _type;
+	private NameFilter _nameFilter = new NameFilter();
+	private TableRowSorter<ContactsTableModel> _rowSorter;
+	private boolean _pressed;
+	private ArrayList<Contact> _contacts = new ArrayList<Contact>();
+	
+	
     /**
-     * Constructor for ContactsTable.
+     * Constructor for ContactsTable. Accepts a <code>ContactsTable.Type</code>
+     * which sets how the table retrieves the contacts it shows
+     * 
+     * @param type The type of table to be used
      */
     public ContactsTable(Type type) {
         super();
-        this.type = type;
+        this._type = type;
         ContactsTableModel cModel = new ContactsTableModel();
         setModel(cModel);
-        initTable();
+        _initTable();
         this.setShowGrid(false);
         CurrentProject.addProjectListener(new ProjectListener() {
 
@@ -67,41 +83,57 @@ public class ContactsTable  extends JTable {
         });
     }
     
+    
+    public void setNameFilter(String text) {
+		if(text != null) {
+			_nameFilter._filterString = text;
+			refresh();
+		}
+	}
+    
+    
     public TransferableContacts getTransferableContacts() {
-    	return transferableContacts;
+    	return _transferableContacts;
     }
+    
+    
+    public TableCellRenderer getCellRenderer(int row, int column) {
+        return new DefaultTableCellRenderer() {
 
-    public void initTable() {
-    	if(type == Type.ALL) {
-    		contacts = ContactManager.getAllContacts();
-    	}
-    	else {
-    		contacts = ContactManager.getProjectContacts(CurrentProject.get());
-    	}
-    	rowSorter = new TableRowSorter<ContactsTableModel>((ContactsTableModel)this.getModel());
-        rowSorter.setRowFilter(nameFilter);
-        setRowSorter(rowSorter);
-        //getColumnModel().getColumn(0).setPreferredWidth(60);
-        //getColumnModel().getColumn(0).setMaxWidth(60);
-        clearSelection();
-        updateUI();
+            public Component getTableCellRendererComponent(
+                JTable table,
+                Object value,
+                boolean isSelected,
+                boolean hasFocus,
+                int row,
+                int column) {
+                Component comp;
+                comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                comp.setForeground(java.awt.Color.black);
+                return comp;
+            }
+        };
     }
+    
 
+    /**
+     * Refreshes the contact table, updating its contents
+     */
     public void refresh() {
-        initTable();
+        _initTable();
     }
+    
     
     @Override
     public void valueChanged(ListSelectionEvent e) {
     	super.valueChanged(e);
-    	transferableContacts.clear();
+    	_transferableContacts.clear();
     	int[] indexes = this.getSelectedRows();
     	for(int i = 0; i < indexes.length; i++) {
-    		transferableContacts.add((Contact)this.getModel().getValueAt(indexes[i], ContactsTable.CONTACT));
+    		_transferableContacts.add((Contact)this.getModel().getValueAt(indexes[i], ContactsTable.CONTACT));
     	}
     }
     
-    private boolean pressed;
     
     private boolean isUnselected(MouseEvent e) {
          Point pt = e.getPoint();
@@ -110,25 +142,28 @@ public class ContactsTable  extends JTable {
          return row >= 0 && col >= 0 && !super.isCellSelected(row, col);
     }
     
+    
     @Override
     protected void processMouseEvent(MouseEvent e) {
-         pressed = e.getID() == MouseEvent.MOUSE_PRESSED
+         _pressed = e.getID() == MouseEvent.MOUSE_PRESSED
                    && SwingUtilities.isLeftMouseButton(e)
                    && !e.isShiftDown() && !e.isControlDown()
                    && isUnselected(e);
          try {
-              if (pressed)
+              if (_pressed)
                    clearSelection();
               super.processMouseEvent(e);
          } finally {
-              pressed = false;
+              _pressed = false;
          }
     }
     
+    
     @Override
     public boolean isCellSelected(int row, int col) {
-         return pressed ? true : super.isCellSelected(row, col);
+         return _pressed ? true : super.isCellSelected(row, col);
     }
+    
     
     /*@Override
     public void processMouseEvent(MouseEvent e) {
@@ -164,26 +199,32 @@ public class ContactsTable  extends JTable {
     protected void processKeyEvent(KeyEvent e) {
     	
     }*/
-
-    public TableCellRenderer getCellRenderer(int row, int column) {
-        return new DefaultTableCellRenderer() {
-
-            public Component getTableCellRendererComponent(
-                JTable table,
-                Object value,
-                boolean isSelected,
-                boolean hasFocus,
-                int row,
-                int column) {
-                Component comp;
-                comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                comp.setForeground(java.awt.Color.black);
-                return comp;
-            }
-        };
+    
+    
+    private void _initTable() {
+    	if(_type == Type.ALL) {
+    		_contacts = ContactManager.getAllContacts();
+    	}
+    	else {
+    		_contacts = ContactManager.getProjectContacts(CurrentProject.get());
+    	}
+    	_rowSorter = new TableRowSorter<ContactsTableModel>((ContactsTableModel)this.getModel());
+        _rowSorter.setRowFilter(_nameFilter);
+        setRowSorter(_rowSorter);
+        //getColumnModel().getColumn(0).setPreferredWidth(60);
+        //getColumnModel().getColumn(0).setMaxWidth(60);
+        clearSelection();
+        updateUI();
     }
 
-    class ContactsTableModel extends AbstractTableModel {
+
+    /**
+     * The ContactsTableModel as a table model for the ContactsTable class
+     * 
+     * @author Jonathan Hinkle
+     *
+     */
+    public class ContactsTableModel extends AbstractTableModel {
 
         String[] columnNames = {
             Local.getString("First Name"),
@@ -193,27 +234,34 @@ public class ContactsTable  extends JTable {
             Local.getString("Organization")
         };
 
-        ContactsTableModel() {
+        
+        /**
+         * Constructor for the ContactsTableModel
+         */
+        public ContactsTableModel() {
             super();
         }
 
+        
         public int getColumnCount() {
             return 5;
         }
+        
 
         public int getRowCount() {
 			int i;
 			try {
-				i = contacts.size();
+				i = _contacts.size();
 			}
 			catch(NullPointerException e) {
 				i = 1;
 			}
 			return i;
         }
+        
 
         public Object getValueAt(int row, int col) {
-           Contact ev = (Contact)contacts.get(row);
+           Contact ev = (Contact)_contacts.get(row);
            if (col == 0)
                 return ev.getFirstName();
            else if (col == 1)
@@ -226,63 +274,73 @@ public class ContactsTable  extends JTable {
                return ev.getOrganization();
            else return ev;
         }
+        
 
         public String getColumnName(int col) {
             return columnNames[col];
         }
     }
     
-    class TransferableContacts extends ArrayList<Contact> implements Transferable {
+    
+    /**
+     * A transferable <code>ArrayList</code> of <code>Contact</code>s used
+     * by the UI for drag-n-drop functionality.
+     * 
+     * @author Jonathan
+     *
+     */
+    public class TransferableContacts extends ArrayList<Contact> implements Transferable {
     	
-    	private DataFlavor dataFlavor = null;
+    	private DataFlavor _dataFlavor = null;
     	
+    	
+    	/**
+    	 * Constructor for TransferableContacts
+    	 */
     	public TransferableContacts() {
     		super();
     		try {
-				dataFlavor = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType + 
+				_dataFlavor = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType + 
 						";contact=" + TransferableContacts.class.getName());
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
     	}
     	
+    	
 		@Override
 		public DataFlavor[] getTransferDataFlavors() {
 			DataFlavor[] returnFlavors = null;
-			if(dataFlavor != null) {
+			if(_dataFlavor != null) {
 				returnFlavors = new DataFlavor[1];
-				returnFlavors[0] = dataFlavor;
+				returnFlavors[0] = _dataFlavor;
 			}
 			return returnFlavors;
 		}
+		
 
 		@Override
 		public boolean isDataFlavorSupported(DataFlavor flavor) {
 			boolean supported = false;
-			if(dataFlavor != null && dataFlavor.equals(flavor)) { 
+			if(_dataFlavor != null && _dataFlavor.equals(flavor)) { 
 				supported = true;
 			}
 			return supported;
 		}
 
+		
 		@Override
 		public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
 			if(!isDataFlavorSupported(flavor)) throw new UnsupportedFlavorException(flavor);
 			return this;
 		}
-    	
     }
-
-	public void setNameFilterText(String text) {
-		if(text != null) {
-			nameFilter.filterString = text;
-			refresh();
-		}
-	}
 	
+    
 	private class NameFilter extends RowFilter<ContactsTableModel, Integer> {
 		
-		public String filterString = "";
+		private String _filterString = "";
+		
 		
 		@Override
 		public boolean include(javax.swing.RowFilter.Entry<? extends ContactsTableModel, ? extends Integer> entry) {
@@ -291,12 +349,11 @@ public class ContactsTable  extends JTable {
 			final int i = entry.getIdentifier().intValue();
 			Contact contact = (Contact)ctModel.getValueAt(i, ContactsTable.CONTACT);
 			String nameString = contact.getFirstName() + " " + contact.getLastName();
-			if(nameString.startsWith(filterString)) {
+			if(nameString.startsWith(_filterString)) {
 				matches = true;
 			}
 			return matches;
 		}
-		
 	}
 }
 

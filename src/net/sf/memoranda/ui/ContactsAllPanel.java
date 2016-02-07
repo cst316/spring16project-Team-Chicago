@@ -4,129 +4,120 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Point;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.util.ArrayList;
 
-import javax.swing.DropMode;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
-import javax.swing.ListSelectionModel;
-import javax.swing.TransferHandler;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
-import net.sf.memoranda.Contact;
-import net.sf.memoranda.ContactManager;
-import net.sf.memoranda.CurrentProject;
-import net.sf.memoranda.History;
-import net.sf.memoranda.ui.ContactsTable.TransferableContacts;
 import net.sf.memoranda.util.Local;
 
+/**
+ * The ContactsAllPanel class is used in the ContactsPanel class to display and manipulate all
+ * <code>Contact</code> objects in the application.
+ * 
+ * @author Jonathan Hinkle
+ * @see ContactsPanel
+ * @see {@link net.sf.memoranda.Contact}
+ *
+ */
 public class ContactsAllPanel extends JPanel{
-    BorderLayout borderLayout1 = new BorderLayout();
-    JScrollPane scrollPane = new JScrollPane();
-    JPanel headerPanel = new JPanel();
-    JLabel headerTitle = new JLabel();
-    ContactsTable contactTable = new ContactsTable(ContactsTable.Type.ALL);
-    JTextField txtSearch = new JTextField();
-    JToolBar tbSearch = new JToolBar();
-    JLabel lblSearch = new JLabel();
-    JMenuItem ppEditContact = new JMenuItem();
-    JMenuItem ppRemoveContact = new JMenuItem();
-    JMenuItem ppNewContact = new JMenuItem();
-    ContactsPanel parentPanel = null;
+	
+	//Header
+	private JPanel _headerPanel = new JPanel();
+	//Header Contents
+    private JLabel _headerTitle = new JLabel();
+    private JToolBar _tbSearch = new JToolBar();
+    private JLabel _lblSearch = new JLabel();
+    private JTextField _txtSearch = new JTextField();
+    
+    //Scroll Pane
+    private JScrollPane _scrollPane = new JScrollPane();
+    //Scroll Pane Contents
+    private ContactsTable _contactTable = new ContactsTable(ContactsTable.Type.ALL);
 
-    public ContactsAllPanel(ContactsPanel _parentPanel) {
+    
+    public ContactsAllPanel() {
         try {
-            parentPanel = _parentPanel;
-            jbInit();
+            _jbInit();
         }
         catch (Exception ex) {
             new ExceptionDialog(ex);
         }
     }
     
-    void jbInit() throws Exception {
-
-        this.setLayout(borderLayout1);
+    
+    public ContactsTable getTable() {
+		return _contactTable;
+	}
+    
+    
+    private void _jbInit() throws Exception {
+        this.setLayout(new BorderLayout());
         
-        lblSearch.setEnabled(true);
-        lblSearch.setText("Search:");
-        lblSearch.setMinimumSize(new Dimension(75, 24));
-        lblSearch.setRequestFocusEnabled(false);
-        lblSearch.setPreferredSize(new Dimension(75, 24));
-        lblSearch.setFocusable(false);
+        this._buildHeader();
+        this._buildScrollPane();
         
-        txtSearch.setEnabled(true);
-        txtSearch.setMinimumSize(new Dimension(350, 24));
-        txtSearch.setToolTipText(Local.getString("Search by first and last name"));
-        txtSearch.setPreferredSize(new Dimension(350, 24));
-        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
+        this.add(_headerPanel, BorderLayout.NORTH);
+        this.add(_scrollPane, BorderLayout.CENTER);
+    }
+    
+    
+    private void _buildHeader() {
+    	Font oldFont = _headerTitle.getFont();
+        _headerTitle.setFont(new Font(oldFont.getName(), Font.PLAIN, oldFont.getSize()*2));
+        _headerTitle.setPreferredSize(new Dimension(200,48));
+        _headerTitle.setMinimumSize(new Dimension(200,48));
+        _headerTitle.setText("All Contacts");
+        
+        _lblSearch.setEnabled(true);
+        _lblSearch.setText("Search:");
+        _lblSearch.setMinimumSize(new Dimension(75, 24));
+        _lblSearch.setRequestFocusEnabled(false);
+        _lblSearch.setPreferredSize(new Dimension(75, 24));
+        _lblSearch.setFocusable(false);
+        
+        _txtSearch.setEnabled(true);
+        _txtSearch.setMinimumSize(new Dimension(350, 24));
+        _txtSearch.setToolTipText(Local.getString("Search by first and last name"));
+        _txtSearch.setPreferredSize(new Dimension(350, 24));
+        _txtSearch.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				contactTable.setNameFilterText(txtSearch.getText());
+				_contactTable.setNameFilter(_txtSearch.getText());
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				contactTable.setNameFilterText(txtSearch.getText());
+				_contactTable.setNameFilter(_txtSearch.getText());
 			}
 
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				contactTable.setNameFilterText(txtSearch.getText());
+				_contactTable.setNameFilter(_txtSearch.getText());
 			}
 			
         });
         
-        headerTitle.setPreferredSize(new Dimension(200,48));
-        headerTitle.setMinimumSize(new Dimension(200,48));
-        Font oldFont = headerTitle.getFont();
-        headerTitle.setFont(new Font(oldFont.getName(), Font.PLAIN, oldFont.getSize()*2));
-        headerTitle.setText("All Contacts");
+        _tbSearch.add(_lblSearch);
+        _tbSearch.add(_txtSearch);
+        _tbSearch.setFloatable(false);
         
-        tbSearch.add(lblSearch);
-        tbSearch.add(txtSearch);
-        tbSearch.setFloatable(false);
-        
-        headerPanel.setLayout(new BorderLayout());
-        headerPanel.add(headerTitle, BorderLayout.NORTH);
-        headerPanel.add(tbSearch, BorderLayout.CENTER);
-        
-        this.add(headerPanel, BorderLayout.NORTH);
-        
-        scrollPane.getViewport().setBackground(Color.white);
-        contactTable.setMaximumSize(new Dimension(32767, 32767));
-        contactTable.setRowHeight(24);
-        scrollPane.getViewport().add(contactTable, null);
-        
-        this.add(scrollPane, BorderLayout.CENTER);
+        _headerPanel.setLayout(new BorderLayout());
+        _headerPanel.add(_headerTitle, BorderLayout.NORTH);
+        _headerPanel.add(_tbSearch, BorderLayout.CENTER);
     }
-
-	public ContactsTable getTable() {
-		return contactTable;
-	}
+    
+    private void _buildScrollPane() {
+    	_contactTable.setMaximumSize(new Dimension(32767, 32767));
+        _contactTable.setRowHeight(24);
+        
+        _scrollPane.getViewport().setBackground(Color.white);
+        _scrollPane.getViewport().add(_contactTable, null);
+    }
 }
 

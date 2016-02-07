@@ -27,208 +27,266 @@ import net.sf.memoranda.CurrentProject;
 import net.sf.memoranda.History;
 import net.sf.memoranda.util.Local;
 
+
+/**
+ * The ContactsPanel class is used to display one of the main views in the memoranda
+ * application. It contains features for adding, removing, and editing <code>Contact</code>s.
+ * Two tables are contained in the panel, one listing all contacts within the application,
+ * and another listing contacts associated with the <code>CurrentProject</code>.
+ * 
+ * @author Jonathan Hinkle
+ * @see {@link net.sf.memoranda.Contact}
+ * @see {@link net.sf.memoranda.CurrentProject}
+ *
+ */
 public class ContactsPanel extends JPanel{
+
 	
-	private enum SelectionContext {
+	/**
+	 * Values are used indicate the current selection context for selected
+	 * <Code>Contact</Code>s by which table they are being selected from
+	 *
+	 */
+	public enum SelectionContext {
 		ALL,
 		PROJECT,
 	}
 	private SelectionContext _selectionContext = SelectionContext.ALL;
-    BorderLayout borderLayout1 = new BorderLayout();
-    JButton historyBackB = new JButton();
-    JButton historyForwardB = new JButton();
-    JButton newContactB = new JButton();
-    JButton editContactB = new JButton();
-    JButton removeContactB = new JButton();
-    JToolBar contactsToolBar = new JToolBar();
-    ContactsAllPanel contactsAllPanel = new ContactsAllPanel(this);
-    ContactsProjectPanel contactsProjectPanel = new ContactsProjectPanel(this);
-    JSplitPane contactsSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-    JPopupMenu contactPPMenu = new JPopupMenu();
-    JMenuItem ppEditContact = new JMenuItem();
-    JMenuItem ppRemoveContact = new JMenuItem();
-    JMenuItem ppNewContact = new JMenuItem();
-    DailyItemsPanel parentPanel = null;
-    private boolean _addToProject = true;
+	private boolean _addToProject = true;
+	private DailyItemsPanel _parentPanel = null;
+	
+	//Menu
+	private JPopupMenu _contactPPMenu = new JPopupMenu();
+	//Menu Contents
+    private JMenuItem _ppEditContact = new JMenuItem();
+    private JMenuItem _ppRemoveContact = new JMenuItem();
+    private JMenuItem _ppNewContact = new JMenuItem();
+    
+    //ToolBar
+	private JToolBar _contactsToolBar = new JToolBar();
+	//ToolBar Contents
+    private JButton _historyBackB = new JButton();
+    private JButton _historyForwardB = new JButton();
+    private JButton _newContactB = new JButton();
+    private JButton _editContactB = new JButton();
+    private JButton _removeContactB = new JButton();
+    
+    //SplitPane
+    private JSplitPane _contactsSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    //SplitPane Contents
+    private ContactsAllPanel _contactsAllPanel = new ContactsAllPanel();
+    private ContactsProjectPanel _contactsProjectPanel = new ContactsProjectPanel();
+    private ContactsTable _contactsAllTable;
+    private ContactsTable _contactsProjectTable;
 
-    public ContactsPanel(DailyItemsPanel _parentPanel) {
+    
+    /**
+     * Constructor for the panel
+     * 
+     * @param parentPanel The parent DailyItemsPanel
+     * @see DailyItemsPanel
+     */
+    public ContactsPanel(DailyItemsPanel parentPanel) {
         try {
-            parentPanel = _parentPanel;
-            jbInit();
+            this._parentPanel = parentPanel;
+            _jbInit();
         }
         catch (Exception ex) {
             new ExceptionDialog(ex);
         }
     }
-    void jbInit() throws Exception {
-        contactsToolBar.setFloatable(false);
-
-        historyBackB.setAction(History.historyBackAction);
-        historyBackB.setFocusable(false);
-        historyBackB.setBorderPainted(false);
-        historyBackB.setToolTipText(Local.getString("History back"));
-        historyBackB.setRequestFocusEnabled(false);
-        historyBackB.setPreferredSize(new Dimension(24, 24));
-        historyBackB.setMinimumSize(new Dimension(24, 24));
-        historyBackB.setMaximumSize(new Dimension(24, 24));
-        historyBackB.setText("");
-
-        historyForwardB.setAction(History.historyForwardAction);
-        historyForwardB.setBorderPainted(false);
-        historyForwardB.setFocusable(false);
-        historyForwardB.setPreferredSize(new Dimension(24, 24));
-        historyForwardB.setRequestFocusEnabled(false);
-        historyForwardB.setToolTipText(Local.getString("History forward"));
-        historyForwardB.setMinimumSize(new Dimension(24, 24));
-        historyForwardB.setMaximumSize(new Dimension(24, 24));
-        historyForwardB.setText("");
-
-        newContactB.setIcon(
-            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/contact_new.png")));
-        newContactB.setEnabled(true);
-        newContactB.setMaximumSize(new Dimension(24, 24));
-        newContactB.setMinimumSize(new Dimension(24, 24));
-        newContactB.setToolTipText(Local.getString("New contact"));
-        newContactB.setRequestFocusEnabled(false);
-        newContactB.setPreferredSize(new Dimension(24, 24));
-        newContactB.setFocusable(false);
-        newContactB.addActionListener(new ActionListener() {
+    
+    public SelectionContext getSelectionContext() {
+		return _selectionContext;
+	}
+    
+    
+    private void _jbInit() throws Exception {
+    	this.setLayout(new BorderLayout());
+    	
+    	this._buildContactsMenuContents();
+    	this._buildContactsToolBar();
+    	this._buildContactsSplitPane();
+    	
+        this.add(_contactsToolBar, BorderLayout.NORTH);
+        this.add(_contactsSplitPane, BorderLayout.CENTER);
+    }
+    
+    
+    private void _buildContactsMenuContents() {
+        _contactPPMenu.setFont(new java.awt.Font("Dialog", 1, 10));
+        _ppEditContact.setFont(new java.awt.Font("Dialog", 1, 11));
+        _ppEditContact.setText(Local.getString("Edit contact") + "...");
+        _ppEditContact.setEnabled(false);
+        _ppEditContact.setIcon(
+            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/contact_edit.png"))
+        );
+        _ppEditContact.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                newContactB_actionPerformed(e);
+                _ppEditContact_actionPerformed(e);
             }
         });
-        newContactB.setBorderPainted(false);
-
-        editContactB.setBorderPainted(false);
-        editContactB.setFocusable(false);
-        editContactB.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                editContactB_actionPerformed(e);
-            }
-        });
-        editContactB.setPreferredSize(new Dimension(24, 24));
-        editContactB.setRequestFocusEnabled(false);
-        editContactB.setToolTipText(Local.getString("Edit contact"));
-        editContactB.setMinimumSize(new Dimension(24, 24));
-        editContactB.setMaximumSize(new Dimension(24, 24));
-        editContactB.setEnabled(true);
-        editContactB.setIcon(
-            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/contact_edit.png")));
-
-        removeContactB.setBorderPainted(false);
-        removeContactB.setFocusable(false);
-        removeContactB.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                removeContactB_actionPerformed(e);
-            }
-        });
-        removeContactB.setPreferredSize(new Dimension(24, 24));
-        removeContactB.setRequestFocusEnabled(false);
-        removeContactB.setToolTipText(Local.getString("Remove contact"));
-        removeContactB.setMinimumSize(new Dimension(24, 24));
-        removeContactB.setMaximumSize(new Dimension(24, 24));
-        removeContactB.setIcon(
-            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/contact_remove.png")));
-
-        this.setLayout(borderLayout1);
-        contactPPMenu.setFont(new java.awt.Font("Dialog", 1, 10));
-        ppEditContact.setFont(new java.awt.Font("Dialog", 1, 11));
-        ppEditContact.setText(Local.getString("Edit contact") + "...");
-        ppEditContact.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ppEditContact_actionPerformed(e);
-            }
-        });
-        ppEditContact.setEnabled(false);
-        ppEditContact.setIcon(
-            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/contact_edit.png")));
-        ppRemoveContact.setFont(new java.awt.Font("Dialog", 1, 11));
-        ppRemoveContact.setText(Local.getString("Remove contact"));
-        ppRemoveContact.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ppRemoveContact_actionPerformed(e);
-            }
-        });
-        ppRemoveContact.setIcon(
-            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/contact_remove.png")));
-        ppRemoveContact.setEnabled(false);
-        ppNewContact.setFont(new java.awt.Font("Dialog", 1, 11));
-        ppNewContact.setText(Local.getString("New contact") + "...");
-        ppNewContact.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ppNewContact_actionPerformed(e);
-            }
-        });
-        ppNewContact.setIcon(
-            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/contact_new.png")));
-        contactsToolBar.add(historyBackB, null);
-        contactsToolBar.add(historyForwardB, null);
-        contactsToolBar.addSeparator(new Dimension(8, 24));
-
-        contactsToolBar.add(newContactB, null);
-        contactsToolBar.add(removeContactB, null);
-        contactsToolBar.addSeparator(new Dimension(8, 24));
-        contactsToolBar.add(editContactB, null);
-
-        this.add(contactsToolBar, BorderLayout.NORTH);
         
-        contactsSplitPane.setLeftComponent(contactsProjectPanel);
-        contactsSplitPane.setRightComponent(contactsAllPanel);
-        contactsSplitPane.setResizeWeight(0.5);
-        this.add(contactsSplitPane, BorderLayout.CENTER);
+        _ppRemoveContact.setEnabled(false);
+        _ppRemoveContact.setFont(new java.awt.Font("Dialog", 1, 11));
+        _ppRemoveContact.setText(Local.getString("Remove contact"));
+        _ppRemoveContact.setIcon(
+            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/contact_remove.png"))
+        );
+        _ppRemoveContact.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                _ppRemoveContact_actionPerformed(e);
+            }
+        });
+        
+        _ppNewContact.setFont(new java.awt.Font("Dialog", 1, 11));
+        _ppNewContact.setText(Local.getString("New contact") + "...");
+        _ppNewContact.setIcon(
+            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/contact_new.png"))
+        );
+        _ppNewContact.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                _ppNewContact_actionPerformed(e);
+            }
+        });
+        
+        _contactPPMenu.add(_ppEditContact);
+        _contactPPMenu.addSeparator();
+        _contactPPMenu.add(_ppNewContact);
+        _contactPPMenu.add(_ppRemoveContact);
+    }
+    
+    
+    private void _buildContactsToolBar() {
+        _historyBackB.setAction(History.historyBackAction);
+        _historyBackB.setFocusable(false);
+        _historyBackB.setBorderPainted(false);
+        _historyBackB.setToolTipText(Local.getString("History back"));
+        _historyBackB.setRequestFocusEnabled(false);
+        _historyBackB.setPreferredSize(new Dimension(24, 24));
+        _historyBackB.setMinimumSize(new Dimension(24, 24));
+        _historyBackB.setMaximumSize(new Dimension(24, 24));
+        _historyBackB.setText("");
 
-        PopupListener ppListener = new PopupListener();
+        _historyForwardB.setAction(History.historyForwardAction);
+        _historyForwardB.setBorderPainted(false);
+        _historyForwardB.setFocusable(false);
+        _historyForwardB.setPreferredSize(new Dimension(24, 24));
+        _historyForwardB.setRequestFocusEnabled(false);
+        _historyForwardB.setToolTipText(Local.getString("History forward"));
+        _historyForwardB.setMinimumSize(new Dimension(24, 24));
+        _historyForwardB.setMaximumSize(new Dimension(24, 24));
+        _historyForwardB.setText("");
 
-        ContactsTable cAllTable = contactsAllPanel.getTable();
-        ContactsTable cProjectsTable = contactsProjectPanel.getTable();
-        cAllTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        _newContactB.setBorderPainted(false);
+        _newContactB.setEnabled(true);
+        _newContactB.setMaximumSize(new Dimension(24, 24));
+        _newContactB.setMinimumSize(new Dimension(24, 24));
+        _newContactB.setToolTipText(Local.getString("New contact"));
+        _newContactB.setRequestFocusEnabled(false);
+        _newContactB.setPreferredSize(new Dimension(24, 24));
+        _newContactB.setFocusable(false);
+        _newContactB.setIcon(
+                new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/contact_new.png"))
+            );
+        _newContactB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                _newContactB_actionPerformed(e);
+            }
+        });
+
+        _editContactB.setBorderPainted(false);
+        _editContactB.setFocusable(false);
+        _editContactB.setPreferredSize(new Dimension(24, 24));
+        _editContactB.setRequestFocusEnabled(false);
+        _editContactB.setToolTipText(Local.getString("Edit contact"));
+        _editContactB.setMinimumSize(new Dimension(24, 24));
+        _editContactB.setMaximumSize(new Dimension(24, 24));
+        _editContactB.setEnabled(false);
+        _editContactB.setIcon(
+            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/contact_edit.png"))
+        );
+        _editContactB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                _editContactB_actionPerformed(e);
+            }
+        });
+
+        _removeContactB.setBorderPainted(false);
+        _removeContactB.setFocusable(false);
+        _removeContactB.setPreferredSize(new Dimension(24, 24));
+        _removeContactB.setRequestFocusEnabled(false);
+        _removeContactB.setToolTipText(Local.getString("Remove contact"));
+        _removeContactB.setMinimumSize(new Dimension(24, 24));
+        _removeContactB.setMaximumSize(new Dimension(24, 24));
+        _removeContactB.setEnabled(false);
+        _removeContactB.setIcon(
+            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/contact_remove.png"))
+        );
+        _removeContactB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                _removeContactB_actionPerformed(e);
+            }
+        });
+        
+        _contactsToolBar.add(_historyBackB, null);
+        _contactsToolBar.add(_historyForwardB, null);
+        _contactsToolBar.addSeparator(new Dimension(8, 24));
+        _contactsToolBar.add(_newContactB, null);
+        _contactsToolBar.add(_removeContactB, null);
+        _contactsToolBar.addSeparator(new Dimension(8, 24));
+        _contactsToolBar.add(_editContactB, null);
+        _contactsToolBar.setFloatable(false);
+    }
+    
+    
+    private void _buildContactsSplitPane() {
+        _contactsAllTable = _contactsAllPanel.getTable();
+        _contactsProjectTable = _contactsProjectPanel.getTable();
+        
+        _contactsAllTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
-                boolean enbl = cAllTable.getSelectedRow() > -1;
-                cProjectsTable.getSelectionModel().clearSelection();
+                boolean enbl = _contactsAllTable.getSelectedRow() > -1;
+                _contactsProjectTable.getSelectionModel().clearSelection();
                 _selectionContext = SelectionContext.ALL;
-                editContactB.setEnabled(enbl);
-                ppEditContact.setEnabled(enbl);
-                removeContactB.setEnabled(enbl);
-                ppRemoveContact.setEnabled(enbl);
+                _editContactB.setEnabled(enbl);
+                _ppEditContact.setEnabled(enbl);
+                _removeContactB.setEnabled(enbl);
+                _ppRemoveContact.setEnabled(enbl);
             }
         });
-        cProjectsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        _contactsProjectTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
-                boolean enbl = cProjectsTable.getSelectedRow() > -1;
-                cAllTable.getSelectionModel().clearSelection();
+                boolean enbl = _contactsProjectTable.getSelectedRow() > -1;
+                _contactsAllTable.getSelectionModel().clearSelection();
                 _selectionContext = SelectionContext.PROJECT;
-                editContactB.setEnabled(enbl);
-                ppEditContact.setEnabled(enbl);
-                removeContactB.setEnabled(enbl);
-                ppRemoveContact.setEnabled(enbl);
+                _editContactB.setEnabled(enbl);
+                _ppEditContact.setEnabled(enbl);
+                _removeContactB.setEnabled(enbl);
+                _ppRemoveContact.setEnabled(enbl);
             }
         });
-        editContactB.setEnabled(false);
-        removeContactB.setEnabled(false);
-        contactPPMenu.add(ppEditContact);
-        contactPPMenu.addSeparator();
-        contactPPMenu.add(ppNewContact);
-        contactPPMenu.add(ppRemoveContact);
 		
 		// remove contacts using the DEL key
-		cAllTable.addKeyListener(new KeyListener() {
+		_contactsAllTable.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e){
-				if(cAllTable.getSelectedRows().length > 0 && e.getKeyCode()==KeyEvent.VK_DELETE) {
-					ppRemoveContact_actionPerformed(null);
+				if(_contactsAllTable.getSelectedRows().length > 0 && e.getKeyCode()==KeyEvent.VK_DELETE) {
+					_ppRemoveContact_actionPerformed(null);
 				}
 			}
 			public void	keyReleased(KeyEvent e){}
 			public void keyTyped(KeyEvent e){} 
 		});
-		cProjectsTable.addKeyListener(new KeyListener() {
+		_contactsProjectTable.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e){
-				if(cProjectsTable.getSelectedRows().length > 0 && e.getKeyCode()==KeyEvent.VK_DELETE) {
-					ppRemoveContact_actionPerformed(null);
+				if(_contactsProjectTable.getSelectedRows().length > 0 && e.getKeyCode()==KeyEvent.VK_DELETE) {
+					_ppRemoveContact_actionPerformed(null);
 				}
 			}
 			public void	keyReleased(KeyEvent e){}
 			public void keyTyped(KeyEvent e){} 
 		});
+		
 		//contactsSplitPane.setDividerLocation(this.getWidth()-300);
 		/*projectContactsTable.setDropMode(DropMode.INSERT);
 		projectContactsTable.setTransferHandler(new TransferHandler(){
@@ -271,14 +329,19 @@ public class ContactsPanel extends JPanel{
 			}
 			
 		});*/
+		
+		_contactsSplitPane.setLeftComponent(_contactsProjectPanel);
+        _contactsSplitPane.setRightComponent(_contactsAllPanel);
+        _contactsSplitPane.setResizeWeight(0.5);
     }
-    void editContactB_actionPerformed(ActionEvent e) {
+    
+    private void _editContactB_actionPerformed(ActionEvent e) {
     	ContactsTable cTable = null;
     	if(_selectionContext == SelectionContext.ALL) {
-    		cTable = contactsAllPanel.getTable();
+    		cTable = _contactsAllPanel.getTable();
     	}
     	else if(_selectionContext == SelectionContext.PROJECT) {
-    		cTable = contactsProjectPanel.getTable();
+    		cTable = _contactsProjectPanel.getTable();
     	}
     	if(cTable != null) {
 	        ContactDialog dlg = new ContactDialog(App.getFrame(), Local.getString("Contact"));
@@ -317,11 +380,12 @@ public class ContactsPanel extends JPanel{
 	    	}
 	        
 	        ContactManager.updateContact(contact);
-		    saveContacts();
+		    _saveContacts();
     	}
     }
     
-    void newContactB_actionPerformed(ActionEvent e) {
+    
+    private void _newContactB_actionPerformed(ActionEvent e) {
     	ContactDialog dlg = new ContactDialog(App.getFrame(), Local.getString("New contact"));
     	dlg.cbAddToProject.setSelected(_addToProject);
     	Dimension frmSize = App.getFrame().getSize();
@@ -347,26 +411,28 @@ public class ContactsPanel extends JPanel{
     		_addToProject = false;
     	}
     	ContactManager.addContact(newContact);
-    	saveContacts();
+    	_saveContacts();
     }
+    
 
-    private void saveContacts() {
+    private void _saveContacts() {
 		ContactManager.saveContactList();
-		contactsAllPanel.getTable().refresh();
-		contactsProjectPanel.getTable().refresh();
-        parentPanel.calendar.jnCalendar.updateUI();
-        parentPanel.updateIndicators();
+		_contactsAllPanel.getTable().refresh();
+		_contactsProjectPanel.getTable().refresh();
+        _parentPanel.calendar.jnCalendar.updateUI();
+        _parentPanel.updateIndicators();
     }
+    
 
-    void removeContactB_actionPerformed(ActionEvent e) {
+    private void _removeContactB_actionPerformed(ActionEvent e) {
 		String msg;
 		Contact contact;
 		ContactsTable cTable = null;
 		if(_selectionContext == SelectionContext.ALL) {
-			cTable = contactsAllPanel.getTable();
+			cTable = _contactsAllPanel.getTable();
 		}
 		else if(_selectionContext == SelectionContext.PROJECT) {
-			cTable = contactsProjectPanel.getTable();
+			cTable = _contactsProjectPanel.getTable();
 			
 		}
 		if(cTable != null) {
@@ -402,42 +468,53 @@ public class ContactsPanel extends JPanel{
 					ContactManager.updateContact(contact);
 				}
 			}
-	        contactsAllPanel.getTable().getSelectionModel().clearSelection();
-	        contactsAllPanel.getTable().getSelectionModel().clearSelection();
-	        saveContacts();
+	        _contactsAllPanel.getTable().getSelectionModel().clearSelection();
+	        _contactsAllPanel.getTable().getSelectionModel().clearSelection();
+	        _saveContacts();
 		}
     }
+    
+    
+    private void _ppEditContact_actionPerformed(ActionEvent e) {
+        _editContactB_actionPerformed(e);
+    }
+    
+    
+    private void _ppRemoveContact_actionPerformed(ActionEvent e) {
+        _removeContactB_actionPerformed(e);
+    }
+    
+    
+    private void _ppNewContact_actionPerformed(ActionEvent e) {
+        _newContactB_actionPerformed(e);
+    }
+    
+    
+    private class PopupListener extends MouseAdapter {
 
-    class PopupListener extends MouseAdapter {
-
+    	
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) {
-            	editContactB_actionPerformed(null);
+            	_editContactB_actionPerformed(null);
             }
         }
 
+        
         public void mousePressed(MouseEvent e) {
             maybeShowPopup(e);
         }
 
+        
         public void mouseReleased(MouseEvent e) {
             maybeShowPopup(e);
         }
 
+        
         private void maybeShowPopup(MouseEvent e) {
             if (e.isPopupTrigger()) {
-            	contactPPMenu.show(e.getComponent(), e.getX(), e.getY());
+            	_contactPPMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         }
-    }
-    void ppEditContact_actionPerformed(ActionEvent e) {
-        editContactB_actionPerformed(e);
-    }
-    void ppRemoveContact_actionPerformed(ActionEvent e) {
-        removeContactB_actionPerformed(e);
-    }
-    void ppNewContact_actionPerformed(ActionEvent e) {
-        newContactB_actionPerformed(e);
     }
 }
 
