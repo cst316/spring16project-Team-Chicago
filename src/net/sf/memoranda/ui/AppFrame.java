@@ -111,7 +111,19 @@ public class AppFrame extends JFrame {
             doPrjUnPack();
         }
     };
-
+    /*
+    public Action importCalAction = new AbstractAction("Import Calendar"){
+    	public void actionPerformed(ActionEvent e){
+    		doImportCal();
+    	}
+    };
+    
+    public Action exportCalAction = new AbstractAction("Export Calendar"){
+    	public void actionPerformed(ActionEvent e){
+    		doExportCal();
+    	}
+    };
+*/
     public Action minimizeToSystemTrayAction = new AbstractAction("Close the window") {
         public void actionPerformed(ActionEvent e) {
             doMinimizeToSystemTray();
@@ -151,6 +163,8 @@ public class AppFrame extends JFrame {
         JMenuItem jMenuFileNewNote = new JMenuItem(workPanel.dailyItemsPanel.editorPanel.newAction);
     JMenuItem jMenuFilePackPrj = new JMenuItem(prjPackAction);
     JMenuItem jMenuFileUnpackPrj = new JMenuItem(prjUnpackAction);
+    //JMenuItem jMenuImportCalendar = new JMenuItem(importCalAction);
+    //JMenuItem jMenuExportCalendar = new JMenuItem(exportCalAction);
     JMenuItem jMenuFileExportPrj = new JMenuItem(exportNotesAction);
     JMenuItem jMenuFileImportPrj = new JMenuItem(importNotesAction);
     JMenuItem jMenuFileImportNote = new JMenuItem(importOneNoteAction);
