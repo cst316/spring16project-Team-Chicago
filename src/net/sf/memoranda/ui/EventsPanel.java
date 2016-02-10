@@ -12,19 +12,23 @@ import java.awt.event.MouseEvent;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Vector;
 
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.sf.memoranda.Event;
+import net.sf.memoranda.EventImpl;
 import net.sf.memoranda.EventsManager;
 import net.sf.memoranda.EventsScheduler;
 import net.sf.memoranda.History;
@@ -45,6 +49,12 @@ public class EventsPanel extends JPanel {
     JButton newEventB = new JButton();
     JButton editEventB = new JButton();
     JButton removeEventB = new JButton();
+    
+    // US-53 create view buttons
+    JRadioButton dayRb = new JRadioButton("Today");
+    JRadioButton weekRb = new JRadioButton("7 Days");
+    JRadioButton monthRb = new JRadioButton("30 Days");
+    
     JScrollPane scrollPane = new JScrollPane();
     static private EventsTable eventsTable = new EventsTable();
     JPopupMenu eventPPMenu = new JPopupMenu();
@@ -132,6 +142,13 @@ public class EventsPanel extends JPanel {
         removeEventB.setIcon(
             new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/event_remove.png")));
 
+        // US-53 creates view radio button set
+        ButtonGroup viewGroup = new ButtonGroup();
+        viewGroup.add(dayRb);
+        viewGroup.add(weekRb);
+        viewGroup.add(monthRb);
+        dayRb.setSelected(true);  // makes day default       
+        
         this.setLayout(borderLayout1);
         scrollPane.getViewport().setBackground(Color.white);
         eventsTable.setMaximumSize(new Dimension(32767, 32767));
@@ -176,7 +193,30 @@ public class EventsPanel extends JPanel {
         eventsToolBar.add(removeEventB, null);
         eventsToolBar.addSeparator(new Dimension(8, 24));
         eventsToolBar.add(editEventB, null);
-
+        
+        // US-53 adds view radio buttons group to tool bar
+        eventsToolBar.addSeparator(new Dimension(8, 24));
+        eventsToolBar.add(dayRb, null);
+        eventsToolBar.add(weekRb, null);
+        eventsToolBar.add(monthRb, null);
+        
+        // US-53 adds listeners for each view radio button
+        dayRb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dayRbEventB_actionPerformed(e);
+            }
+        });
+        weekRb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                weekRbEventB_actionPerformed(e);
+            }
+        });
+        monthRb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                monthRbEventB_actionPerformed(e);
+            }
+        });
+        
         this.add(eventsToolBar, BorderLayout.NORTH);
 
         PopupListener ppListener = new PopupListener();
@@ -510,6 +550,67 @@ public class EventsPanel extends JPanel {
         EventsManager.removeEvent(ev);
         saveEvents();  
     }
+    
+    /**
+     * Method dayRbEventB_actionPerformed()
+     * Input: ActionEvent e
+     * Returns: void
+     * @param e
+     * Description: Performs actions when the day radio button is selected. This is the default 
+     * view as normal - meaning editing can be performed. US-53.
+     */
+    void dayRbEventB_actionPerformed(ActionEvent e) {
+    	// add something to bring view back to eventsTable
+    	eventsTable.refresh();
+    	Util.debug("Today button selected!");
+    }
+    
+    /**
+     * Method weekRbEventB_actionPerformed()
+     * Input: ActionEvent e
+     * Returns: void
+     * @param e
+     * Description: Performs actions when the 7 day radio button is selected. Opens up new table 
+     * to display all events from current day +6. US-53.
+     */
+    void weekRbEventB_actionPerformed(ActionEvent e) {
+    	//TO-DO -- below is testing and debugging
+    	Util.debug("Week button selected!");
+    	CalendarDate date = new CalendarDate();	// output of this test will only be from today
+    	Vector ev = new Vector();	// remember to remove vector import
+    	
+    	ev = (Vector)EventsManager.getEventsForWeek(date);
+    	System.out.println("The list contains: ");
+    	for (int i = 0; i < ev.size(); i++) {
+    		System.out.print(((EventImpl)ev.elementAt(i)).getText() + " ");
+    	}
+    	System.out.println(((EventImpl)ev.elementAt(3)).getTimeString());
+    	Util.debug(date.getFullDateString());
+    }
+    
+    /**
+     * Method monthRbEventB_actionPerformed()
+     * Input: ActionEvent e
+     * Returns: void
+     * @param e
+     * Description: Performs actions when the 30 day radio button is selected. Opens up new table 
+     * to display all events from current day +29. US-53.
+     */
+    void monthRbEventB_actionPerformed(ActionEvent e) {
+    	Util.debug("Month button selected!");
+    	//TO-DO -- below is testing and debugging
+    	CalendarDate date = new CalendarDate();	// output of this test will only be from today
+    	Vector ev = new Vector();	// remember to remove vector import
+    	
+    	ev = (Vector)EventsManager.getEventsForMonth(date);
+    	System.out.println("The list contains: ");
+    	for (int i = 0; i < ev.size(); i++) {
+    		System.out.print(((EventImpl)ev.elementAt(i)).getText() + " ");
+    	}
+    	System.out.println(((EventImpl)ev.elementAt(3)).getTimeString());
+    }
+    
+
 
     class PopupListener extends MouseAdapter {
 

@@ -82,6 +82,20 @@ public class CalendarDate {
         cal.roll(Calendar.DATE, true);
         return new CalendarDate(cal);
     }
+    
+    /**
+     * Method: nextDay()
+     * Inputs: int addDays
+     * Returns: CalendarDate 
+     * @param addDays - number of days to add to date
+     * @return CalendarDate object 
+     * Description: Adds days to the date and returns a new date.
+     */
+    public static CalendarDate nextDay(int addDays) {
+    	Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, addDays);
+        return new CalendarDate(cal);
+    }
 
     public static Calendar toCalendar(int day, int month, int year) {
         Calendar cal = Calendar.getInstance();

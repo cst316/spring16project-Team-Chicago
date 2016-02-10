@@ -106,8 +106,10 @@ public class EventsManager {
 		Day d = getDay(date);
 		if (d != null) {
 			Elements els = d.getElement().getChildElements("event");
-			for (int i = 0; i < els.size(); i++)
+			for (int i = 0; i < els.size(); i++) {
 				v.add(new EventImpl(els.get(i)));
+				//Util.debug("getting " + ((EventImpl) v.elementAt(i)).getText());
+			}
 		}
 		Collection r = getRepeatableEventsForDate(date);
 		if (r.size() > 0)
@@ -115,6 +117,60 @@ public class EventsManager {
 		//EventsVectorSorter.sort(v);
 		Collections.sort(v);
 		return v;
+	}
+	
+	/**
+	 * Method: getEventsForWeek()
+	 * Inputs: CalendarDate date
+	 * Returns: Vector weekEvents
+	 * @param date - selected event date
+	 * @return weekEvents - collection of events matching current date and 7 days ahead.
+	 * Description: Takes the current selected calendar day and makes a collection of all events
+	 * of that day and following week. US-53.
+	 */
+	public static Collection getEventsForWeek(CalendarDate date) {  	
+    	int nextDay = 0;
+    	Vector weekEvents = new Vector();
+    	
+    	for (int j = 0; j < 7; j++) { 			
+    		Vector events = (Vector) EventsManager.getEventsForDate(date);
+    		nextDay++;
+    		date = CalendarDate.nextDay(nextDay);
+    		weekEvents.addAll(events);
+    	}
+    	
+		Collection r = getRepeatableEventsForDate(date);
+		if (r.size() > 0)
+			weekEvents.addAll(r);
+		Collections.sort(weekEvents);
+		return weekEvents;
+	}
+	
+	/**
+	 * Method: getEventsForMonth()
+	 * Inputs: CalendarDate date
+	 * Returns: Vector monthEvents
+	 * @param date - selected event date
+	 * @return weekEvents - collection of events matching current date and 30 days ahead.
+	 * Description: Takes the current selected calendar day and makes a collection of all events
+	 * of that day and following 30 days. US-53.
+	 */
+	public static Collection getEventsForMonth(CalendarDate date) {  	
+    	int nextDay = 0;
+    	Vector monthEvents = new Vector();
+    	
+    	for (int j = 0; j < 30; j++) { 			
+    		Vector events = (Vector) EventsManager.getEventsForDate(date);
+    		nextDay++;
+    		date = CalendarDate.nextDay(nextDay);
+    		monthEvents.addAll(events);
+    	}
+    	
+		Collection r = getRepeatableEventsForDate(date);
+		if (r.size() > 0)
+			monthEvents.addAll(r);
+		Collections.sort(monthEvents);
+		return monthEvents;
 	}
 	
 	public static String getFormattedLocalTime() {
