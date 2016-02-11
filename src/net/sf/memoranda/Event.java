@@ -43,5 +43,12 @@ public interface Event {
     String getTimeString();
     
 	boolean getWorkingDays();
+	/**
+	 * Method: getSchedDate()
+	 * Inputs:
+	 * Returns: date string
+	 * Description: Returns a string of the date an event was scheduled for. US-53.
+	 */
+	String getSchedDate();	
     
 }

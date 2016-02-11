@@ -87,9 +87,8 @@ public class CalendarDate {
      * Method: nextDay()
      * Inputs: int addDays
      * Returns: CalendarDate 
-     * @param addDays - number of days to add to date
-     * @return CalendarDate object 
-     * Description: Adds days to the date and returns a new date.
+     *
+     * Description: Adds days to the date and returns a new date. US-53.
      */
     public static CalendarDate nextDay(int addDays) {
     	Calendar cal = Calendar.getInstance();

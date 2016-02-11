@@ -1,11 +1,3 @@
-/**
- * EventsTable.java
- * Created on 09.03.2003, 9:52:02 Alex
- * Package: net.sf.memoranda.ui
- *
- * @author Alex V. Alishevskikh, alex@openmechanics.net
- * Copyright (c) 2003 Memoranda Team. http://memoranda.sf.net
- */
 package net.sf.memoranda.ui;
 
 import java.awt.Component;
@@ -16,53 +8,47 @@ import java.util.Vector;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
-
 import net.sf.memoranda.Event;
 import net.sf.memoranda.EventsManager;
 import net.sf.memoranda.date.CalendarDate;
 import net.sf.memoranda.date.CurrentDate;
-import net.sf.memoranda.date.DateListener;
 import net.sf.memoranda.util.Local;
 import net.sf.memoranda.util.Util;
-/**
- *
- */
-/*$Id: EventsTable.java,v 1.6 2004/10/11 08:48:20 alexeya Exp $*/
-public class EventsTable extends JTable {
 
-    public static final int EVENT = 100;
-    public static final int EVENT_ID = 101;
+public class ExtendedEventsTable extends EventsTable {
 
     Vector events = new Vector();
     /**
      * Constructor for EventsTable.
      */
-    public EventsTable() {
+    public ExtendedEventsTable() {
         super();
-        setModel(new EventsTableModel());
-        initTable(CurrentDate.get());
-        this.setShowGrid(false);
-        CurrentDate.addDateListener(new DateListener() {
-            public void dateChange(CalendarDate d) {
-                //updateUI();
-                initTable(d);
-            }
-        });
+        setModel(new ExtendedEventsTableModel());
     }
 
-    public void initTable(CalendarDate d) {
-        events = (Vector)EventsManager.getEventsForDate(d);
-        getColumnModel().getColumn(0).setPreferredWidth(60);	// time column
-        getColumnModel().getColumn(0).setMaxWidth(60);			// time column
+    public void initWeekTable(CalendarDate d) {
+        events = (Vector)EventsManager.getEventsForWeek(d);
+        getColumnModel().getColumn(0).setPreferredWidth(120);	// date column
+        getColumnModel().getColumn(0).setMaxWidth(120);			
+        getColumnModel().getColumn(1).setPreferredWidth(60);	// time column
+        getColumnModel().getColumn(1).setMaxWidth(60);			
         clearSelection();
         updateUI();
     }
-
-    public void refresh() {
-        initTable(CurrentDate.get());
+    
+    public void initMonthTable(CalendarDate d) {
+        events = (Vector)EventsManager.getEventsForMonth(d);
+        getColumnModel().getColumn(0).setPreferredWidth(120);	// date column
+        getColumnModel().getColumn(0).setMaxWidth(120);			
+        getColumnModel().getColumn(1).setPreferredWidth(80);	// time column
+        getColumnModel().getColumn(1).setMaxWidth(80);			
+        clearSelection();
+        updateUI();
     }
+    
 
-     public TableCellRenderer getCellRenderer(int row, int column) {
+    @Override
+    public TableCellRenderer getCellRenderer(int row, int column) {
         return new javax.swing.table.DefaultTableCellRenderer() {
 
             public Component getTableCellRendererComponent(
@@ -94,20 +80,20 @@ public class EventsTable extends JTable {
 
     }
 
-    class EventsTableModel extends AbstractTableModel {
+    private class ExtendedEventsTableModel extends AbstractTableModel {
 
         String[] columnNames = {
-            //Local.getString("Task name"),
+            Local.getString("Date"),
             Local.getString("Time"),
-                Local.getString("Text")
+            Local.getString("Text")
         };
 
-        EventsTableModel() {
+        ExtendedEventsTableModel() {
             super();
         }
 
         public int getColumnCount() {
-            return 2;
+            return 3;
         }
 
         public int getRowCount() {
@@ -123,13 +109,23 @@ public class EventsTable extends JTable {
 
         public Object getValueAt(int row, int col) {
            Event ev = (Event)events.get(row);
-           if (col == 0)
-                //return ev.getHour()+":"+ev.getMinute();
-                return ev.getTimeString();
-           else if (col == 1)
-                return ev.getText();
-           else if (col == EVENT_ID)
-                return ev.getId();
+           if (col == 0) {
+        	   if (ev.isRepeatable()) {
+        		   return "Reoccuring";
+        	   }
+        	   else {
+        		   return ev.getSchedDate();
+        	   }
+           }
+           else if (col == 1) {
+               return ev.getTimeString();
+           }
+           else if (col == 2) {
+        	   return ev.getText();
+           }
+           else if (col == EVENT_ID) {
+               return ev.getId();
+           }
            else return ev;
         }
 

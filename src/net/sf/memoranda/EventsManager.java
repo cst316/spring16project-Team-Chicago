@@ -108,7 +108,6 @@ public class EventsManager {
 			Elements els = d.getElement().getChildElements("event");
 			for (int i = 0; i < els.size(); i++) {
 				v.add(new EventImpl(els.get(i)));
-				//Util.debug("getting " + ((EventImpl) v.elementAt(i)).getText());
 			}
 		}
 		Collection r = getRepeatableEventsForDate(date);
@@ -123,8 +122,7 @@ public class EventsManager {
 	 * Method: getEventsForWeek()
 	 * Inputs: CalendarDate date
 	 * Returns: Vector weekEvents
-	 * @param date - selected event date
-	 * @return weekEvents - collection of events matching current date and 7 days ahead.
+	 * 
 	 * Description: Takes the current selected calendar day and makes a collection of all events
 	 * of that day and following week. US-53.
 	 */
@@ -132,7 +130,7 @@ public class EventsManager {
     	int nextDay = 0;
     	Vector weekEvents = new Vector();
     	
-    	for (int j = 0; j < 7; j++) { 			
+    	for (int j = 0; j < 7; j++) { 		
     		Vector events = (Vector) EventsManager.getEventsForDate(date);
     		nextDay++;
     		date = CalendarDate.nextDay(nextDay);
@@ -140,8 +138,10 @@ public class EventsManager {
     	}
     	
 		Collection r = getRepeatableEventsForDate(date);
-		if (r.size() > 0)
+		if (r.size() > 0) {
 			weekEvents.addAll(r);
+		}
+		
 		Collections.sort(weekEvents);
 		return weekEvents;
 	}
@@ -150,8 +150,7 @@ public class EventsManager {
 	 * Method: getEventsForMonth()
 	 * Inputs: CalendarDate date
 	 * Returns: Vector monthEvents
-	 * @param date - selected event date
-	 * @return weekEvents - collection of events matching current date and 30 days ahead.
+	 * 
 	 * Description: Takes the current selected calendar day and makes a collection of all events
 	 * of that day and following 30 days. US-53.
 	 */
@@ -290,12 +289,19 @@ public class EventsManager {
 		CalendarDate date,
 		int hh,
 		int mm,
-		String text) {
+		String text,
+		Date schedDate) { 
+		
+		// US-53 gets the scheduled date of the events, converts to string, then adds it
+		String dateText;
+		dateText = CalendarDate.dateToCalendar(schedDate).getTime().toString();
+		
 		Element el = new Element("event");
 		el.addAttribute(new Attribute("id", Util.generateId()));
 		el.addAttribute(new Attribute("hour", String.valueOf(hh)));
 		el.addAttribute(new Attribute("min", String.valueOf(mm)));
 		el.appendChild(text);
+		el.addAttribute(new Attribute("schedDate", String.valueOf(dateText)));
 		Day d = getDay(date);
 		if (d == null)
 			d = createDay(date);

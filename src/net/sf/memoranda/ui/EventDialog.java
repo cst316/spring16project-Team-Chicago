@@ -41,6 +41,7 @@ import javax.swing.event.ChangeListener;
 import net.sf.memoranda.EventsManager;
 import net.sf.memoranda.date.CalendarDate;
 import net.sf.memoranda.util.Local;
+import net.sf.memoranda.util.Util;
 
 /*$Id: EventDialog.java,v 1.28 2005/02/19 10:06:25 rawsushi Exp $*/
 public class EventDialog extends JDialog implements WindowListener {	
@@ -535,11 +536,6 @@ public class EventDialog extends JDialog implements WindowListener {
 	public Date getEventDate() {
 		return eventDate;
 	}
-	
-	/*
-	public void setDisengageCheck(boolean check) {
-		this.editCheck = check;
-	}*/
 	
     public void windowClosed( WindowEvent e ) {}
 
