@@ -106,8 +106,9 @@ public class EventsManager {
 		Day d = getDay(date);
 		if (d != null) {
 			Elements els = d.getElement().getChildElements("event");
-			for (int i = 0; i < els.size(); i++)
+			for (int i = 0; i < els.size(); i++) {
 				v.add(new EventImpl(els.get(i)));
+			}
 		}
 		Collection r = getRepeatableEventsForDate(date);
 		if (r.size() > 0)
@@ -117,6 +118,13 @@ public class EventsManager {
 		return v;
 	}
 	
+	/**
+	 * Method: getFormattedLocalTime()
+	 * Inputs: (none)
+	 * Returns: String systime - formatted date
+	 * 
+	 * Description: Formats the system time into HHmm. US-51.
+	 */
 	public static String getFormattedLocalTime() {
 		// sets sysTime date and time values to check		  
 		Calendar time = Calendar.getInstance();           
@@ -132,12 +140,12 @@ public class EventsManager {
 	}
 	
 	/**
-	 * Method: checkEventSchedule
+	 * Method: checkEventSchedule()
 	 * Inputs: schedTime - the time trying to be scheduled
-	 * @param schedTime
 	 * Returns: void
+	 * 
 	 * Description: Checks if the non-repeated event being created is scheduled for a time that
-	 * has already past.
+	 * has already past. US-51.
 	 */
 	public static void checkEventScheduleTime(String schedTime) {
 		Calendar time = Calendar.getInstance(); 
@@ -160,11 +168,10 @@ public class EventsManager {
 	}
 	
 	/**
-	 * Method: eventDateConver.java
+	 * Method: eventDateConver()
 	 * Input: String toConvert - current date from calendar
 	 * Returns: convertedDate - converted date format
-	 * @param toConvert
-	 * @return convertDate
+	 * 
 	 * Description: Custom date formatter. Converts "dd/mm/yyyy" to "yyyyMMdd".
 	 */
 	public static String eventDateConverter(String toConvert) {
@@ -172,12 +179,10 @@ public class EventsManager {
 		String[] dateElements;
 		
 		// gets day, month, year from date string
-		try {
-			dateElements = toConvert.split("/");
-		}
-		catch (Exception ex) {
-			throw ex;
-		}
+		dateElements = toConvert.split("/");
+		if (dateElements.length != 3) {
+			   throw new IllegalArgumentException("Date not in correct format");
+			}
 		
 		// stores each part of the date
 		String day = dateElements[0];
@@ -201,9 +206,12 @@ public class EventsManager {
 	}
 
 	/**
-	 * Checks if current day events are past their user-set notification date. Called in App.java
+	 * Method: checkOverDueEvents()
+	 * Inputs: (none)
+	 * Returns: (none)
+	 * 
+	 * Description: Checks if current day events are past their user-set notification date. Called in App.java
 	 * at startup. Occurs during app initialization.
-	 * @author Larry Naron
 	 */
 	public static void checkOverdueEvents() {	
 		// sets date and time values to check
