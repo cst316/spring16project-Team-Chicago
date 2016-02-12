@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import net.sf.memoranda.date.CalendarDate;
 import net.sf.memoranda.util.Local;
-import net.sf.memoranda.util.Util;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -23,8 +22,7 @@ import nu.xom.Element;
 /*$Id: EventImpl.java,v 1.9 2004/10/06 16:00:11 ivanrise Exp $*/
 public class EventImpl implements Event, Comparable {
 	
-	public Date schedDate;
-    
+	private String repSchedDate;   
     private Element _elem = null;
 
     /**
@@ -34,15 +32,15 @@ public class EventImpl implements Event, Comparable {
         _elem = elem;
     }
     
-    /**
-     * Method: getSchedDate()
-     * Inputs:
-     * Returns: String of an event's scheduled date
-     * 
-     * Description: Returns the schedule date of the event. US-53.
-     */
-    public String getSchedDate() {
-    	Util.debug("EVENTIMPL vaue of date is " + _elem.getAttribute("schedDate").toString());
+    public void setRepSchedDate(CalendarDate date) { 	
+    	repSchedDate = date.getShortDateString();
+    }
+    
+    public String getRepSchedDate() {	
+    	return repSchedDate;
+    }
+    
+    public String getSchedDate() {	
     	return (String) (_elem.getAttribute("schedDate").getValue()).toString();
     }
       

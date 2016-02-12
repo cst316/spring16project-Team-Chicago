@@ -9,7 +9,6 @@ package net.sf.memoranda;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -136,13 +135,7 @@ public class EventsManager {
     		date = CalendarDate.nextDay(nextDay);
     		weekEvents.addAll(events);
     	}
-    	
-		Collection r = getRepeatableEventsForDate(date);
-		if (r.size() > 0) {
-			weekEvents.addAll(r);
-		}
-		
-		Collections.sort(weekEvents);
+
 		return weekEvents;
 	}
 	
@@ -165,10 +158,6 @@ public class EventsManager {
     		monthEvents.addAll(events);
     	}
     	
-		Collection r = getRepeatableEventsForDate(date);
-		if (r.size() > 0)
-			monthEvents.addAll(r);
-		Collections.sort(monthEvents);
 		return monthEvents;
 	}
 	
@@ -294,7 +283,9 @@ public class EventsManager {
 		
 		// US-53 gets the scheduled date of the events, converts to string, then adds it
 		String dateText;
-		dateText = CalendarDate.dateToCalendar(schedDate).getTime().toString();
+		DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+		dateText = sdf.format(schedDate);
+				
 		
 		Element el = new Element("event");
 		el.addAttribute(new Attribute("id", Util.generateId()));
@@ -324,6 +315,7 @@ public class EventsManager {
 			rep = new Element("repeatable");
 			_root.appendChild(rep);
 		}
+		
 		el.addAttribute(new Attribute("repeat-type", String.valueOf(type)));
 		el.addAttribute(new Attribute("id", Util.generateId()));
 		el.addAttribute(new Attribute("hour", String.valueOf(hh)));
@@ -369,6 +361,9 @@ public class EventsManager {
 			//System.out.println(date.inPeriod(ev.getStartDate(),
 			// ev.getEndDate()));
 			if (date.inPeriod(ev.getStartDate(), ev.getEndDate())) {
+				
+				ev.setRepSchedDate(date);	// sets the date of the repeating event US-53
+				
 				if (ev.getRepeat() == REPEAT_DAILY) {
 					int n = date.getCalendar().get(Calendar.DAY_OF_YEAR);
 					int ns =

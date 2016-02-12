@@ -11,7 +11,6 @@ package net.sf.memoranda.date;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
 import net.sf.memoranda.util.Local;
 import net.sf.memoranda.util.Util;
 
