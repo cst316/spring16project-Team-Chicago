@@ -10,7 +10,11 @@ import org.junit.Test;
 
 import net.sf.memoranda.date.CalendarDate;
 
-public class CalendarDateTest {
+/**
+ * This class was originally named CalendarDateTest, but an add to our repository for
+ * Travis CI added a CalendarDateTest before this was merged into master.
+ */
+public class CalendarDateNextDayTest {
 	
 	private Calendar cal;
 	private String sysDate;
