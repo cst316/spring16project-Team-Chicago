@@ -59,7 +59,7 @@ public class ExportSticker {
                 boolean result = true;
                 String fs = System.getProperty("file.separator");
                 
-                String contents = getSticker();
+                String contents = getStickerForTxt();
                 try {
                 File file = new File(this.name+"."+src);
                 
@@ -93,6 +93,55 @@ public class ExportSticker {
             
                 return result;
         }
+        
+        /**
+        Method: getStickerForTxt
+        Inputs:
+        Returns: String of contents of stickers
+
+        Description: Special method that edits out html text for .txt output cleans output
+      */
+
+  
+        
+        public String getStickerForTxt(){
+            Map stickers = EventsManager.getStickers();
+    String result = "";
+    String edited ="";
+    String editedTemp = "";
+    char compare;
+    char left = '<';
+    char right = '>';
+    boolean flag = false;
+    String nl = System.getProperty("line.separator"); 
+            for (Iterator i = stickers.keySet().iterator(); i.hasNext();) {
+        String id = (String)i.next();
+        System.out.println((String)(((Element)stickers.get(id)).getValue()));
+        edited = (String)(((Element)stickers.get(id)).getValue());
+        int len = edited.length();
+        editedTemp = "";
+        for (int k = 0; k < len; k++)
+        {
+        	char cur = edited.charAt(k);
+        	
+        	if ( cur == left)
+        	{
+        		 flag = true;
+        	}
+        	else if ( cur == right)
+        	{
+        		flag = false;
+        	}
+        	else if (flag == false)
+        		editedTemp += edited.charAt(k);
+        }
+       
+        	result += editedTemp + nl;
+    
+            } 
+            return result;
+    }
+  
         
         /*public static String getStickers() {
                 String result ="";
