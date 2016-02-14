@@ -283,7 +283,7 @@ public class EventsManager {
 		
 		// US-53 gets the scheduled date of the events, converts to string, then adds it
 		String dateText;
-		DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+		DateFormat sdf = new SimpleDateFormat("M/dd/yy");
 		dateText = sdf.format(schedDate);
 				
 		
