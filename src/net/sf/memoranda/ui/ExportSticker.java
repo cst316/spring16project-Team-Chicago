@@ -56,21 +56,27 @@ public class ExportSticker {
             }
             return output;
         }
-       //export in txt
+        /**
+        Method: export
+        Inputs:
+        Returns: boolean result
+
+        Description: Export a text file to a specfic folder
+      */
         public boolean export(){
                 boolean result = true;
-                //String fs = System.getProperty("file.separator");
+        
                 String contents = getSticker();
                 JFileChooser fx = new JFileChooser(new java.io.File("."));
 
                 fx.setDialogTitle("export location");
-               fx.setFileFilter(new FileTypeFilter(".txt","Text File"));
+                fx.setFileFilter(new FileTypeFilter(".txt","Text File"));
                 int exportResult = fx.showSaveDialog(null);
                 if (exportResult == JFileChooser.APPROVE_OPTION){
                 	File fi = fx.getSelectedFile();
                 
                 try {
-                	//File file = new File(this.name+"."+src);
+                	
                 		String tempLocation = fi.getPath();
                 		tempLocation = tempLocation + ".txt";	
                         FileWriter fwrite=new FileWriter(tempLocation);
@@ -89,7 +95,14 @@ public class ExportSticker {
                         
                 return result;
         }
-//EXport in html
+        /**
+        Method: exporthtml
+        Inputs:
+        Returns: boolean result
+
+        Description: Creates File Explorer for exporting stickers
+        			into html files. 
+      */
         public boolean exporthtml(){
             boolean result = true;
             //String fs = System.getProperty("file.separator");

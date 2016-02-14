@@ -1,12 +1,20 @@
-//Vikas Bhagat
-//File Type Filter
-
+/*
+*File: Type Filter
+*Author: Vikas Bhagat
+*Date 2/11/16
+*Description: created class and method to take string extension
+*				and description for FileExplorer 
+*/
 package net.sf.memoranda.ui;
 
 import java.io.File;
 import javax.swing.filechooser.*;
 import javax.swing.JFileChooser.*;
 
+/**
+* Class: FileTypeFilter
+* Description:: 
+*/
 public class FileTypeFilter extends FileFilter {
 
 	private final String extension;

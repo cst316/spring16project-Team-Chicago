@@ -193,17 +193,13 @@ public class AgendaPanel extends JPanel {
 						 }
 						 refresh(CurrentDate.get());
 					}else if (d.startsWith("memoranda:exportstickerst")) {
-						 /*  add high export sticker meanwhile..*/
+						 /*.txt export*/
 						 final JFrame parent = new JFrame();
-						// String name = JOptionPane.showInputDialog(parent,Local.getString("Enter file name to export"),null);
 						  new ExportSticker("").export();
-						 //JOptionPane.showMessageDialog(null,name);
 					}else if (d.startsWith("memoranda:exportstickersh")) {
-						 /*  You need to add the export sticker meantime...*/
+						 /*  .html export*/
 						 final JFrame parent = new JFrame();
-						 //String name = JOptionPane.showInputDialog(parent,Local.getString("Enter file name to export"),null);
 						  new ExportSticker("").exporthtml();
-						 //JOptionPane.showMessageDialog(null,name);
 					}else if (d.startsWith("memoranda:importstickers")) {
 						//Create file chooser window opens in working folder
 				        JFileChooser fileChooser = new JFileChooser();
@@ -211,11 +207,10 @@ public class AgendaPanel extends JPanel {
 				        fileChooser.setCurrentDirectory(new java.io.File("."));
 				        int returnValue = fileChooser.showOpenDialog(null);
 				        if (returnValue == JFileChooser.APPROVE_OPTION) {
-				          File selectedFile = fileChooser.getSelectedFile();
+				         File selectedFile = fileChooser.getSelectedFile();
 				          System.out.println(selectedFile.getName());
 				        }
-						//String name = JOptionPane.showInputDialog(parent,Local.getString("Enter name of file to import"),null);
-						//new ImportSticker(name).import_file();
+
 					}
 				}
 			}
