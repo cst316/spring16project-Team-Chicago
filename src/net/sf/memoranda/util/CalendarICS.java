@@ -13,6 +13,7 @@ import biweekly.*;
 import biweekly.component.VEvent;
 import biweekly.util.ICalDate;
 import net.sf.memoranda.date.CalendarDate;
+import net.sf.memoranda.ui.ExceptionDialog;
 import net.sf.memoranda.*;
 
 /**
@@ -40,14 +41,13 @@ public class CalendarICS {
 				int hour = iDate.getHours();
 				int minute = iDate.getMinutes();
 				Event mevent = EventsManager.createEvent(date,hour,minute,event.getSummary().getValue());
-				String testDate = date.toString();
-				System.out.println(testDate);
+				CurrentStorage.get().storeEventsManager();
 				
 			} 
 		}catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			new ExceptionDialog(e, "Failed to read from "+f, "Make sure that this file is a .ics file.");
 		}
 		
 	}
+	
 }
