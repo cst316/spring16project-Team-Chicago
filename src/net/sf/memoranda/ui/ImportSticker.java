@@ -1,6 +1,7 @@
 package net.sf.memoranda.ui;
 
 import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
 
 import net.sf.memoranda.util.Local;
 
@@ -13,12 +14,9 @@ String name;
         }
 
         public boolean import_file(){
-                /*
-                 We are working on this =)
-                  
-                  
-                  */
                 
+
+          
                 JOptionPane.showMessageDialog(null,Local.getString("can not import your document"));
                 return true;
         }

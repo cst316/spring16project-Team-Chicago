@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
+
 
 import net.sf.memoranda.EventsManager;
 import net.sf.memoranda.util.CurrentStorage;
@@ -54,22 +56,28 @@ public class ExportSticker {
             }
             return output;
         }
-        
-        public boolean export(String src){
+       //export in txt
+        public boolean export(){
                 boolean result = true;
-                String fs = System.getProperty("file.separator");
-                
+                //String fs = System.getProperty("file.separator");
                 String contents = getSticker();
+                JFileChooser fx = new JFileChooser(new java.io.File("."));
+
+                fx.setDialogTitle("export location");
+               fx.setFileFilter(new FileTypeFilter(".txt","Text File"));
+                int exportResult = fx.showSaveDialog(null);
+                if (exportResult == JFileChooser.APPROVE_OPTION){
+                	File fi = fx.getSelectedFile();
+                
                 try {
-                File file = new File(this.name+"."+src);
-                
-                
-                        FileWriter fwrite=new FileWriter(file,true);
-            
+                	//File file = new File(this.name+"."+src);
+                		String tempLocation = fi.getPath();
+                		tempLocation = tempLocation + ".txt";	
+                        FileWriter fwrite=new FileWriter(tempLocation);
                         fwrite.write(contents);
-                        
+                        fwrite.flush();
                         fwrite.close();
-                        JOptionPane.showMessageDialog(null,Local.getString("Document created with success in your wallet Memoranda"));
+                        JOptionPane.showMessageDialog(null,Local.getString("Document created!"));
             
             
         } catch (IOException e) {
@@ -77,11 +85,44 @@ public class ExportSticker {
             JOptionPane.showMessageDialog(null,Local.getString("failed to create your document"));
         }
                 
-                
+                }        
                         
                 return result;
         }
+//EXport in html
+        public boolean exporthtml(){
+            boolean result = true;
+            //String fs = System.getProperty("file.separator");
+            String contents = getSticker();
+            JFileChooser fx = new JFileChooser(new java.io.File("."));
+
+            fx.setDialogTitle("export location");
+           fx.setFileFilter(new FileTypeFilter(".html","HTML File"));
+            int exportResult = fx.showSaveDialog(null);
+            if (exportResult == JFileChooser.APPROVE_OPTION){
+            	File fi = fx.getSelectedFile();
+            
+            try {
+            	//File file = new File(this.name+"."+src);
+            		String tempLocation = fi.getPath();
+            		tempLocation = tempLocation + ".html";	
+                    FileWriter fwrite=new FileWriter(tempLocation);
+                    fwrite.write(contents);
+                    fwrite.flush();
+                    fwrite.close();
+                    JOptionPane.showMessageDialog(null,Local.getString("Document created!"));
         
+        
+    } catch (IOException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null,Local.getString("failed to create your document"));
+    }
+            
+            }        
+                    
+            return result;
+    }
+
         public String getSticker(){
                 Map stickers = EventsManager.getStickers();
         String result = "";
