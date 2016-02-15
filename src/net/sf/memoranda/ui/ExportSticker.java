@@ -37,8 +37,8 @@ public class ExportSticker {
 
         }*/
         
-        public ExportSticker(String x) {
-                this.name = remove1(x);
+        public ExportSticker(String x) {    
+        	//this.name = remove1(x);
         }
 
         /**
