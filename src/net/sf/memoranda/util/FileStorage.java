@@ -439,33 +439,63 @@ public class FileStorage implements Storage {
             JN_DOCPATH + prj.getID() + File.separator + ".resources");
     }
     /**
-     * @see net.sf.memoranda.util.Storage#openResourcesList(net.sf.memoranda.Project)
+     * @see net.sf.memoranda.util.Storage#openMasterContactList(net.sf.memoranda.Project)
      */
-    public void openContactList() {
+    public Document openMasterContactList() {
+    	Document doc = null;
         String fn = JN_DOCPATH + ".contactlist";
         if (documentExists(fn)) {
             /*DEBUG*/
-            System.out.println("[DEBUG] Open contact list: " + fn);
-            ContactManager.setDoc(openDocument(fn));
+            System.out.println("[DEBUG] Open master contact list: " + fn);
+            doc = openDocument(fn);
         }
         else {
             /*DEBUG*/
-            System.out.println("[DEBUG] New contact list created");
-            ContactManager.setDoc(null);
+            System.out.println("[DEBUG] New master contact list created");
         }
+        return doc;
     }
     /**
-     * @see net.sf.memoranda.util.Storage#storeResourcesList(net.sf.memoranda.ResourcesList, net.sf.memoranda.Project)
+     * @see net.sf.memoranda.util.Storage#storeMasterContactList(net.sf.memoranda.ResourcesList, net.sf.memoranda.Project)
      */
-    public void storeContactList() {
+    public void storeMasterContactList() {
         /*DEBUG*/
         System.out.println(
-            "[DEBUG] Save contact list: "
+            "[DEBUG] Save master contact list: "
                 + JN_DOCPATH
                 + ".contactlist");
         saveDocument(
-            ContactManager.getDoc(),
+            ContactManager.toDocument(),
             JN_DOCPATH + ".contactlist");
+    }
+    /**
+     * @see net.sf.memoranda.util.Storage#openProjectContactList(net.sf.memoranda.Project)
+     */
+    public Document openProjectContactList(Project prj) {
+    	Document doc = null;
+        String fn = JN_DOCPATH + prj.getID() + File.separator + ".contactlist";
+        if (documentExists(fn)) {
+            /*DEBUG*/
+            System.out.println("[DEBUG] Open contact list: " + fn);
+            doc = openDocument(fn);
+        }
+        return doc;
+    }
+    /**
+     * @see net.sf.memoranda.util.Storage#storeProjectContactList(net.sf.memoranda.Project)
+     */
+    public void storeProjectContactList(Project prj) {
+        /*DEBUG*/
+    	/*DEBUG*/
+        System.out.println(
+            "[DEBUG] Save resources list: "
+                + JN_DOCPATH
+                + prj.getID()
+                + File.separator
+                + ".resources");
+        saveDocument(
+            ContactManager.toProjectDocument(prj),
+            JN_DOCPATH + prj.getID() + File.separator + ".contactlist");
     }
     /**
      * @see net.sf.memoranda.util.Storage#restoreContext()

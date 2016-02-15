@@ -13,6 +13,7 @@ import net.sf.memoranda.NoteList;
 import net.sf.memoranda.Project;
 import net.sf.memoranda.ResourcesList;
 import net.sf.memoranda.TaskList;
+import nu.xom.Document;
 /**
  * 
  */
@@ -34,8 +35,8 @@ public interface Storage {
     void openProjectManager();    
     void storeProjectManager();
     
-    void openContactList();    
-    void storeContactList();
+    Document openMasterContactList();    
+    void storeMasterContactList();
     
     void openEventsManager();
     void storeEventsManager();
@@ -52,4 +53,6 @@ public interface Storage {
     void restoreContext();
     void storeContext(); 
        
+    Document openProjectContactList(Project prj);
+    void storeProjectContactList(Project prj);
 }
