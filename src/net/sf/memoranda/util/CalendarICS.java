@@ -24,11 +24,13 @@ import net.sf.memoranda.*;
  */
 public class CalendarICS {
 
-	@SuppressWarnings("deprecation")
+	private static final int YEAR =1900;
+	
 	/**
 	 * Converts .ics file of events to events in Memoranda 
 	 * @param f .ics file to convert
 	 */
+	@SuppressWarnings("deprecation")
 	public static void importCalendar(File f){
 		try {
 			FileInputStream file = new FileInputStream(f);
@@ -37,7 +39,7 @@ public class CalendarICS {
 			for(int i=0;i<eventCount;i++){
 				VEvent event = icals.get(0).getEvents().get(i);
 				ICalDate iDate = event.getDateStart().getValue();
-				CalendarDate date = new CalendarDate(iDate.getDate(),iDate.getMonth(),iDate.getYear()+1900);
+				CalendarDate date = new CalendarDate(iDate.getDate(),iDate.getMonth(),iDate.getYear()+YEAR);
 				int hour = iDate.getHours();
 				int minute = iDate.getMinutes();
 				Event mevent = EventsManager.createEvent(date,hour,minute,event.getSummary().getValue());
@@ -49,5 +51,6 @@ public class CalendarICS {
 		}
 		
 	}
+	
 	
 }

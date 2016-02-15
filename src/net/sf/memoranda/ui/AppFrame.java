@@ -118,14 +118,7 @@ public class AppFrame extends JFrame {
     		doImportCal();
     	}
     };	
-   
-    /*
-    public Action exportCalAction = new AbstractAction("Export Calendar"){
-    	public void actionPerformed(ActionEvent e){
-    		doExportCal();
-    	}
-
-	};*/
+  
     
     public Action minimizeToSystemTrayAction = new AbstractAction("Close the window") {
         public void actionPerformed(ActionEvent e) {
@@ -167,7 +160,7 @@ public class AppFrame extends JFrame {
     JMenuItem jMenuFilePackPrj = new JMenuItem(prjPackAction);
     JMenuItem jMenuFileUnpackPrj = new JMenuItem(prjUnpackAction);
     JMenuItem jMenuImportCalendar = new JMenuItem(importCalAction);
-    //JMenuItem jMenuExportCalendar = new JMenuItem(exportCalAction);
+    
     JMenuItem jMenuFileExportPrj = new JMenuItem(exportNotesAction);
     JMenuItem jMenuFileImportPrj = new JMenuItem(importNotesAction);
     JMenuItem jMenuFileImportNote = new JMenuItem(importOneNoteAction);
@@ -510,7 +503,6 @@ public class AppFrame extends JFrame {
         jMenuFile.add(jMenuFilePackPrj);
         jMenuFile.add(jMenuFileUnpackPrj);
         jMenuFile.add(jMenuImportCalendar);
-        //jMenuFile.add(jMenuExportCalendar);
         jMenuFile.addSeparator();
         jMenuFile.add(jMenuFileExportPrj);
         jMenuFile.add(jMenuFileExportNote);
@@ -946,10 +938,12 @@ public class AppFrame extends JFrame {
         }
         //---------------------------------------------------------------------
 
-        if (lastSel != null)
+        if (lastSel != null){
             chooser.setCurrentDirectory(lastSel);
-        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
+        }
+        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION){
             return;
+        }
         Context.put("LAST_SELECTED_PACK_FILE", chooser.getSelectedFile());        
         java.io.File f = chooser.getSelectedFile();
         CalendarICS.importCalendar(f);
@@ -957,11 +951,6 @@ public class AppFrame extends JFrame {
 		
 	}
     
-    /*
-    public void doExportCal() {
-		// TODO Auto-generated method stub
-		
-	}*/
 
     public void showPreferences() {
         PreferencesDialog dlg = new PreferencesDialog(this);
