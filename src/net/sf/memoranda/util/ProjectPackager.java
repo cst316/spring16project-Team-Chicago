@@ -21,11 +21,14 @@ import java.util.zip.ZipOutputStream;
 
 import javax.swing.JOptionPane;
 
+import net.sf.memoranda.ContactManager;
+import net.sf.memoranda.CurrentProject;
 import net.sf.memoranda.Project;
 import net.sf.memoranda.ProjectManager;
 import net.sf.memoranda.date.CalendarDate;
 import net.sf.memoranda.ui.App;
 import net.sf.memoranda.ui.ExceptionDialog;
+import nu.xom.Document;
 /**
  * 
  */
@@ -120,7 +123,9 @@ public class ProjectPackager {
                 }
             }
             zip.close();
-            CurrentStorage.get().storeProjectManager();             
+            CurrentStorage.get().storeProjectManager();
+            Document doc = CurrentStorage.get().openProjectContactList(prj);
+            ContactManager.importProjectContacts(doc, prj);
         }
         catch (Exception ex) {
             new ExceptionDialog(ex, "Failed to read from "+zipfile, "Make sure that this file is a Memoranda project archive.");
