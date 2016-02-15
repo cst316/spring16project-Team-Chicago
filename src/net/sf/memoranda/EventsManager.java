@@ -118,7 +118,6 @@ public class EventsManager {
 	}
 	
 	/**
-<<<<<<< HEAD
 	 * Method: getEventsForWeek()
 	 * Inputs: CalendarDate date
 	 * Returns: Vector weekEvents
