@@ -25,6 +25,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
@@ -32,10 +33,12 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.JSpinner.DateEditor;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import net.sf.memoranda.EventsManager;
 import net.sf.memoranda.date.CalendarDate;
 import net.sf.memoranda.util.Local;
 
@@ -80,6 +83,7 @@ public class EventDialog extends JDialog implements WindowListener {
     CalendarFrame endCalFrame = new CalendarFrame();
     CalendarFrame startCalFrame = new CalendarFrame();
     private Date eventDate;
+    private boolean editCheck = true;
     
     public EventDialog(Frame frame, String title) {
         super(frame, title, true);
@@ -474,7 +478,20 @@ public class EventDialog extends JDialog implements WindowListener {
         disableElements();
     }
 
+    /**
+     * Method: okB_actionPerformed
+     * Inputs: ActionEvent e
+     * Returns: void
+     * 
+     * Description: After the OK button is pressed on the Event dialog, a quick check of the 
+     * scheduled time is performed, and the dialog is closed.
+     */
     void okB_actionPerformed(ActionEvent e) {
+    	// checks if one of the repeat buttons is selected
+    	if (noRepeatRB.isSelected() == true) {
+    		JSpinner.DateEditor time = new JSpinner.DateEditor(timeSpin, "HHmm");
+    		EventsManager.checkEventScheduleTime(time.getFormat().format(timeSpin.getValue()));
+    	}
         this.dispose();
     }
 
@@ -518,6 +535,11 @@ public class EventDialog extends JDialog implements WindowListener {
 	public Date getEventDate() {
 		return eventDate;
 	}
+	
+	/*
+	public void setDisengageCheck(boolean check) {
+		this.editCheck = check;
+	}*/
 	
     public void windowClosed( WindowEvent e ) {}
 

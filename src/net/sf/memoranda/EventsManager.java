@@ -7,16 +7,22 @@
  */
 package net.sf.memoranda;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
+
+import javax.swing.JOptionPane;
+
 import java.util.Map;
 import java.util.Collections;
-
+import java.util.Date;
 
 import net.sf.memoranda.date.CalendarDate;
+import net.sf.memoranda.ui.DailyItemsPanel;
 import net.sf.memoranda.util.CurrentStorage;
 import net.sf.memoranda.util.Util;
 import nu.xom.Attribute;
@@ -100,8 +106,9 @@ public class EventsManager {
 		Day d = getDay(date);
 		if (d != null) {
 			Elements els = d.getElement().getChildElements("event");
-			for (int i = 0; i < els.size(); i++)
+			for (int i = 0; i < els.size(); i++) {
 				v.add(new EventImpl(els.get(i)));
+			}
 		}
 		Collection r = getRepeatableEventsForDate(date);
 		if (r.size() > 0)
@@ -110,14 +117,103 @@ public class EventsManager {
 		Collections.sort(v);
 		return v;
 	}
+	
+	/**
+	 * Method: getFormattedLocalTime()
+	 * Inputs: (none)
+	 * Returns: String systime - formatted date
+	 * 
+	 * Description: Formats the system time into HHmm. US-51.
+	 */
+	public static String getFormattedLocalTime() {
+		// sets sysTime date and time values to check		  
+		Calendar time = Calendar.getInstance();           
+		int timeHour = time.get(Calendar.HOUR_OF_DAY);
+		int timeMinute = time.get(Calendar.MINUTE);
+		
+		// concatenates system hour and minute for comparison with user scheduled event time
+		String hour = String.format("%02d", timeHour);
+		String minute = String.format("%02d", timeMinute);
+		String sysTime = hour + minute;
+		
+		return sysTime;
+	}
+	
+	/**
+	 * Method: checkEventSchedule()
+	 * Inputs: schedTime - the time trying to be scheduled
+	 * Returns: void
+	 * 
+	 * Description: Checks if the non-repeated event being created is scheduled for a time that
+	 * has already past. US-51.
+	 */
+	public static void checkEventScheduleTime(String schedTime) {
+		Calendar time = Calendar.getInstance(); 
+		
+		// gets scheduled event date		
+		String schedDate = DailyItemsPanel.getCurrentDate();
+		schedDate = eventDateConverter(schedDate);
+		
+		// gets current system time and date
+		String sysTime = getFormattedLocalTime();
+		String sysDate = new SimpleDateFormat("yyyyMMdd").format(time.getTime());		
+		
+		// compare dates and times
+		if (sysDate.equals(schedDate)) {
+			if (sysTime.compareTo(schedTime) > 0) {		
+				JOptionPane.showMessageDialog(null, "Time selected for event has already past!", 
+									  			    "Notice", JOptionPane.WARNING_MESSAGE);
+			}
+		}
+	}
+	
+	/**
+	 * Method: eventDateConver()
+	 * Input: String toConvert - current date from calendar
+	 * Returns: convertedDate - converted date format
+	 * 
+	 * Description: Custom date formatter. Converts "dd/mm/yyyy" to "yyyyMMdd".
+	 */
+	public static String eventDateConverter(String toConvert) {
+		String convertedDate = "";
+		String[] dateElements;
+		
+		// gets day, month, year from date string
+		dateElements = toConvert.split("/");
+		if (dateElements.length != 3) {
+			   throw new IllegalArgumentException("Date not in correct format");
+			}
+		
+		// stores each part of the date
+		String day = dateElements[0];
+		String month = dateElements[1];
+		int correctMonth = Integer.parseInt(month) + 1;
+		month = Integer.toString(correctMonth);
+		String year = dateElements[2];
+		
+		// pads days and months with zeroes if needed
+		if (day.length() < 2) {
+			day = "0" + day;
+		}
+		if (month.length() < 2) {
+			month = "0" + month;
+		}
+		
+		// assembles date parts to new date format
+		convertedDate = year + month + day;
+		
+		return convertedDate;
+	}
 
 	/**
-	 * Checks if current day events are past their user-set notification date. Called in App.java
+	 * Method: checkOverDueEvents()
+	 * Inputs: (none)
+	 * Returns: (none)
+	 * 
+	 * Description: Checks if current day events are past their user-set notification date. Called in App.java
 	 * at startup. Occurs during app initialization.
-	 * @author Larry Naron
 	 */
 	public static void checkOverdueEvents() {	
- 
 		// sets date and time values to check
 		CalendarDate date = new CalendarDate();			  
 		Calendar time = Calendar .getInstance();           
@@ -132,14 +228,10 @@ public class EventsManager {
 			// checks event hour and minute against current system time
 			if (((EventImpl)events.elementAt(j)).getHour() < currentHour ) {
 				new OverdueEventNotifier().eventIsOccured(((EventImpl)events.elementAt(j)));
-				System.out.println("[DEBUG] Notification " + 
-				            ((EventImpl) events.elementAt(j)).getText() + " is overdue");
 			} 	
 			else if (((EventImpl)events.elementAt(j)).getHour() == currentHour &&
 					       ((EventImpl)events.elementAt(j)).getMinute() < currentMinute) {
 				new OverdueEventNotifier().eventIsOccured(((EventImpl)events.elementAt(j)));
-				System.out.println("[DEBUG] Notification " + 
-				            ((EventImpl) events.elementAt(j)).getText() + " is overdue");
 			} 
 			
 		} // end for	
