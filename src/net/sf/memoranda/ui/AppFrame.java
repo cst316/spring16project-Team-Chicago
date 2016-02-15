@@ -113,14 +113,14 @@ public class AppFrame extends JFrame {
         }
     };
     
-    private Action importCalAction = new AbstractAction("Import Calendar"){
+    private Action _importCalAction = new AbstractAction("Import Calendar"){
     	public void actionPerformed(ActionEvent e){
     		doImportCal();
     	}
     };	
   
     
-    private Action minimizeToSystemTrayAction = new AbstractAction("Close the window") {
+    private Action _minimizeToSystemTrayAction = new AbstractAction("Close the window") {
         public void actionPerformed(ActionEvent e) {
             doMinimizeToSystemTray();
         }
@@ -159,14 +159,14 @@ public class AppFrame extends JFrame {
         JMenuItem jMenuFileNewNote = new JMenuItem(workPanel.dailyItemsPanel.editorPanel.newAction);
     JMenuItem jMenuFilePackPrj = new JMenuItem(prjPackAction);
     JMenuItem jMenuFileUnpackPrj = new JMenuItem(prjUnpackAction);
-    JMenuItem jMenuImportCalendar = new JMenuItem(importCalAction);
+    JMenuItem jMenuImportCalendar = new JMenuItem(_importCalAction);
     
     JMenuItem jMenuFileExportPrj = new JMenuItem(exportNotesAction);
     JMenuItem jMenuFileImportPrj = new JMenuItem(importNotesAction);
     JMenuItem jMenuFileImportNote = new JMenuItem(importOneNoteAction);
     JMenuItem jMenuFileExportNote = new JMenuItem(
             workPanel.dailyItemsPanel.editorPanel.exportAction);
-    JMenuItem jMenuFileMin = new JMenuItem(minimizeToSystemTrayAction);
+    JMenuItem jMenuFileMin = new JMenuItem(_minimizeToSystemTrayAction);
 
     JMenuItem jMenuItem1 = new JMenuItem();
     JMenuItem jMenuEditUndo = new JMenuItem(editor.undoAction);
