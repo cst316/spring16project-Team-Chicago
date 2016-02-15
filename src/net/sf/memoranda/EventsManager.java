@@ -242,7 +242,7 @@ public class EventsManager {
 		CalendarDate date,
 		int hh,
 		int mm,
-		String text) {
+		String text, Date schedDate) {
 		Element el = new Element("event");
 		el.addAttribute(new Attribute("id", Util.generateId()));
 		el.addAttribute(new Attribute("hour", String.valueOf(hh)));
