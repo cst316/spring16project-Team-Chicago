@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -192,19 +193,27 @@ public class AgendaPanel extends JPanel {
 					}else if (d.startsWith("memoranda:exportstickerst")) {
 						 /*  add high export sticker meanwhile..*/
 						 final JFrame parent = new JFrame();
-						 String name = JOptionPane.showInputDialog(parent,Local.getString("Enter file name to export"),null);
-						 new ExportSticker(name).export("txt");
+						// String name = JOptionPane.showInputDialog(parent,Local.getString("Enter file name to export"),null);
+						  new ExportSticker("").export();
 						 //JOptionPane.showMessageDialog(null,name);
 					}else if (d.startsWith("memoranda:exportstickersh")) {
 						 /*  You need to add the export sticker meantime...*/
 						 final JFrame parent = new JFrame();
-						 String name = JOptionPane.showInputDialog(parent,Local.getString("Enter file name to export"),null);
-						 new ExportSticker(name).export("html");
+						 //String name = JOptionPane.showInputDialog(parent,Local.getString("Enter file name to export"),null);
+						  new ExportSticker("").exporthtml();
 						 //JOptionPane.showMessageDialog(null,name);
 					}else if (d.startsWith("memoranda:importstickers")) {
-						final JFrame parent = new JFrame();
-						String name = JOptionPane.showInputDialog(parent,Local.getString("Enter name of file to import"),null);
-						new ImportSticker(name).import_file();
+						//Create file chooser window opens in working folder
+				        JFileChooser fileChooser = new JFileChooser();
+				        fileChooser.setDialogTitle("Import location");
+				        fileChooser.setCurrentDirectory(new java.io.File("."));
+				        int returnValue = fileChooser.showOpenDialog(null);
+				        if (returnValue == JFileChooser.APPROVE_OPTION) {
+				          File selectedFile = fileChooser.getSelectedFile();
+				          System.out.println(selectedFile.getName());
+				        }
+						//String name = JOptionPane.showInputDialog(parent,Local.getString("Enter name of file to import"),null);
+						//new ImportSticker(name).import_file();
 					}
 				}
 			}
