@@ -168,7 +168,13 @@ public class ContactManager {
 	 * @See Contact
 	 */
 	public static void importProjectContacts(Document document, Project project) {
-		if(document != null && project != null) {
+		
+		// Create an empty doc if the imported doc is null
+		if(document == null) {
+			document = new Document(new Element("contactlist"));
+		}
+		
+		if(project != null) {
 			if (!_projectContactIDs.containsKey(project.getID())) {
 				_projectContactIDs.put(project.getID(), new HashMap<String, Contact>(PROJECTLF, PROJECTLF));
 			}
@@ -324,8 +330,8 @@ public class ContactManager {
 		}
 	}
 	
+	
 	private static void _removeContactFromProjects(Contact contact) {
-		Set<String> projectIDs = contact.getProjectIDs();
 		Iterator<String> idIterator = _projectContactIDs.keySet().iterator();
 		for(String id; idIterator.hasNext();) {
 			id = idIterator.next();
@@ -337,6 +343,7 @@ public class ContactManager {
 			}
 		}
 	}
+	
 	
 	private static void _mergeImportContacts(Document doc, Project prj) {
 		HashMap<String, Contact> projectContacts = getContactsHashMap(prj);

@@ -488,11 +488,11 @@ public class FileStorage implements Storage {
         /*DEBUG*/
     	/*DEBUG*/
         System.out.println(
-            "[DEBUG] Save resources list: "
+            "[DEBUG] Save project list: "
                 + JN_DOCPATH
                 + prj.getID()
                 + File.separator
-                + ".resources");
+                + ".contactlist");
         saveDocument(
             ContactManager.toProjectDocument(prj),
             JN_DOCPATH + prj.getID() + File.separator + ".contactlist");

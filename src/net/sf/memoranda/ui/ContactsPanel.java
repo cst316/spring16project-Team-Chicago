@@ -4,14 +4,18 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.DropMode;
 import javax.swing.ImageIcon;
@@ -313,30 +317,28 @@ public class ContactsPanel extends JPanel{
 			
 			@Override
 			public boolean canImport(TransferSupport support) {
-				boolean importable = false;
-				DataFlavor[] permittedFlavors = _contactsProjectTable.getTransferableContacts().getTransferDataFlavors();
-				for(int i = 0; i < permittedFlavors.length; i++) {
-					if(support.isDataFlavorSupported(permittedFlavors[i])) {
-						importable = true;
-						break;
-					}
-				}
-				return importable;
+				return support.isDataFlavorSupported(DataFlavor.stringFlavor);
 			}
 			
 			@Override
 			public boolean importData(TransferSupport support) {
 				boolean success = false;
 				if(canImport(support)) {
-					success = true;
-					@SuppressWarnings("unchecked")
-					TransferableContacts<Contact> contacts = _contactsAllTable.getTransferableContacts();
-					contacts.forEach(contact -> {
-						contact.addProjectID(CurrentProject.get().getID());
-						ContactManager.updateContact(contact);
-					});
+					try {
+						String id;
+						id = (String) support.getTransferable().getTransferData(DataFlavor.stringFlavor);
+						Contact contact = new Contact("","");
+						contact.setID(id);
+						Contact removed = ContactManager.removeContact(contact);
+						removed.addProjectID(CurrentProject.get().getID());
+						ContactManager.addContact(removed);
+						success = true;
+					} catch (UnsupportedFlavorException e) {
+						success = false;
+					} catch (IOException e) {
+						success = false;
+					}
 				}
-			    _saveContacts();
 				return success;
 			}
 			
@@ -355,13 +357,21 @@ public class ContactsPanel extends JPanel{
 			
 			@Override
 			protected Transferable createTransferable(JComponent c) {
-				return _contactsAllTable.getTransferableContacts();
+				int index = _contactsAllTable.getSelectedRow();
+				String selectedID = (String)_contactsAllTable.getModel().getValueAt(index, ContactsTable.CONTACT_ID);
+				StringSelection transID = new StringSelection(selectedID);
+				return transID;
 			}
 			
 			@Override
 			public int getSourceActions(JComponent comp) {
 	            return COPY;
 	        }
+			
+			@Override
+			public void exportDone(JComponent source, Transferable data, int action) {
+				_saveContacts();
+			}
 			
 		});
 		

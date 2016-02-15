@@ -207,6 +207,8 @@ public class ContactsTable  extends JTable {
                return ev.getPhoneNumber();
            else if (col == 4)
                return ev.getOrganization();
+           else if (col == CONTACT_ID)
+          	 	return ev.getID();
            else return ev;
         }
         
