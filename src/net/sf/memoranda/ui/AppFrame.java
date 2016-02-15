@@ -52,6 +52,7 @@ import net.sf.memoranda.ResourcesList;
 import net.sf.memoranda.TaskList;
 import net.sf.memoranda.date.CurrentDate;
 import net.sf.memoranda.ui.htmleditor.HTMLEditor;
+import net.sf.memoranda.util.CalendarICS;
 import net.sf.memoranda.util.Configuration;
 import net.sf.memoranda.util.Context;
 import net.sf.memoranda.util.CurrentStorage;
@@ -111,8 +112,15 @@ public class AppFrame extends JFrame {
             doPrjUnPack();
         }
     };
-
-    public Action minimizeToSystemTrayAction = new AbstractAction("Close the window") {
+    
+    private Action _importCalAction = new AbstractAction("Import Calendar"){
+    	public void actionPerformed(ActionEvent e){
+    		doImportCal();
+    	}
+    };	
+  
+    
+    private Action _minimizeToSystemTrayAction = new AbstractAction("Close the window") {
         public void actionPerformed(ActionEvent e) {
             doMinimizeToSystemTray();
         }
@@ -151,12 +159,14 @@ public class AppFrame extends JFrame {
         JMenuItem jMenuFileNewNote = new JMenuItem(workPanel.dailyItemsPanel.editorPanel.newAction);
     JMenuItem jMenuFilePackPrj = new JMenuItem(prjPackAction);
     JMenuItem jMenuFileUnpackPrj = new JMenuItem(prjUnpackAction);
+    JMenuItem jMenuImportCalendar = new JMenuItem(_importCalAction);
+    
     JMenuItem jMenuFileExportPrj = new JMenuItem(exportNotesAction);
     JMenuItem jMenuFileImportPrj = new JMenuItem(importNotesAction);
     JMenuItem jMenuFileImportNote = new JMenuItem(importOneNoteAction);
     JMenuItem jMenuFileExportNote = new JMenuItem(
             workPanel.dailyItemsPanel.editorPanel.exportAction);
-    JMenuItem jMenuFileMin = new JMenuItem(minimizeToSystemTrayAction);
+    JMenuItem jMenuFileMin = new JMenuItem(_minimizeToSystemTrayAction);
 
     JMenuItem jMenuItem1 = new JMenuItem();
     JMenuItem jMenuEditUndo = new JMenuItem(editor.undoAction);
@@ -492,6 +502,7 @@ public class AppFrame extends JFrame {
         jMenuFile.addSeparator();
         jMenuFile.add(jMenuFilePackPrj);
         jMenuFile.add(jMenuFileUnpackPrj);
+        jMenuFile.add(jMenuImportCalendar);
         jMenuFile.addSeparator();
         jMenuFile.add(jMenuFileExportPrj);
         jMenuFile.add(jMenuFileExportNote);
@@ -881,6 +892,65 @@ public class AppFrame extends JFrame {
         ProjectPackager.unpack(f);
         projectsPanel.prjTablePanel.updateUI();
     }
+    /**
+     * Assembles file browser for importing ics file
+     */
+    public void doImportCal() {
+    	UIManager.put("FileChooser.lookInLabelText", Local
+                .getString("Look in:"));
+        UIManager.put("FileChooser.upFolderToolTipText", Local.getString(
+                "Up One Level"));
+        UIManager.put("FileChooser.newFolderToolTipText", Local.getString(
+                "Create New Folder"));
+        UIManager.put("FileChooser.listViewButtonToolTipText", Local
+                .getString("List"));
+        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local
+                .getString("Details"));
+        UIManager.put("FileChooser.fileNameLabelText", Local.getString(
+                "File Name:"));
+        UIManager.put("FileChooser.filesOfTypeLabelText", Local.getString(
+                "Files of Type:"));
+        UIManager.put("FileChooser.openButtonText", Local.getString("Open"));
+        UIManager.put("FileChooser.openButtonToolTipText", Local.getString(
+                "Open selected file"));
+        UIManager
+                .put("FileChooser.cancelButtonText", Local.getString("Cancel"));
+        UIManager.put("FileChooser.cancelButtonToolTipText", Local.getString(
+                "Cancel"));
+
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileHidingEnabled(false);
+        chooser.setDialogTitle(Local.getString("Import Calendar"));
+        chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.addChoosableFileFilter(new AllFilesFilter(AllFilesFilter.ICS));
+        
+        chooser.setPreferredSize(new Dimension(550, 375));
+
+        
+        File lastSel = null;
+
+        try {
+            lastSel = (java.io.File) Context.get("LAST_SELECTED_PACK_FILE");
+        }
+        catch (ClassCastException cce) {
+            lastSel = new File(System.getProperty("user.dir") + File.separator);
+        }
+        //---------------------------------------------------------------------
+
+        if (lastSel != null){
+            chooser.setCurrentDirectory(lastSel);
+        }
+        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION){
+            return;
+        }
+        Context.put("LAST_SELECTED_PACK_FILE", chooser.getSelectedFile());        
+        java.io.File f = chooser.getSelectedFile();
+        CalendarICS.importCalendar(f);
+        projectsPanel.prjTablePanel.updateUI();
+		
+	}
+    
 
     public void showPreferences() {
         PreferencesDialog dlg = new PreferencesDialog(this);
