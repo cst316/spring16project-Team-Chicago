@@ -2,6 +2,8 @@ Done since Memoranda 1.1 (20160131)
 
 - Added a notification for when a user attempts to schedule a non-repeatable event prior to the current time
 - Can now switch between week and month views in Events
+- Stickers can now be exported as .txt files without html tags
+- Stickers can be exported with a file browser
 - Contacts now able to be associated with projects
 - Contacts are exported and imported with their associated projects
 
