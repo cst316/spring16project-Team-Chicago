@@ -65,7 +65,7 @@ public class ExportSticker {
         public boolean export(){
                 boolean result = true;
                 //String fs = System.getProperty("file.separator");
-                String contents = getSticker();
+                String contents = getStickerForTxt();
                 JFileChooser fx = new JFileChooser(new java.io.File("."));
 
                 fx.setDialogTitle("export location");
@@ -144,6 +144,55 @@ public class ExportSticker {
             
                 return result;
         }
+        
+        /**
+         * Parses string to remove html markuk
+         * 
+         * 
+  		 * 
+         *
+         *          
+         * @return String that has been edited
+         */
+        
+        
+        public String getStickerForTxt(){
+            Map stickers = EventsManager.getStickers();
+    String result = "";
+    String edited ="";
+    String editedTemp = "";
+    char compare;
+    char left = '<';
+    char right = '>';
+    boolean flag = false;
+    String nl = System.getProperty("line.separator"); 
+            for (Iterator i = stickers.keySet().iterator(); i.hasNext();) {
+        String id = (String)i.next();
+        System.out.println((String)(((Element)stickers.get(id)).getValue()));
+        edited = (String)(((Element)stickers.get(id)).getValue());
+        int len = edited.length();
+        editedTemp = "";
+        for (int k = 0; k < len; k++)
+        {
+        	char cur = edited.charAt(k);
+        	
+        	if ( cur == left)
+        	{
+        		 flag = true;
+        	}
+        	else if ( cur == right)
+        	{
+        		flag = false;
+        	}
+        	else if (flag == false)
+        		editedTemp += edited.charAt(k);
+        }
+      
+        	result += editedTemp + nl;
+    
+            } 
+            return result;
+    }
         
         /*public static String getStickers() {
                 String result ="";
