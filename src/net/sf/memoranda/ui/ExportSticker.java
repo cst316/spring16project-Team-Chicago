@@ -54,16 +54,8 @@ public class ExportSticker {
             }
             return output;
         }
-
-        /**
-         * Create a File Chooser when called especialy for txt files                        
-         * 
-         *
-         *           
-         * @return boolean 
-         */
-        public boolean export(){
-
+        
+        public boolean export(String src){
                 boolean result = true;
                 String fs = System.getProperty("file.separator");
                 
@@ -89,36 +81,6 @@ public class ExportSticker {
                         
                 return result;
         }
-        
-        /**
-         * Create a File Chooser when called especialy for html files                        
-         * 
-         *
-         *           
-         * @return boolean 
-         */
-        public boolean exporthtml(){
-            boolean result = true;
-            //String fs = System.getProperty("file.separator");
-            String contents = getSticker();
-            JFileChooser fx = new JFileChooser(new java.io.File("."));
-
-            fx.setDialogTitle("export location");
-           fx.setFileFilter(new FileTypeFilter(".html","HTML File"));
-            int exportResult = fx.showSaveDialog(null);
-            if (exportResult == JFileChooser.APPROVE_OPTION){
-            	File fi = fx.getSelectedFile();
-            
-            try {
-            	//File file = new File(this.name+"."+src);
-            		String tempLocation = fi.getPath();
-            		tempLocation = tempLocation + ".html";	
-                    FileWriter fwrite=new FileWriter(tempLocation);
-                    fwrite.write(contents);
-                    fwrite.flush();
-                    fwrite.close();
-                    JOptionPane.showMessageDialog(null,Local.getString("Document created!"));
-
         
         public String getSticker(){
                 Map stickers = EventsManager.getStickers();
