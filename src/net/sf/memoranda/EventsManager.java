@@ -123,7 +123,7 @@ public class EventsManager {
 	 * Returns: Vector weekEvents
 	 * 
 	 * Description: Takes the current selected calendar day and makes a collection of all events
-	 * of that day and following week. US-53.
+	 * of that day and following week. US-53
 	 */
 	public static Collection getEventsForWeek(CalendarDate date) {  	
     	int nextDay = 0;
@@ -176,12 +176,12 @@ public class EventsManager {
 	}
 	
 	/**
-	 * Method: checkEventSchedule
+	 * Method: checkEventSchedule()
 	 * Inputs: schedTime - the time trying to be scheduled
-	 * @param schedTime
 	 * Returns: void
+	 * 
 	 * Description: Checks if the non-repeated event being created is scheduled for a time that
-	 * has already past.
+	 * has already past. US-51.
 	 */
 	public static void checkEventScheduleTime(String schedTime) {
 		Calendar time = Calendar.getInstance(); 
@@ -204,11 +204,10 @@ public class EventsManager {
 	}
 	
 	/**
-	 * Method: eventDateConver.java
+	 * Method: eventDateConver()
 	 * Input: String toConvert - current date from calendar
 	 * Returns: convertedDate - converted date format
-	 * @param toConvert
-	 * @return convertDate
+	 * 
 	 * Description: Custom date formatter. Converts "dd/mm/yyyy" to "yyyyMMdd".
 	 */
 	public static String eventDateConverter(String toConvert) {
@@ -216,12 +215,10 @@ public class EventsManager {
 		String[] dateElements;
 		
 		// gets day, month, year from date string
-		try {
-			dateElements = toConvert.split("/");
-		}
-		catch (Exception ex) {
-			throw ex;
-		}
+		dateElements = toConvert.split("/");
+		if (dateElements.length != 3) {
+			   throw new IllegalArgumentException("Date not in correct format");
+			}
 		
 		// stores each part of the date
 		String day = dateElements[0];
@@ -245,9 +242,12 @@ public class EventsManager {
 	}
 
 	/**
-	 * Checks if current day events are past their user-set notification date. Called in App.java
+	 * Method: checkOverDueEvents()
+	 * Inputs: (none)
+	 * Returns: (none)
+	 * 
+	 * Description: Checks if current day events are past their user-set notification date. Called in App.java
 	 * at startup. Occurs during app initialization.
-	 * @author Larry Naron
 	 */
 	public static void checkOverdueEvents() {	
 		// sets date and time values to check
