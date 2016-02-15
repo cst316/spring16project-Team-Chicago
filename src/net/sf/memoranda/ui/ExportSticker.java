@@ -136,8 +136,8 @@ public class ExportSticker {
                 return result;
         }
         
-        public String getStickerForTxt(){
-            Map stickers = EventsManager.getStickers();
+    public String getStickerForTxt(){
+    Map stickers = EventsManager.getStickers();
     String result = "";
     String edited ="";
     String editedTemp = "";
