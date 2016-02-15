@@ -5,10 +5,11 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ContactListTest.class,
-				ContactTest.class, 
+
+@SuiteClasses({ ContactTest.class, 
 				EventsManagerTest.class,
 				CalendarDateNextDayTest.class})
+
 public class AllTests {
 
 }
