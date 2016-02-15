@@ -32,7 +32,7 @@ import net.sf.memoranda.util.Local;
  */
 public class ExtendedEventsTable extends EventsTable {
 
-    private Vector<Event> events = new Vector<Event>();
+    private Vector<Event> _events = new Vector<Event>();
     
     /**
      * Constructor for ExtendedEventsTable.
@@ -52,7 +52,7 @@ public class ExtendedEventsTable extends EventsTable {
      * current day.
      */
     public void initWeekTable(CalendarDate d) {
-        events = (Vector)EventsManager.getEventsForWeek(d);
+        _events = (Vector)EventsManager.getEventsForWeek(d);
         getColumnModel().getColumn(0).setPreferredWidth(100);	// date column
         getColumnModel().getColumn(0).setMaxWidth(100);			
         getColumnModel().getColumn(1).setPreferredWidth(60);	// time column
@@ -70,7 +70,7 @@ public class ExtendedEventsTable extends EventsTable {
      * current day.
      */
     public void initMonthTable(CalendarDate d) {
-        events = (Vector)EventsManager.getEventsForMonth(d);
+        _events = (Vector)EventsManager.getEventsForMonth(d);
         getColumnModel().getColumn(0).setPreferredWidth(100);	// date column
         getColumnModel().getColumn(0).setMaxWidth(100);			
         getColumnModel().getColumn(1).setPreferredWidth(80);	// time column
@@ -152,7 +152,7 @@ public class ExtendedEventsTable extends EventsTable {
         public int getRowCount() {
 			int i;
 			try {
-				i = events.size();
+				i = _events.size();
 			}
 			catch(NullPointerException e) {
 				i = 1;
@@ -161,7 +161,7 @@ public class ExtendedEventsTable extends EventsTable {
         }
 
         public Object getValueAt(int row, int col) {
-           Event ev = (Event)events.get(row);
+           Event ev = (Event)_events.get(row);
            if (col == 0) {
         	   if (ev.isRepeatable()) {
         		   return ev.getRepSchedDate();
