@@ -56,12 +56,13 @@ public class ExportSticker {
             }
             return output;
         }
-               /**
-               *Method: export
-               *Inputs:
-               *Returns: boolean result
-       		   *Description: Export a text file to a specfic folder
-             */
+        /**
+         * Create a File Chooser when called especialy for txt files                        
+         * 
+         *
+         *           
+         * @return boolean 
+         */
         public boolean export(){
                 boolean result = true;
                 //String fs = System.getProperty("file.separator");
@@ -95,11 +96,12 @@ public class ExportSticker {
                 return result;
         }
         /**
-        *Method: export HTML
-        *Inputs:
-        *Returns: boolean result
-		   *Description: Export a htlm file to a specfic folder
-      */
+         * Create a File Chooser when called especialy for html files                        
+         * 
+         *
+         *           
+         * @return boolean 
+         */
         public boolean exporthtml(){
             boolean result = true;
             //String fs = System.getProperty("file.separator");
