@@ -56,7 +56,12 @@ public class ExportSticker {
             }
             return output;
         }
-       //export in txt
+               /**
+               *Method: export
+               *Inputs:
+               *Returns: boolean result
+       		   *Description: Export a text file to a specfic folder
+             */
         public boolean export(){
                 boolean result = true;
                 //String fs = System.getProperty("file.separator");
@@ -89,7 +94,12 @@ public class ExportSticker {
                         
                 return result;
         }
-//EXport in html
+        /**
+        *Method: export HTML
+        *Inputs:
+        *Returns: boolean result
+		   *Description: Export a htlm file to a specfic folder
+      */
         public boolean exporthtml(){
             boolean result = true;
             //String fs = System.getProperty("file.separator");
