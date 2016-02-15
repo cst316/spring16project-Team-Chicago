@@ -102,10 +102,8 @@ public class ExportSticker {
         Description: Special method that edits out html text for .txt output cleans output
       */
 
-  
-        
-        public String getStickerForTxt(){
-            Map stickers = EventsManager.getStickers();
+    public String getStickerForTxt(){
+    Map stickers = EventsManager.getStickers();
     String result = "";
     String edited ="";
     String editedTemp = "";
@@ -116,7 +114,6 @@ public class ExportSticker {
     String nl = System.getProperty("line.separator"); 
             for (Iterator i = stickers.keySet().iterator(); i.hasNext();) {
         String id = (String)i.next();
-        System.out.println((String)(((Element)stickers.get(id)).getValue()));
         edited = (String)(((Element)stickers.get(id)).getValue());
         int len = edited.length();
         editedTemp = "";
