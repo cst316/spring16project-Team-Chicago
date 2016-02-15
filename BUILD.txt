@@ -1,5 +1,5 @@
 
-                         Memoranda version 1.0 
+                         Memoranda version 1.2
                             Building HOWTO
 
 ================================================================================
@@ -86,4 +86,4 @@ To set an option, use the "-D" commandline parameter, e.g.
 
 
 ================================================================================
-$Id: BUILD.txt,v 1.1 2004/10/13 12:59:56 alexeya Exp $
+$Id: BUILD.txt,v 1.2 2016/02/15 12:59:56 jdhinkle Exp $
