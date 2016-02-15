@@ -203,8 +203,9 @@ public class ContactManager {
 		ArrayList<Contact> contacts = getContacts(project);
 		contacts.forEach((contact) -> {
 			// Don't save any projects the contact is associated with since it's not needed.
-			contact.clearIDs();
-			rootElement.appendChild(contact.toElement());
+			Contact newContact = contact.copy();
+			newContact.clearIDs();
+			rootElement.appendChild(newContact.toElement());
 		});
 		return new Document(rootElement);
 	}
@@ -325,12 +326,14 @@ public class ContactManager {
 	
 	private static void _removeContactFromProjects(Contact contact) {
 		Set<String> projectIDs = contact.getProjectIDs();
-		Iterator<String> idIterator = projectIDs.iterator();
+		Iterator<String> idIterator = _projectContactIDs.keySet().iterator();
 		for(String id; idIterator.hasNext();) {
 			id = idIterator.next();
 			HashMap<String, Contact> contactHash = _projectContactIDs.get(id);
 			if(contactHash != null) {
-				contactHash.remove(contact.getID());
+				if(contactHash.containsKey(contact.getID())) {
+					contactHash.remove(contact.getID());
+				}
 			}
 		}
 	}
@@ -371,6 +374,7 @@ public class ContactManager {
 				}
 				else {
 					masterContact.addProjectID(prj.getID());
+					_updateContact(masterContact);
 				}
 			}
 			else {
