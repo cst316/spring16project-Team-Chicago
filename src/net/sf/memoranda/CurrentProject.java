@@ -17,6 +17,7 @@ import net.sf.memoranda.ui.AppFrame;
 import net.sf.memoranda.util.Context;
 import net.sf.memoranda.util.CurrentStorage;
 import net.sf.memoranda.util.Storage;
+import nu.xom.Document;
 
 /**
  *
@@ -82,12 +83,14 @@ public class CurrentProject {
         TaskList newtasklist = CurrentStorage.get().openTaskList(project);
         NoteList newnotelist = CurrentStorage.get().openNoteList(project);
         ResourcesList newresources = CurrentStorage.get().openResourcesList(project);
+        Document newContactListDoc = CurrentStorage.get().openProjectContactList(project);
         notifyListenersBefore(project, newnotelist, newtasklist, newresources);
         _project = project;
         _tasklist = newtasklist;
         _notelist = newnotelist;
         _resources = newresources;
         notifyListenersAfter();
+        ContactManager.importProjectContacts(newContactListDoc, project);
         Context.put("LAST_OPENED_PROJECT_ID", project.getID());
     }
 

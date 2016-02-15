@@ -15,6 +15,7 @@ import java.awt.event.WindowListener;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -36,11 +37,13 @@ public class ContactDialog extends JDialog implements WindowListener {
     JLabel lblEmailAddress = new JLabel();
     JLabel lblTelephone = new JLabel();
     JLabel lblOrganization = new JLabel();
+    JLabel lblAddToProject = new JLabel();
     public JTextField txtFirstName = new JTextField();
     public JTextField txtLastName = new JTextField();
     public JTextField txtEmailAddress = new JTextField();
     public JTextField txtTelephone = new JTextField();
     public JTextField txtOrganization = new JTextField();
+    JCheckBox cbAddToProject = new JCheckBox();
     JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
     JButton okB = new JButton();
     JButton cancelB = new JButton();
@@ -105,6 +108,15 @@ public class ContactDialog extends JDialog implements WindowListener {
         gbc.insets = new Insets(10, 10, 5, 10);
         gbc.anchor = GridBagConstraints.WEST;
         contactPanel.add(lblOrganization, gbc);
+        cbAddToProject.setText(Local.getString("Add to current project"));
+        cbAddToProject.setMinimumSize(new Dimension(375, 24));
+        cbAddToProject.setSelected(true);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0; gbc.gridy = 5;
+        gbc.insets = new Insets(10, 10, 5, 10);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        contactPanel.add(cbAddToProject, gbc);
 
         txtFirstName.setMinimumSize(new Dimension(375, 24));
         txtFirstName.setPreferredSize(new Dimension(375, 24));
@@ -151,6 +163,14 @@ public class ContactDialog extends JDialog implements WindowListener {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         contactPanel.add(txtOrganization, gbc);
+        /*lblAddToProject.setText(Local.getString("Add to current project"));
+        lblAddToProject.setMinimumSize(new Dimension(375, 24));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1; gbc.gridy = 5;
+        gbc.insets = new Insets(10, 10, 5, 10);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        contactPanel.add(lblAddToProject, gbc);*/
         
         // Build ButtonsPanel
         okB.setMaximumSize(new Dimension(100, 26));
