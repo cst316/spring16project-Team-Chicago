@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.util.Map;
 import java.util.Collections;
-
+import java.util.Date;
 
 import net.sf.memoranda.date.CalendarDate;
 import net.sf.memoranda.util.CurrentStorage;
@@ -150,7 +150,7 @@ public class EventsManager {
 		CalendarDate date,
 		int hh,
 		int mm,
-		String text) {
+		String text, Date schedDate) {
 		Element el = new Element("event");
 		el.addAttribute(new Attribute("id", Util.generateId()));
 		el.addAttribute(new Attribute("hour", String.valueOf(hh)));

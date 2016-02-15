@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.transform.TransformerException;
@@ -39,10 +40,11 @@ public class CalendarICS {
 			for(int i=0;i<eventCount;i++){
 				VEvent event = icals.get(0).getEvents().get(i);
 				ICalDate iDate = event.getDateStart().getValue();
-				CalendarDate date = new CalendarDate(iDate.getDate(),iDate.getMonth(),iDate.getYear()+YEAR);
+				CalendarDate cdate = new CalendarDate(iDate.getDate(),iDate.getMonth(),iDate.getYear()+YEAR);
 				int hour = iDate.getHours();
 				int minute = iDate.getMinutes();
-				Event mevent = EventsManager.createEvent(date,hour,minute,event.getSummary().getValue());
+				Date date = new Date(iDate.getDate(),iDate.getMonth(),iDate.getYear()+1900);
+				Event mevent = EventsManager.createEvent(cdate,hour,minute,event.getSummary().getValue(),date);
 				CurrentStorage.get().storeEventsManager();
 				
 			} 

@@ -113,14 +113,14 @@ public class AppFrame extends JFrame {
         }
     };
     
-    public Action importCalAction = new AbstractAction("Import Calendar"){
+    private Action importCalAction = new AbstractAction("Import Calendar"){
     	public void actionPerformed(ActionEvent e){
     		doImportCal();
     	}
     };	
   
     
-    public Action minimizeToSystemTrayAction = new AbstractAction("Close the window") {
+    private Action minimizeToSystemTrayAction = new AbstractAction("Close the window") {
         public void actionPerformed(ActionEvent e) {
             doMinimizeToSystemTray();
         }
