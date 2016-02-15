@@ -281,12 +281,11 @@ public class EventsManager {
 		String text,
 		Date schedDate) { 
 		
-		// US-53 gets the scheduled date of the events, converts to string, then adds it
+		// US-53 gets the scheduled date of the events, converts to string, then adds it.
 		String dateText;
 		DateFormat sdf = new SimpleDateFormat("M/dd/yy");
-		dateText = sdf.format(schedDate);
-				
-		
+		dateText = sdf.format(schedDate);				
+
 		Element el = new Element("event");
 		el.addAttribute(new Attribute("id", Util.generateId()));
 		el.addAttribute(new Attribute("hour", String.valueOf(hh)));
