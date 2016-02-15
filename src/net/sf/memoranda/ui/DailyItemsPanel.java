@@ -400,11 +400,11 @@ public class DailyItemsPanel extends JPanel {
     
     /**
      * Method: getCurrentDate()
+     * Inputs: (none)
      * Returns: String of current date selected on the calendar
-     * @return selectDate
+     * 
      * Description: Gets the date currently selected on the calendar. This is used to bypass the
      * multiple continuity issues between Date and Calendar dates being used.
-     * Currently being used by EventsManager.java
      */
     public static String getCurrentDate() {
     	String selectDate = CurrentDate.get().toString();

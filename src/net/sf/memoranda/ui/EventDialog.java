@@ -483,9 +483,9 @@ public class EventDialog extends JDialog implements WindowListener {
      * Method: okB_actionPerformed
      * Inputs: ActionEvent e
      * Returns: void
+     * 
      * Description: After the OK button is pressed on the Event dialog, a quick check of the 
      * scheduled time is performed, and the dialog is closed.
-     * @param e
      */
     void okB_actionPerformed(ActionEvent e) {
     	// checks if one of the repeat buttons is selected
