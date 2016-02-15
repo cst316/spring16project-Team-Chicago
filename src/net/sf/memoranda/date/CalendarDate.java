@@ -11,7 +11,6 @@ package net.sf.memoranda.date;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
 import net.sf.memoranda.util.Local;
 import net.sf.memoranda.util.Util;
 
@@ -80,6 +79,19 @@ public class CalendarDate {
     public static CalendarDate tomorrow() {
         Calendar cal = Calendar.getInstance();
         cal.roll(Calendar.DATE, true);
+        return new CalendarDate(cal);
+    }
+    
+    /**
+     * Method: nextDay()
+     * Inputs: int addDays
+     * Returns: CalendarDate 
+     *
+     * Description: Adds days to the date and returns a new date. US-53.
+     */
+    public static CalendarDate nextDay(int addDays) {
+    	Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, addDays);
         return new CalendarDate(cal);
     }
 

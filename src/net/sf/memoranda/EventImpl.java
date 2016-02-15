@@ -21,7 +21,8 @@ import nu.xom.Element;
  */
 /*$Id: EventImpl.java,v 1.9 2004/10/06 16:00:11 ivanrise Exp $*/
 public class EventImpl implements Event, Comparable {
-    
+	
+	private String repSchedDate;   
     private Element _elem = null;
 
     /**
@@ -30,8 +31,19 @@ public class EventImpl implements Event, Comparable {
     public EventImpl(Element elem) {
         _elem = elem;
     }
-
-   
+    
+    public void setRepSchedDate(CalendarDate date) { 	
+    	repSchedDate = date.getShortDateString();
+    }
+    
+    public String getRepSchedDate() {	
+    	return repSchedDate;
+    }
+    
+    public String getSchedDate() {	
+    	return (String) (_elem.getAttribute("schedDate").getValue()).toString();
+    }
+      
     /**
      * @see net.sf.memoranda.Event#getHour()
      */
@@ -144,5 +156,7 @@ public class EventImpl implements Event, Comparable {
 		Event event = (Event) o;
 		return (getHour() * 60 + getMinute()) - (event.getHour() * 60 + event.getMinute());
 	}
+	
+	
 
 }

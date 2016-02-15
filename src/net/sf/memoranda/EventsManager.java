@@ -9,7 +9,6 @@ package net.sf.memoranda;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -119,12 +118,49 @@ public class EventsManager {
 	}
 	
 	/**
-	 * Method: getFormattedLocalTime()
-	 * Inputs: (none)
-	 * Returns: String systime - formatted date
+	 * Method: getEventsForWeek()
+	 * Inputs: CalendarDate date
+	 * Returns: Vector weekEvents
 	 * 
-	 * Description: Formats the system time into HHmm. US-51.
+	 * Description: Takes the current selected calendar day and makes a collection of all events
+	 * of that day and following week. US-53
 	 */
+	public static Collection getEventsForWeek(CalendarDate date) {  	
+    	int nextDay = 0;
+    	Vector weekEvents = new Vector();
+    	
+    	for (int j = 0; j < 7; j++) { 		
+    		Vector events = (Vector) EventsManager.getEventsForDate(date);
+    		nextDay++;
+    		date = CalendarDate.nextDay(nextDay);
+    		weekEvents.addAll(events);
+    	}
+
+		return weekEvents;
+	}
+	
+	/**
+	 * Method: getEventsForMonth()
+	 * Inputs: CalendarDate date
+	 * Returns: Vector monthEvents
+	 * 
+	 * Description: Takes the current selected calendar day and makes a collection of all events
+	 * of that day and following 30 days. US-53.
+	 */
+	public static Collection getEventsForMonth(CalendarDate date) {  	
+    	int nextDay = 0;
+    	Vector monthEvents = new Vector();
+    	
+    	for (int j = 0; j < 30; j++) { 			
+    		Vector events = (Vector) EventsManager.getEventsForDate(date);
+    		nextDay++;
+    		date = CalendarDate.nextDay(nextDay);
+    		monthEvents.addAll(events);
+    	}
+    	
+		return monthEvents;
+	}
+	
 	public static String getFormattedLocalTime() {
 		// sets sysTime date and time values to check		  
 		Calendar time = Calendar.getInstance();           
@@ -242,12 +278,20 @@ public class EventsManager {
 		CalendarDate date,
 		int hh,
 		int mm,
-		String text, Date schedDate) {
+		String text,
+		Date schedDate) { 
+		
+		// US-53 gets the scheduled date of the events, converts to string, then adds it.
+		String dateText;
+		DateFormat sdf = new SimpleDateFormat("M/dd/yy");
+		dateText = sdf.format(schedDate);				
+
 		Element el = new Element("event");
 		el.addAttribute(new Attribute("id", Util.generateId()));
 		el.addAttribute(new Attribute("hour", String.valueOf(hh)));
 		el.addAttribute(new Attribute("min", String.valueOf(mm)));
 		el.appendChild(text);
+		el.addAttribute(new Attribute("schedDate", String.valueOf(dateText)));
 		Day d = getDay(date);
 		if (d == null)
 			d = createDay(date);
@@ -270,6 +314,7 @@ public class EventsManager {
 			rep = new Element("repeatable");
 			_root.appendChild(rep);
 		}
+		
 		el.addAttribute(new Attribute("repeat-type", String.valueOf(type)));
 		el.addAttribute(new Attribute("id", Util.generateId()));
 		el.addAttribute(new Attribute("hour", String.valueOf(hh)));
@@ -315,6 +360,9 @@ public class EventsManager {
 			//System.out.println(date.inPeriod(ev.getStartDate(),
 			// ev.getEndDate()));
 			if (date.inPeriod(ev.getStartDate(), ev.getEndDate())) {
+				
+				ev.setRepSchedDate(date);	// sets the date of the repeating event US-53
+				
 				if (ev.getRepeat() == REPEAT_DAILY) {
 					int n = date.getCalendar().get(Calendar.DAY_OF_YEAR);
 					int ns =

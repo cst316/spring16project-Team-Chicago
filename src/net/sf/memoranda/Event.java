@@ -17,6 +17,12 @@ import net.sf.memoranda.date.CalendarDate;
  */
 /*$Id: Event.java,v 1.4 2004/07/21 17:51:25 ivanrise Exp $*/
 public interface Event {
+	
+	void setRepSchedDate(CalendarDate date);
+	
+	String getRepSchedDate();
+	
+	String getSchedDate();
     
     String getId();
     
@@ -43,5 +49,6 @@ public interface Event {
     String getTimeString();
     
 	boolean getWorkingDays();
+	
     
 }

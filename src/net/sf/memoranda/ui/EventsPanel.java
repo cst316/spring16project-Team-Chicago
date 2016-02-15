@@ -13,18 +13,21 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.sf.memoranda.Event;
+import net.sf.memoranda.EventImpl;
 import net.sf.memoranda.EventsManager;
 import net.sf.memoranda.EventsScheduler;
 import net.sf.memoranda.History;
@@ -45,8 +48,15 @@ public class EventsPanel extends JPanel {
     JButton newEventB = new JButton();
     JButton editEventB = new JButton();
     JButton removeEventB = new JButton();
+    
+    // US-53 create view buttons
+    JRadioButton dayRb = new JRadioButton("Today");
+    JRadioButton weekRb = new JRadioButton("7 Days");
+    JRadioButton monthRb = new JRadioButton("30 Days");
+    
     JScrollPane scrollPane = new JScrollPane();
-    static private EventsTable eventsTable = new EventsTable();
+    static private EventsTable eventsTable = new EventsTable();	
+    static private ExtendedEventsTable exTable = new ExtendedEventsTable();
     JPopupMenu eventPPMenu = new JPopupMenu();
     JMenuItem ppEditEvent = new JMenuItem();
     JMenuItem ppRemoveEvent = new JMenuItem();
@@ -132,10 +142,19 @@ public class EventsPanel extends JPanel {
         removeEventB.setIcon(
             new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/event_remove.png")));
 
+        // US-53 creates view radio button set
+        ButtonGroup viewGroup = new ButtonGroup();
+        viewGroup.add(dayRb);
+        viewGroup.add(weekRb);
+        viewGroup.add(monthRb);
+        dayRb.setSelected(true);  // makes today default       
+        
         this.setLayout(borderLayout1);
         scrollPane.getViewport().setBackground(Color.white);
         eventsTable.setMaximumSize(new Dimension(32767, 32767));
         eventsTable.setRowHeight(24);
+        exTable.setMaximumSize(new Dimension(32767, 32767));
+        exTable.setRowHeight(24);
         eventPPMenu.setFont(new java.awt.Font("Dialog", 1, 10));
         ppEditEvent.setFont(new java.awt.Font("Dialog", 1, 11));
         ppEditEvent.setText(Local.getString("Edit event") + "...");
@@ -176,7 +195,30 @@ public class EventsPanel extends JPanel {
         eventsToolBar.add(removeEventB, null);
         eventsToolBar.addSeparator(new Dimension(8, 24));
         eventsToolBar.add(editEventB, null);
-
+        
+        // US-53 adds view radio buttons group to tool bar
+        eventsToolBar.addSeparator(new Dimension(8, 24));
+        eventsToolBar.add(dayRb, null);
+        eventsToolBar.add(weekRb, null);
+        eventsToolBar.add(monthRb, null);
+        
+        // US-53 adds listeners for each view radio button
+        dayRb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dayRbEventB_actionPerformed(e);
+            }
+        });
+        weekRb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                weekRbEventB_actionPerformed(e);
+            }
+        });
+        monthRb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                monthRbEventB_actionPerformed(e);
+            }
+        });
+        
         this.add(eventsToolBar, BorderLayout.NORTH);
 
         PopupListener ppListener = new PopupListener();
@@ -184,8 +226,10 @@ public class EventsPanel extends JPanel {
         eventsTable.addMouseListener(ppListener);
 
         CurrentDate.addDateListener(new DateListener() {
-            public void dateChange(CalendarDate d) {
-                eventsTable.initTable(d);     
+            public void dateChange(CalendarDate d) {      
+                dayRb.setSelected(true);
+                eventsTable.initTable(d);  
+                scrollPane.getViewport().add(eventsTable, null);
                 boolean enbl = d.after(CalendarDate.today()) || d.equals(CalendarDate.today());
                 newEventB.setEnabled(enbl);           
                 ppNewEvent.setEnabled(enbl);
@@ -193,6 +237,19 @@ public class EventsPanel extends JPanel {
                 ppEditEvent.setEnabled(false);
                 removeEventB.setEnabled(false);
                 ppRemoveEvent.setEnabled(false);
+                
+                // disables radio button views if not current date US-53 
+                boolean setRb = d.equals(CalendarDate.today());
+                if (!setRb){
+                	dayRb.setVisible(false);
+                	weekRb.setVisible(false);
+                	monthRb.setVisible(false);
+                }
+                else {
+                	dayRb.setVisible(true);
+                	weekRb.setVisible(true);
+                	monthRb.setVisible(true);
+                }
             }
         });
 
@@ -297,8 +354,9 @@ public class EventsPanel extends JPanel {
         //int hh = ((Date) dlg.timeSpin.getModel().getValue()).getHours();
         //int mm = ((Date) dlg.timeSpin.getModel().getValue()).getMinutes();
         String text = dlg.textField.getText();
+        Date schedDate = dlg.getEventDate();	//US-53
         if (dlg.noRepeatRB.isSelected())
-   	    EventsManager.createEvent(CurrentDate.get(), hh, mm, text);
+   	    EventsManager.createEvent(CurrentDate.get(), hh, mm, text, schedDate);
         else {
 	    updateEvents(dlg,hh,mm,text);
 	}    
@@ -366,10 +424,10 @@ public class EventsPanel extends JPanel {
 		calendar.setTime(((Date)dlg.timeSpin.getModel().getValue()));//Fix deprecated methods to get hours
 		int hh = calendar.get(Calendar.HOUR_OF_DAY);//Fix deprecated methods to get hours
 		int mm = calendar.get(Calendar.MINUTE);//Fix deprecated methods to get hours
-
+		Date schedDate = dlg.getEventDate();	//US-53
         String text = dlg.textField.getText();
         if (dlg.noRepeatRB.isSelected())
-   	    EventsManager.createEvent(CurrentDate.get(), hh, mm, text);
+   	    EventsManager.createEvent(CurrentDate.get(), hh, mm, text, schedDate);
         else {
 	     updateEvents(dlg,hh,mm,text);
 	}    
@@ -413,11 +471,12 @@ public class EventsPanel extends JPanel {
     	//int hh = ((Date) dlg.timeSpin.getModel().getValue()).getHours();
     	//int mm = ((Date) dlg.timeSpin.getModel().getValue()).getMinutes();
     	String text = dlg.textField.getText();
-		
+    	
+    	Date schedDate = dlg.getEventDate();  			
 		CalendarDate eventCalendarDate = new CalendarDate(dlg.getEventDate());
 		
     	if (dlg.noRepeatRB.isSelected())
-    		EventsManager.createEvent(eventCalendarDate, hh, mm, text);
+    		EventsManager.createEvent(eventCalendarDate, hh, mm, text, schedDate);
     	else {
     		updateEvents(dlg,hh,mm,text);
     	}
@@ -460,6 +519,7 @@ public class EventsPanel extends JPanel {
             rtype = EventsManager.REPEAT_MONTHLY;
             period = ((Integer) dlg.dayOfMonthSpin.getModel().getValue()).intValue();
         }
+
         EventsManager.createRepeatableEvent(rtype, sd, ed, period, hh, mm, text, dlg.workingDaysOnlyCB.isSelected());
     }
 
@@ -510,7 +570,60 @@ public class EventsPanel extends JPanel {
         EventsManager.removeEvent(ev);
         saveEvents();  
     }
-
+    
+    /**
+     * Method: dayRbEventB_actionPerformed()
+     * Inputs: ActionEvent e
+     * Returns: void
+     * 
+     * Description: Performs actions when the day radio button is selected. This is the default 
+     * view as normal - meaning editing can be performed. US-53.
+     */
+    void dayRbEventB_actionPerformed(ActionEvent e) {
+        newEventB.setEnabled(true);           
+        ppNewEvent.setEnabled(true);
+    	scrollPane.getViewport().add(eventsTable, null);
+    	eventsTable.refresh();
+    }
+    
+    /**
+     * Method: weekRbEventB_actionPerformed()
+     * Inputs: ActionEvent e
+     * Returns: void
+     * 
+     * Description: Performs actions when the 7 day radio button is selected. Opens up new table 
+     * to display all events from current day +6. US-53.
+     */
+    void weekRbEventB_actionPerformed(ActionEvent e) {
+        newEventB.setEnabled(false);           
+        ppNewEvent.setEnabled(false);
+        editEventB.setEnabled(false);
+        ppEditEvent.setEnabled(false);
+        removeEventB.setEnabled(false);
+        ppRemoveEvent.setEnabled(false);
+        scrollPane.getViewport().add(exTable, null);
+        exTable.initWeekTable(CalendarDate.today());               
+    }
+    
+    /**
+     * Method: monthRbEventB_actionPerformed()
+     * Inputs: ActionEvent e
+     * Returns: void
+     * 
+     * Description: Performs actions when the 30 day radio button is selected. Opens up new table 
+     * to display all events from current day +29. US-53.
+     */
+    void monthRbEventB_actionPerformed(ActionEvent e) {
+        newEventB.setEnabled(false);           
+        ppNewEvent.setEnabled(false);
+        editEventB.setEnabled(false);
+        ppEditEvent.setEnabled(false);
+        removeEventB.setEnabled(false);
+        ppRemoveEvent.setEnabled(false);
+        scrollPane.getViewport().add(exTable, null);
+        exTable.initMonthTable(CalendarDate.today());
+    }
+    
     class PopupListener extends MouseAdapter {
 
         public void mouseClicked(MouseEvent e) {
