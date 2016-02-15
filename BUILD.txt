@@ -38,12 +38,12 @@ Note that you don't need it if you've got the "full" distribution package.
 Building the Memoranda from sources
 -----------------------------------
 
-For building Memoranda you need Jakarta Ant build tool (v1.5.2 and higher). 
-You can download Ant from http://jakarta.apache.org. 
+For building Memoranda you need the Apache Ant build tool (v1.5.2 and higher). 
+You can download Ant from http://ant.apache.org. 
 
 	1) Set the JAVA_HOME environment variable to your JDK installation 
       	   directory
-	2) Set the ANT_HOME environment variable to Jakarta Ant directory 
+	2) Set the ANT_HOME environment variable to Apache Ant directory 
 	3) Go to the Memoranda home directory
 	4) Run 'ant' or 'ant package'
 
