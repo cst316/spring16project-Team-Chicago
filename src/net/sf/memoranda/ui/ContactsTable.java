@@ -22,6 +22,7 @@ import javax.swing.RowSorter;
 
 import net.sf.memoranda.Contact;
 import net.sf.memoranda.ContactManager;
+import net.sf.memoranda.ContactManagerListener;
 import net.sf.memoranda.CurrentProject;
 import net.sf.memoranda.NoteList;
 import net.sf.memoranda.Project;
@@ -49,11 +50,11 @@ public class ContactsTable  extends JTable {
 		ALL,
 		PROJECT
 	}
-	private TransferableContacts _transferableContacts = new TransferableContacts();
+	
+	private TransferableContacts<Contact> _transferableContacts = new TransferableContacts<Contact>();
 	private Type _type;
 	private NameFilter _nameFilter = new NameFilter();
 	private TableRowSorter<ContactsTableModel> _rowSorter;
-	private boolean _pressed;
 	private ArrayList<Contact> _contacts = new ArrayList<Contact>();
 	
 	
@@ -70,16 +71,13 @@ public class ContactsTable  extends JTable {
         setModel(cModel);
         _initTable();
         this.setShowGrid(false);
-        CurrentProject.addProjectListener(new ProjectListener() {
+        ContactManager.addContactManagerListener(new ContactManagerListener() {
 
 			@Override
-			public void projectChange(Project prj, NoteList nl, TaskList tl, ResourcesList rl) {}
-
-			@Override
-			public void projectWasChanged() {
+			public void contactManagerChanged() {
 				refresh();
 			}
-        	
+
         });
     }
     
@@ -124,89 +122,26 @@ public class ContactsTable  extends JTable {
     }
     
     
+    /**
+     * @see javax.swing.JTable#valueChanged(javax.swing.event.ListSelectionEvent)
+     */
     @Override
     public void valueChanged(ListSelectionEvent e) {
     	super.valueChanged(e);
     	_transferableContacts.clear();
     	int[] indexes = this.getSelectedRows();
     	for(int i = 0; i < indexes.length; i++) {
-    		_transferableContacts.add((Contact)this.getModel().getValueAt(indexes[i], ContactsTable.CONTACT));
+    		Contact c = (Contact)this.getModel().getValueAt(indexes[i], ContactsTable.CONTACT);
+    		_transferableContacts.add(c);
     	}
     }
-    
-    
-    private boolean isUnselected(MouseEvent e) {
-         Point pt = e.getPoint();
-         int row = rowAtPoint(pt);
-         int col = columnAtPoint(pt);
-         return row >= 0 && col >= 0 && !super.isCellSelected(row, col);
-    }
-    
-    
-    @Override
-    protected void processMouseEvent(MouseEvent e) {
-         _pressed = e.getID() == MouseEvent.MOUSE_PRESSED
-                   && SwingUtilities.isLeftMouseButton(e)
-                   && !e.isShiftDown() && !e.isControlDown()
-                   && isUnselected(e);
-         try {
-              if (_pressed)
-                   clearSelection();
-              super.processMouseEvent(e);
-         } finally {
-              _pressed = false;
-         }
-    }
-    
-    
-    @Override
-    public boolean isCellSelected(int row, int col) {
-         return _pressed ? true : super.isCellSelected(row, col);
-    }
-    
-    
-    /*@Override
-    public void processMouseEvent(MouseEvent e) {
-    	if(e.getID() == MouseEvent.MOUSE_DRAGGED &&
-    			SwingUtilities.isLeftMouseButton(e) &&
-    			!e.isShiftDown() &&
-    			!e.isControlDown()) {
-    		Point point = e.getPoint();
-    		int rowIndex = this.rowAtPoint(point);
-    		if(rowIndex >= 0) {
-    			this.addRowSelectionInterval(rowIndex, rowIndex);
-    		}
-    	}
-    	else {
-    		super.processMouseEvent(e);
-    	}
-    }*/
-    
-    /*@Override
-    protected void processMouseEvent(MouseEvent e) {
-         if (e.getID() == MouseEvent.MOUSE_PRESSED && SwingUtilities.isLeftMouseButton(e)) {
-        	 if (e.isShiftDown()) {
-        		 Point point = 
-        	 }
-        	 else if(e.isControlDown()) {
-        		 
-        	 }
-         }
-         super.processMouseEvent(e);
-    }
-    
-    @Override
-    protected void processKeyEvent(KeyEvent e) {
-    	
-    }*/
-    
     
     private void _initTable() {
     	if(_type == Type.ALL) {
     		_contacts = ContactManager.getAllContacts();
     	}
     	else {
-    		_contacts = ContactManager.getProjectContacts(CurrentProject.get());
+    		_contacts = ContactManager.getContacts(CurrentProject.get());
     	}
     	_rowSorter = new TableRowSorter<ContactsTableModel>((ContactsTableModel)this.getModel());
         _rowSorter.setRowFilter(_nameFilter);
@@ -284,12 +219,13 @@ public class ContactsTable  extends JTable {
     
     /**
      * A transferable <code>ArrayList</code> of <code>Contact</code>s used
-     * by the UI for drag-n-drop functionality.
+     * by the UI for drag-n-drop functionality. This class is currently not being used for its full
+     * purpose until problems with selection are fixed to allow multiple contacts to be transfered.
      * 
      * @author Jonathan
      *
      */
-    public class TransferableContacts extends ArrayList<Contact> implements Transferable {
+    public class TransferableContacts<C extends Contact> extends ArrayList<C> implements Transferable {
     	
     	private DataFlavor _dataFlavor = null;
     	
@@ -308,6 +244,9 @@ public class ContactsTable  extends JTable {
     	}
     	
     	
+		/**
+		 * @see java.awt.datatransfer.Transferable#getTransferDataFlavors()
+		 */
 		@Override
 		public DataFlavor[] getTransferDataFlavors() {
 			DataFlavor[] returnFlavors = null;
@@ -319,6 +258,9 @@ public class ContactsTable  extends JTable {
 		}
 		
 
+		/**
+		 * @see java.awt.datatransfer.Transferable#isDataFlavorSupported(java.awt.datatransfer.DataFlavor)
+		 */
 		@Override
 		public boolean isDataFlavorSupported(DataFlavor flavor) {
 			boolean supported = false;
@@ -329,6 +271,9 @@ public class ContactsTable  extends JTable {
 		}
 
 		
+		/**
+		 * @see java.awt.datatransfer.Transferable#getTransferData(java.awt.datatransfer.DataFlavor)
+		 */
 		@Override
 		public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
 			if(!isDataFlavorSupported(flavor)) throw new UnsupportedFlavorException(flavor);

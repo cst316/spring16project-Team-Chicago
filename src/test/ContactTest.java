@@ -2,6 +2,10 @@ package test;
 
 import static org.junit.Assert.*;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import net.sf.memoranda.Contact;
@@ -55,16 +59,16 @@ public class ContactTest {
 		Contact test = new Contact(testContacts[1].toElement());
 		assertEquals(test.getFirstName(),"Melissa");
 		assertEquals(test.getPhoneNumber(),"286-3421");
-		assertTrue(test.getId() != null);
+		assertTrue(test.getID() != null);
 		
 	}
 
 	@Test
 	public final void testGetId() {
-		assertTrue(testContacts[3].getId() != null);
-		assertTrue(testContacts[3].getId().equals("") !=true);
-		assertTrue(testContacts[0].getId() != null);
-		assertTrue(testContacts[0].getId().equals("") !=true);
+		assertTrue(testContacts[3].getID() != null);
+		assertTrue(testContacts[3].getID().equals("") !=true);
+		assertTrue(testContacts[0].getID() != null);
+		assertTrue(testContacts[0].getID().equals("") !=true);
 	}
 
 	@Test
@@ -73,7 +77,7 @@ public class ContactTest {
 		assertEquals(test1.getFirstName(),testContacts[1].getFirstName());
 		assertEquals(test1.getLastName(),testContacts[1].getLastName());
 		assertEquals(test1.getPhoneNumber(),testContacts[1].getPhoneNumber());
-		assertEquals(test1.getId(),testContacts[1].getId());
+		assertEquals(test1.getID(),testContacts[1].getID());
 
 	}
 
@@ -82,17 +86,21 @@ public class ContactTest {
 		Project project1 = ProjectManager.createProject("project1", new CalendarDate(), new CalendarDate());
 		Project project2 = ProjectManager.createProject("project2", new CalendarDate(), new CalendarDate());
 		Project project3 = ProjectManager.createProject("project3", new CalendarDate(), new CalendarDate());
-		testContacts[0].addProject(project1);
-		testContacts[0].addProject(project2);
-		testContacts[0].addProject(project3);
+		testContacts[0].addProjectID(project1.getID());
+		testContacts[0].addProjectID(project2.getID());
+		testContacts[0].addProjectID(project3.getID());
 		Document doc1 = new Document(testContacts[0].toElement());
 		assertEquals(doc1.getRootElement().getLocalName(),"Contact");
-		assertEquals(doc1.getRootElement().getChildCount(),7);
+		assertEquals(doc1.getRootElement().getChildCount(),8);
 		assertEquals(doc1.getRootElement().getChild(0).getValue(),"Tom");
 		Elements projects = doc1.getRootElement().getFirstChildElement("projects").getChildElements();
-		assertEquals(projects.get(0).getValue(), project1.getID());
-		assertEquals(projects.get(1).getValue(), project2.getID());
-		assertEquals(projects.get(2).getValue(), project3.getID());
+		Set<String> ids = new HashSet<String>(3);
+		ids.add(projects.get(0).getValue());
+		ids.add(projects.get(1).getValue());
+		ids.add(projects.get(2).getValue());
+		assertTrue(ids.contains(project1.getID()));
+		assertTrue(ids.contains(project2.getID()));
+		assertTrue(ids.contains(project3.getID()));
 		ProjectManager.removeProject(project1.getID());
 		ProjectManager.removeProject(project2.getID());
 		ProjectManager.removeProject(project3.getID());
@@ -102,18 +110,20 @@ public class ContactTest {
 	public final void testAddProject() {
 		Project project1 = ProjectManager.createProject("project1", new CalendarDate(), new CalendarDate());
 		Project project2 = ProjectManager.createProject("project2", new CalendarDate(), new CalendarDate());
-		boolean add1 = testContacts[0].addProject(project1);
-		boolean add2 = testContacts[0].addProject(project2);
-		boolean add3 = testContacts[0].addProject(project2);
+		boolean add1 = testContacts[0].addProjectID(project1.getID());
+		boolean add2 = testContacts[0].addProjectID(project2.getID());
+		boolean add3 = testContacts[0].addProjectID(project2.getID());
 		assertTrue(add1);
 		assertTrue(add2);
 		assertTrue(!add3);
-		String[] ids = testContacts[0].getProjectIDs();
-		assertEquals(2, ids.length);
+		Set<String> ids = testContacts[0].getProjectIDs();
+		assertEquals(2, ids.size());
+		Iterator<String> idIterator = ids.iterator();
 		int count = 0;
-		for(int i = 0; i < ids.length; i++) {
-			if(ids[i].equals(project1.getID()) ||
-				ids[i].equals(project2.getID())) {
+		for(String id; idIterator.hasNext();) {
+			id = idIterator.next();
+			if(id.equals(project1.getID()) ||
+				id.equals(project2.getID())) {
 					count++;
 			}
 		}
@@ -127,16 +137,19 @@ public class ContactTest {
 		Project project1 = ProjectManager.createProject("project1", new CalendarDate(), new CalendarDate());
 		Project project2 = ProjectManager.createProject("project2", new CalendarDate(), new CalendarDate());
 		Project project3 = ProjectManager.createProject("project3", new CalendarDate(), new CalendarDate());
-		testContacts[0].addProject(project1);
-		testContacts[0].addProject(project2);
-		boolean remove1 = testContacts[0].removeProject(project1);
-		boolean remove2 = testContacts[0].removeProject(project3);
+		testContacts[0].addProjectID(project1.getID());
+		testContacts[0].addProjectID(project2.getID());
+		boolean remove1 = testContacts[0].removeProjectID(project1.getID());
+		boolean remove2 = testContacts[0].removeProjectID(project3.getID());
 		assertTrue(remove1);
 		assertTrue(!remove2);
-		String[] ids = testContacts[0].getProjectIDs();
-		assertEquals(1, ids.length);
-		for(int i = 0; i < ids.length; i++) {
-			if(ids[i].equals(project1.getID())) {
+		Set<String> ids = testContacts[0].getProjectIDs();
+		assertEquals(1, ids.size());
+		Iterator<String> idIterator = ids.iterator();
+		int count = 0;
+		for(String id; idIterator.hasNext();) {
+			id = idIterator.next();
+			if(id.equals(project1.getID())) {
 				fail();
 			}
 		}
@@ -150,11 +163,49 @@ public class ContactTest {
 		Project project1 = ProjectManager.createProject("project1", new CalendarDate(), new CalendarDate());
 		Project project2 = ProjectManager.createProject("project2", new CalendarDate(), new CalendarDate());
 		Project project3 = ProjectManager.createProject("project3", new CalendarDate(), new CalendarDate());
-		testContacts[0].addProject(project1);
-		testContacts[0].addProject(project2);
-		assertTrue(testContacts[0].inProject(project1));
-		assertTrue(testContacts[0].inProject(project2));
-		assertTrue(!testContacts[0].inProject(project3));
-		assertTrue(!testContacts[0].inProject(null));
+		testContacts[0].addProjectID(project1.getID());
+		testContacts[0].addProjectID(project2.getID());
+		Set<String> ids = testContacts[0].getProjectIDs();
+		assertTrue(ids.contains(project1.getID()));
+		assertTrue(ids.contains(project2.getID()));
+		assertTrue(!ids.contains(project3.getID()));
+		assertTrue(!ids.contains(null));
+		ProjectManager.removeProject(project1.getID());
+		ProjectManager.removeProject(project2.getID());
+		ProjectManager.removeProject(project3.getID());
+	}
+	
+	@Test
+	public final void testClearProjectIDs() {
+		Project project1 = ProjectManager.createProject("project1", new CalendarDate(), new CalendarDate());
+		Project project2 = ProjectManager.createProject("project2", new CalendarDate(), new CalendarDate());
+		testContacts[0].addProjectID(project1.getID());
+		testContacts[0].addProjectID(project2.getID());
+		assertEquals(2, testContacts[0].getProjectIDs().size());
+		testContacts[0].clearIDs();
+		assertEquals(0, testContacts[0].getProjectIDs().size());
+		ProjectManager.removeProject(project1.getID());
+		ProjectManager.removeProject(project2.getID());
+	}
+	
+	@Test
+	public final void testAddAllProjectIDs() {
+		Project project1 = ProjectManager.createProject("project1", new CalendarDate(), new CalendarDate());
+		Project project2 = ProjectManager.createProject("project2", new CalendarDate(), new CalendarDate());
+		Project project3 = ProjectManager.createProject("project3", new CalendarDate(), new CalendarDate());
+		Set<String> ids = new HashSet<String>();
+		ids.add(project1.getID());
+		ids.add(project2.getID());
+		ids.add(project3.getID());
+		testContacts[0].addAllProjectID(ids);
+		ids = testContacts[0].getProjectIDs();
+		assertTrue(ids.contains(project1.getID()));
+		assertTrue(ids.contains(project2.getID()));
+		assertTrue(ids.contains(project3.getID()));
+		assertEquals(3, ids.size());
+		ProjectManager.removeProject(project1.getID());
+		ProjectManager.removeProject(project2.getID());
+		ProjectManager.removeProject(project3.getID());
+		
 	}
 }

@@ -3,21 +3,28 @@ package net.sf.memoranda.ui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
+import javax.swing.DropMode;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
+import javax.swing.ListSelectionModel;
+import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -25,6 +32,7 @@ import net.sf.memoranda.Contact;
 import net.sf.memoranda.ContactManager;
 import net.sf.memoranda.CurrentProject;
 import net.sf.memoranda.History;
+import net.sf.memoranda.ui.ContactsTable.TransferableContacts;
 import net.sf.memoranda.util.Local;
 
 
@@ -35,8 +43,8 @@ import net.sf.memoranda.util.Local;
  * and another listing contacts associated with the <code>CurrentProject</code>.
  * 
  * @author Jonathan Hinkle
- * @see {@link net.sf.memoranda.Contact}
- * @see {@link net.sf.memoranda.CurrentProject}
+ * @see { @link net.sf.memoranda.Contact }
+ * @see { @link net.sf.memoranda.CurrentProject }
  *
  */
 public class ContactsPanel extends JPanel{
@@ -51,6 +59,7 @@ public class ContactsPanel extends JPanel{
 		ALL,
 		PROJECT,
 	}
+	
 	private SelectionContext _selectionContext = SelectionContext.ALL;
 	private boolean _addToProject = true;
 	private DailyItemsPanel _parentPanel = null;
@@ -81,7 +90,7 @@ public class ContactsPanel extends JPanel{
 
     
     /**
-     * Constructor for the panel
+     * Constructor for the contacts panel.
      * 
      * @param parentPanel The parent DailyItemsPanel
      * @see DailyItemsPanel
@@ -244,6 +253,15 @@ public class ContactsPanel extends JPanel{
         _contactsAllTable = _contactsAllPanel.getTable();
         _contactsProjectTable = _contactsProjectPanel.getTable();
         
+        _contactsAllTable.setFillsViewportHeight(true);
+        _contactsProjectTable.setFillsViewportHeight(true);
+        _contactsProjectTable.setDropMode(DropMode.INSERT_ROWS);
+		_contactsAllTable.setDropMode(DropMode.INSERT_ROWS);
+		_contactsAllTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		_contactsProjectTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		_contactsAllTable.setDragEnabled(true);
+		_contactsProjectTable.setDragEnabled(true);
+        
         _contactsAllTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 boolean enbl = _contactsAllTable.getSelectedRow() > -1;
@@ -255,6 +273,7 @@ public class ContactsPanel extends JPanel{
                 _ppRemoveContact.setEnabled(enbl);
             }
         });
+        
         _contactsProjectTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 boolean enbl = _contactsProjectTable.getSelectedRow() > -1;
@@ -267,7 +286,7 @@ public class ContactsPanel extends JPanel{
             }
         });
 		
-		// remove contacts using the DEL key
+      //Add a key listener to allow the delete key to be used on selected contacts
 		_contactsAllTable.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e){
 				if(_contactsAllTable.getSelectedRows().length > 0 && e.getKeyCode()==KeyEvent.VK_DELETE) {
@@ -277,6 +296,8 @@ public class ContactsPanel extends JPanel{
 			public void	keyReleased(KeyEvent e){}
 			public void keyTyped(KeyEvent e){} 
 		});
+		
+		//Add a key listener to allow the delete key to be used on selected contacts
 		_contactsProjectTable.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e){
 				if(_contactsProjectTable.getSelectedRows().length > 0 && e.getKeyCode()==KeyEvent.VK_DELETE) {
@@ -287,14 +308,13 @@ public class ContactsPanel extends JPanel{
 			public void keyTyped(KeyEvent e){} 
 		});
 		
-		//contactsSplitPane.setDividerLocation(this.getWidth()-300);
-		/*projectContactsTable.setDropMode(DropMode.INSERT);
-		projectContactsTable.setTransferHandler(new TransferHandler(){
+		// Set the transfer handler for the contacts table to handle drag n drop
+		_contactsProjectTable.setTransferHandler(new TransferHandler(){
 			
 			@Override
 			public boolean canImport(TransferSupport support) {
 				boolean importable = false;
-				DataFlavor[] permittedFlavors = projectContactsTable.getTransferableContacts().getTransferDataFlavors();
+				DataFlavor[] permittedFlavors = _contactsProjectTable.getTransferableContacts().getTransferDataFlavors();
 				for(int i = 0; i < permittedFlavors.length; i++) {
 					if(support.isDataFlavorSupported(permittedFlavors[i])) {
 						importable = true;
@@ -308,27 +328,42 @@ public class ContactsPanel extends JPanel{
 			public boolean importData(TransferSupport support) {
 				boolean success = false;
 				if(canImport(support)) {
-					ArrayList<Contact> contacts = (TransferableContacts)support.getTransferable();
+					success = true;
+					@SuppressWarnings("unchecked")
+					TransferableContacts<Contact> contacts = _contactsAllTable.getTransferableContacts();
 					contacts.forEach(contact -> {
-						contact.addProject(CurrentProject.get());
+						contact.addProjectID(CurrentProject.get().getID());
 						ContactManager.updateContact(contact);
 					});
 				}
-			    saveContacts();
+			    _saveContacts();
 				return success;
 			}
-		});
-		
-		contactTable.setDragEnabled(true);
-		contactTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		contactTable.setTransferHandler(new TransferHandler() {
+			
+			public int getSourceActions(JComponent c) {
+                return COPY;
+            }
 			
 			@Override
 			protected Transferable createTransferable(JComponent c) {
-				return contactTable.getTransferableContacts();
+				return _contactsAllTable.getTransferableContacts();
+			}
+		});
+		
+		// Set the transfer handler for the contacts table to handle drag n drop
+		_contactsAllTable.setTransferHandler(new TransferHandler() {
+			
+			@Override
+			protected Transferable createTransferable(JComponent c) {
+				return _contactsAllTable.getTransferableContacts();
 			}
 			
-		});*/
+			@Override
+			public int getSourceActions(JComponent comp) {
+	            return COPY;
+	        }
+			
+		});
 		
 		_contactsSplitPane.setLeftComponent(_contactsProjectPanel);
         _contactsSplitPane.setRightComponent(_contactsAllPanel);
@@ -355,7 +390,7 @@ public class ContactsPanel extends JPanel{
 	        dlg.txtTelephone.setText(contact.getPhoneNumber());
 	        dlg.txtOrganization.setText(contact.getOrganization());
 	        dlg.cbAddToProject.setEnabled(false);
-	        if(!contact.inProject(CurrentProject.get())) {
+	        if(!contact.getProjectIDs().contains(CurrentProject.get())) {
 	        	dlg.cbAddToProject.setSelected(false);
 	        	if(_selectionContext == SelectionContext.ALL) {
 	        		dlg.cbAddToProject.setEnabled(true);
@@ -369,6 +404,7 @@ public class ContactsPanel extends JPanel{
 	        dlg.setLocation((frmSize.width - dlg.getSize().width) / 2 + loc.x, (frmSize.height - dlg.getSize().height) / 2 + loc.y);
 	        dlg.setVisible(true);
 	        if (dlg.CANCELLED) return;
+	        
 	        contact.setFirstName(dlg.txtFirstName.getText());
 	        contact.setLastName(dlg.txtLastName.getText());
 	        contact.setPhoneNumber(dlg.txtTelephone.getText());
@@ -376,7 +412,7 @@ public class ContactsPanel extends JPanel{
 	        contact.setOrganization(dlg.txtOrganization.getText());
 	        
 	        if(dlg.cbAddToProject.isSelected() && dlg.cbAddToProject.isEnabled()) {
-	    		contact.addProject(CurrentProject.get());
+	    		contact.addProjectID(CurrentProject.get().getID());
 	    	}
 	        
 	        ContactManager.updateContact(contact);
@@ -404,7 +440,7 @@ public class ContactsPanel extends JPanel{
     		);
     	newContact.setOrganization(dlg.txtOrganization.getText());
     	if(dlg.cbAddToProject.isSelected()) {
-    		newContact.addProject(CurrentProject.get());
+    		newContact.addProjectID(CurrentProject.get().getID());
     		_addToProject = true;
     	}
     	else {
@@ -464,7 +500,7 @@ public class ContactsPanel extends JPanel{
 					ContactManager.removeContact(contact);
 				}
 				else if(_selectionContext == SelectionContext.PROJECT) {
-					contact.removeProject(CurrentProject.get());
+					contact.removeProjectID(CurrentProject.get().getID());
 					ContactManager.updateContact(contact);
 				}
 			}
