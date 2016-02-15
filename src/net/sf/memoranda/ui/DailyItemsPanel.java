@@ -10,6 +10,7 @@ import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -72,7 +73,7 @@ public class DailyItemsPanel extends JPanel {
     boolean expanded = true;
 
     Note currentNote;
-	CalendarDate currentDate;
+	static CalendarDate currentDate;
 
     boolean calendarIgnoreChange = false;
     boolean dateChangedByCalendar = false;
@@ -222,6 +223,7 @@ public class DailyItemsPanel extends JPanel {
                 currentDateChanged(d);
             }
         });
+        
 
         CurrentProject.addProjectListener(new ProjectListener() {
             public void projectChange(Project p, NoteList nl, TaskList tl, ResourcesList rl) {
@@ -395,6 +397,19 @@ public class DailyItemsPanel extends JPanel {
         CurrentDate.set(hi.getDate());
         changedByHistory = false;
     }
+    
+    /**
+     * Method: getCurrentDate()
+     * Inputs: (none)
+     * Returns: String of current date selected on the calendar
+     * 
+     * Description: Gets the date currently selected on the calendar. This is used to bypass the
+     * multiple continuity issues between Date and Calendar dates being used.
+     */
+    public static String getCurrentDate() {
+    	String selectDate = CurrentDate.get().toString();
+    	return selectDate;
+    }
 
     public void saveNote() {
         if (currentNote == null)
@@ -482,4 +497,6 @@ public class DailyItemsPanel extends JPanel {
     void alarmB_actionPerformed(ActionEvent e) {
         parentPanel.eventsB_actionPerformed(null);
     }
+    
+
 }
