@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
+
 
 import net.sf.memoranda.EventsManager;
 import net.sf.memoranda.util.CurrentStorage;
@@ -35,8 +37,8 @@ public class ExportSticker {
 
         }*/
         
-        public ExportSticker(String x) {
-                this.name = remove1(x);
+        public ExportSticker(String x) {    
+        	//this.name = remove1(x);
         }
 
         /**
@@ -54,30 +56,33 @@ public class ExportSticker {
             }
             return output;
         }
-
-        /**
-         * Create a File Chooser when called especialy for txt files                        
-         * 
-         *
-         *           
-         * @return boolean 
-         */
+               /**
+               *Method: export
+               *Inputs:
+               *Returns: boolean result
+       		   *Description: Export a text file to a specfic folder
+             */
         public boolean export(){
-
                 boolean result = true;
-                String fs = System.getProperty("file.separator");
+                //String fs = System.getProperty("file.separator");
+                String contents = getStickerForTxt();
+                JFileChooser fx = new JFileChooser(new java.io.File("."));
+
+                fx.setDialogTitle("export location");
+               fx.setFileFilter(new FileTypeFilter(".txt","Text File"));
+                int exportResult = fx.showSaveDialog(null);
+                if (exportResult == JFileChooser.APPROVE_OPTION){
+                	File fi = fx.getSelectedFile();
                 
-                String contents = getSticker();
                 try {
-                File file = new File(this.name+"."+src);
-                
-                
-                        FileWriter fwrite=new FileWriter(file,true);
-            
+                	//File file = new File(this.name+"."+src);
+                		String tempLocation = fi.getPath();
+                		tempLocation = tempLocation + ".txt";	
+                        FileWriter fwrite=new FileWriter(tempLocation);
                         fwrite.write(contents);
-                        
+                        fwrite.flush();
                         fwrite.close();
-                        JOptionPane.showMessageDialog(null,Local.getString("Document created with success in your wallet Memoranda"));
+                        JOptionPane.showMessageDialog(null,Local.getString("Document created!"));
             
             
         } catch (IOException e) {
@@ -85,18 +90,16 @@ public class ExportSticker {
             JOptionPane.showMessageDialog(null,Local.getString("failed to create your document"));
         }
                 
-                
+                }        
                         
                 return result;
         }
-        
         /**
-         * Create a File Chooser when called especialy for html files                        
-         * 
-         *
-         *           
-         * @return boolean 
-         */
+        *Method: export HTML
+        *Inputs:
+        *Returns: boolean result
+		   *Description: Export a htlm file to a specfic folder
+      */
         public boolean exporthtml(){
             boolean result = true;
             //String fs = System.getProperty("file.separator");
@@ -118,8 +121,18 @@ public class ExportSticker {
                     fwrite.flush();
                     fwrite.close();
                     JOptionPane.showMessageDialog(null,Local.getString("Document created!"));
-
         
+        
+    } catch (IOException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null,Local.getString("failed to create your document"));
+    }
+            
+            }        
+                    
+            return result;
+    }
+
         public String getSticker(){
                 Map stickers = EventsManager.getStickers();
         String result = "";
@@ -131,6 +144,55 @@ public class ExportSticker {
             
                 return result;
         }
+        
+        /**
+         * Parses string to remove html markuk
+         * 
+         * 
+  		 * 
+         *
+         *          
+         * @return String that has been edited
+         */
+        
+        
+        public String getStickerForTxt(){
+            Map stickers = EventsManager.getStickers();
+    String result = "";
+    String edited ="";
+    String editedTemp = "";
+    char compare;
+    char left = '<';
+    char right = '>';
+    boolean flag = false;
+    String nl = System.getProperty("line.separator"); 
+            for (Iterator i = stickers.keySet().iterator(); i.hasNext();) {
+        String id = (String)i.next();
+        System.out.println((String)(((Element)stickers.get(id)).getValue()));
+        edited = (String)(((Element)stickers.get(id)).getValue());
+        int len = edited.length();
+        editedTemp = "";
+        for (int k = 0; k < len; k++)
+        {
+        	char cur = edited.charAt(k);
+        	
+        	if ( cur == left)
+        	{
+        		 flag = true;
+        	}
+        	else if ( cur == right)
+        	{
+        		flag = false;
+        	}
+        	else if (flag == false)
+        		editedTemp += edited.charAt(k);
+        }
+      
+        	result += editedTemp + nl;
+    
+            } 
+            return result;
+    }
         
         /*public static String getStickers() {
                 String result ="";
