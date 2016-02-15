@@ -1,3 +1,20 @@
+Done since Memoranda 1.1 (20160131)
+
+- Added a notification for when a user attempts to schedule a non-repeatable event prior to the current time
+- Can now switch between week and month views in Events
+- Contacts now able to be associated with projects
+- Contacts are exported and imported with their associated projects
+
+Done since Memoranda 1.0-RC3 (20160121)
+
+- Changed Agenda UI text from spanish to english
+- Added expired event notification
+- Fixed: UI look and feel selection was improperly displayed in the settings
+- Added Contacts
+- Stickers now open in a new window
+- Fixed: Minimizing the window exited the window
+- Exiting through the 'x' button now creates a system tray icon which can be used to reopen or exit the program
+
 Done by Cristian Andrade
 - Color to the foreground on stickers
 - Simple HTML Format to stickers 
