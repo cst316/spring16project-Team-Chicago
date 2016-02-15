@@ -22,7 +22,7 @@
 	<property name="debuglevel" value="lines,vars,source"/>
 	<property name="optimize" value="off"/>
 	<property name="deprecation" value="off"/>
-
+	
 	<target name="init">
 		<!-- Create the time stamp -->
 		<tstamp/>

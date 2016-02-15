@@ -46,7 +46,7 @@ public class ExportSticker {
          */
         public static String remove1(String input) {
             
-            String original = "áàäéèëíìïóòöúùuñÁÀÄÉÈËÍÌÏÓÒÖÚÙÜÑçÇ";
+            String original = "Ã¡Ã Ã¤Ã©Ã¨Ã«Ã­Ã¬Ã¯Ã³Ã²Ã¶ÃºÃ¹uÃ±Ã�Ã€Ã„Ã‰ÃˆÃ‹Ã�ÃŒÃ�Ã“Ã’Ã–ÃšÃ™ÃœÃ‘Ã§Ã‡";
             
             String ascii = "aaaeeeiiiooouuunAAAEEEIIIOOOUUUNcC";
             String output = input;
@@ -83,12 +83,18 @@ public class ExportSticker {
                         fwrite.write(contents);
                         fwrite.flush();
                         fwrite.close();
-                        JOptionPane.showMessageDialog(null,Local.getString("Document created!"));
+
+
+
+                        JOptionPane.showMessageDialog(null,Local.getString("Document created successfully in folder"));
+
             
             
         } catch (IOException e) {
             e.printStackTrace();
+
             JOptionPane.showMessageDialog(null,Local.getString("failed to create your document"));
+
         }
                 
                 }        

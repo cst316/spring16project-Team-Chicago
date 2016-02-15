@@ -195,12 +195,18 @@ public class AgendaPanel extends JPanel {
 					}else if (d.startsWith("memoranda:exportstickerst")) {
 						 /*.txt export*/
 						 final JFrame parent = new JFrame();
+
 						  new ExportSticker("").export();
+
+
 					}else if (d.startsWith("memoranda:exportstickersh")) {
 						 /*  .html export*/
 						 final JFrame parent = new JFrame();
+
 						  new ExportSticker("").exporthtml();
+
 					}else if (d.startsWith("memoranda:importstickers")) {
+
 						//Create file chooser window opens in working folder
 				        JFileChooser fileChooser = new JFileChooser();
 				        fileChooser.setDialogTitle("Import location");
@@ -210,6 +216,7 @@ public class AgendaPanel extends JPanel {
 				         File selectedFile = fileChooser.getSelectedFile();
 				          System.out.println(selectedFile.getName());
 				        }
+
 
 					}
 				}
