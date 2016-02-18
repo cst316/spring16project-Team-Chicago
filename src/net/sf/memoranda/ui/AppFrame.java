@@ -513,6 +513,7 @@ public class AppFrame extends JFrame {
         jMenuFile.add(jMenuFilePackPrj);
         jMenuFile.add(jMenuFileUnpackPrj);
         jMenuFile.add(jMenuImportCalendar);
+        jMenuFile.add(jMenuExportCalendar);
         jMenuFile.addSeparator();
         jMenuFile.add(jMenuFileExportPrj);
         jMenuFile.add(jMenuFileExportNote);
