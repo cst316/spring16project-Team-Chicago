@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -53,6 +54,11 @@ public class EventsPanel extends JPanel {
     JRadioButton dayRb = new JRadioButton("Today");
     JRadioButton weekRb = new JRadioButton("7 Days");
     JRadioButton monthRb = new JRadioButton("30 Days");
+    JRadioButton customRb = new JRadioButton("Custom Range");	// US-101
+    
+    // create text field for custom user input US-101
+    JTextField customTextField = new JTextField(5);
+    JButton goButton = new JButton("Go");
     
     JScrollPane scrollPane = new JScrollPane();
     static private EventsTable eventsTable = new EventsTable();	
@@ -147,6 +153,7 @@ public class EventsPanel extends JPanel {
         viewGroup.add(dayRb);
         viewGroup.add(weekRb);
         viewGroup.add(monthRb);
+        viewGroup.add(customRb);	// US-101
         dayRb.setSelected(true);  // makes today default       
         
         this.setLayout(borderLayout1);
@@ -201,6 +208,13 @@ public class EventsPanel extends JPanel {
         eventsToolBar.add(dayRb, null);
         eventsToolBar.add(weekRb, null);
         eventsToolBar.add(monthRb, null);
+        // US-101
+        eventsToolBar.add(customRb, null);
+        eventsToolBar.add(customTextField, null);
+        eventsToolBar.add(goButton);
+        eventsToolBar.addSeparator(new Dimension(550, 24));
+        customTextField.setVisible(false);
+        goButton.setVisible(false);
         
         // US-53 adds listeners for each view radio button
         dayRb.addActionListener(new java.awt.event.ActionListener() {
@@ -216,6 +230,16 @@ public class EventsPanel extends JPanel {
         monthRb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 monthRbEventB_actionPerformed(e);
+            }
+        });
+        customRb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                customRbEventB_actionPerformed(e);
+            }
+        });
+        goButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                goButtonEventB_actionPerformed(e);
             }
         });
         
@@ -244,11 +268,15 @@ public class EventsPanel extends JPanel {
                 	dayRb.setVisible(false);
                 	weekRb.setVisible(false);
                 	monthRb.setVisible(false);
+                	customRb.setVisible(false);
+                	customTextField.setVisible(false);
+                	goButton.setVisible(false);
                 }
                 else {
                 	dayRb.setVisible(true);
                 	weekRb.setVisible(true);
                 	monthRb.setVisible(true);
+                	customRb.setVisible(true);
                 }
             }
         });
@@ -580,6 +608,8 @@ public class EventsPanel extends JPanel {
      * view as normal - meaning editing can be performed. US-53.
      */
     void dayRbEventB_actionPerformed(ActionEvent e) {
+    	customTextField.setVisible(false);
+    	goButton.setVisible(false);
         newEventB.setEnabled(true);           
         ppNewEvent.setEnabled(true);
     	scrollPane.getViewport().add(eventsTable, null);
@@ -595,6 +625,8 @@ public class EventsPanel extends JPanel {
      * to display all events from current day +6. US-53.
      */
     void weekRbEventB_actionPerformed(ActionEvent e) {
+    	customTextField.setVisible(false);
+    	goButton.setVisible(false);
         newEventB.setEnabled(false);           
         ppNewEvent.setEnabled(false);
         editEventB.setEnabled(false);
@@ -614,6 +646,8 @@ public class EventsPanel extends JPanel {
      * to display all events from current day +29. US-53.
      */
     void monthRbEventB_actionPerformed(ActionEvent e) {
+    	customTextField.setVisible(false);
+    	goButton.setVisible(false);
         newEventB.setEnabled(false);           
         ppNewEvent.setEnabled(false);
         editEventB.setEnabled(false);
@@ -622,6 +656,73 @@ public class EventsPanel extends JPanel {
         ppRemoveEvent.setEnabled(false);
         scrollPane.getViewport().add(exTable, null);
         exTable.initMonthTable(CalendarDate.today());
+    }
+    
+    /**
+     * Method: customRbEventB_actionPerformed()
+     * Inputs: ActionEvent e
+     * Returns: void
+     * 
+     * Description: When the custom day range radio button is selected, the custom range text
+     * field is displayed. US-101
+     */
+    void customRbEventB_actionPerformed(ActionEvent e) {
+    	
+        newEventB.setEnabled(false);           
+        ppNewEvent.setEnabled(false);
+        editEventB.setEnabled(false);
+        ppEditEvent.setEnabled(false);
+        removeEventB.setEnabled(false);
+        ppRemoveEvent.setEnabled(false);
+        customTextField.setEnabled(true);
+        customTextField.setVisible(true);
+        goButton.setEnabled(true);
+        goButton.setVisible(true);
+        eventsToolBar.revalidate();
+    }
+    
+    /**
+     * Method: goButtonEventB_actionPerformed()
+     * Inputs: ActionEvent e
+     * Returns: void
+     * 
+     * Description: When the user enters a custom day range, the go button is pressed and
+     * creates and displays the table for the events for the current day plus day range US-101
+     */
+    void goButtonEventB_actionPerformed(ActionEvent e) {   
+        int dayRange = getDayRange();
+        scrollPane.getViewport().add(exTable, null);
+        exTable.initCustomRangeTable(CalendarDate.today(), dayRange);
+    }
+    
+    /**
+     * Method: getDayRange()
+     * Inputs: none
+     * Returns: int of days
+     * 
+     * Description: Converts the days range entered by the user in the custom text box from a 
+     * String to an int US-101
+     */
+    int getDayRange() {
+    	int dayRange = 0;
+    	String customText = customTextField.getText().trim();
+    	
+    	// check length of number
+    	if (customText.length() > 3) {
+    		Util.debug("Display popup that entry is too large");
+    		return -1;
+    	}
+    	else {
+        	try {
+        		dayRange = Integer.parseInt(customText);
+        	}
+        	catch (NumberFormatException ex) {
+        		Util.debug("Display popup that entered value is not a number");
+        		return -1;
+        	}
+    		
+    		return dayRange;
+    	}
     }
     
     class PopupListener extends MouseAdapter {

@@ -161,6 +161,28 @@ public class EventsManager {
 		return monthEvents;
 	}
 	
+	/**
+	 * Method: getEventsForCustomRange()
+	 * Inputs: CalendarDate date
+	 * Returns: Vector monthEvents
+	 * 
+	 * Description: Takes the current selected calendar day and makes a collection of all events
+	 * of that day and following custom day range. US-101.
+	 */
+	public static Collection getEventsForCustomRange(CalendarDate date, int dayRange) {  	
+    	int nextDay = 0;
+    	Vector customRangeEvents = new Vector();
+    	
+    	for (int j = 0; j < dayRange; j++) { 			
+    		Vector events = (Vector) EventsManager.getEventsForDate(date);
+    		nextDay++;
+    		date = CalendarDate.nextDay(nextDay);
+    		customRangeEvents.addAll(events);
+    	}
+    	
+		return customRangeEvents;
+	}
+	
 	public static String getFormattedLocalTime() {
 		// sets sysTime date and time values to check		  
 		Calendar time = Calendar.getInstance();           

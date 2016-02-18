@@ -80,6 +80,24 @@ public class ExtendedEventsTable extends EventsTable {
     }
     
     /**
+     * Method: initCustomRangeTable()
+     * Inputs: CalendarDate d, int numOfDays
+     * Returns: void
+     * 
+     * Description: Fills the table with all Events occurring in a custom time period from the
+     * current day.
+     */
+    public void initCustomRangeTable(CalendarDate d, int numOfDays) {
+        _events = (Vector)EventsManager.getEventsForCustomRange(d, numOfDays);
+        getColumnModel().getColumn(0).setPreferredWidth(100);	// date column
+        getColumnModel().getColumn(0).setMaxWidth(100);			
+        getColumnModel().getColumn(1).setPreferredWidth(80);	// time column
+        getColumnModel().getColumn(1).setMaxWidth(80);			
+        clearSelection();
+        updateUI();
+    }
+    
+    /**
      * Method: getCellRenderer()
      * Inputs: int row, int column
      * Returns: TableCellRenderer object
