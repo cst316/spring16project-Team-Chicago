@@ -8,7 +8,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @SuiteClasses({ ContactTest.class, 
 				EventsManagerTest.class,
-				CalendarDateNextDayTest.class})
+				CalendarDateNextDayTest.class,
+				CalendarDateTest.class})
 
 public class AllTests {
 
