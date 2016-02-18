@@ -54,5 +54,14 @@ public class CalendarICS {
 		
 	}
 	
+	/**
+	 * Exports a project's events and tasks to an ics file 
+	 * @param prj project to be exported
+	 * @param f name of file to save to
+	 */
+	public static void exportCal(Project prj,File f){
+		
+	}
+	
 	
 }
