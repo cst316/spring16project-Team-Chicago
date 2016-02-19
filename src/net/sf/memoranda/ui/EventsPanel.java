@@ -704,7 +704,7 @@ public class EventsPanel extends JPanel {
      * Description: Converts the days range entered by the user in the custom text box from a 
      * String to an integer and checks if the input is valid. US-101
      */
-    int getDayRange(String customDaysText, boolean mock) { 	
+    public int getDayRange(String customDaysText, boolean mock) { 	
     	
     	int dayRange = 0;
     	

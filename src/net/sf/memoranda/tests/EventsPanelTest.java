@@ -1,9 +1,11 @@
-package net.sf.memoranda.ui;
+package net.sf.memoranda.tests;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import net.sf.memoranda.ui.EventsPanel;
 
 public class EventsPanelTest {
 	
