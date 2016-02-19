@@ -42,6 +42,8 @@ import net.sf.memoranda.util.Util;
 
 /*$Id: EventsPanel.java,v 1.25 2005/02/19 10:06:25 rawsushi Exp $*/
 public class EventsPanel extends JPanel {
+	private final int _MAX_DAYS = 999;	// max number of days to allow custom events searching US-101 
+	
     BorderLayout borderLayout1 = new BorderLayout();
     JButton historyBackB = new JButton();
     JToolBar eventsToolBar = new JToolBar();
@@ -56,8 +58,8 @@ public class EventsPanel extends JPanel {
     JRadioButton monthRb = new JRadioButton("30 Days");
     JRadioButton customRb = new JRadioButton("Custom Range");	// US-101
     
-    // create text field for custom user input US-101
-    JTextField customTextField = new JTextField(5);
+    // create text field and go button for custom user input US-101
+    JTextField customTextField = new JTextField(50);
     JButton goButton = new JButton("Go");
     
     JScrollPane scrollPane = new JScrollPane();
@@ -203,12 +205,11 @@ public class EventsPanel extends JPanel {
         eventsToolBar.addSeparator(new Dimension(8, 24));
         eventsToolBar.add(editEventB, null);
         
-        // US-53 adds view radio buttons group to tool bar
+        // adds view radio buttons group to tool bar
         eventsToolBar.addSeparator(new Dimension(8, 24));
         eventsToolBar.add(dayRb, null);
         eventsToolBar.add(weekRb, null);
         eventsToolBar.add(monthRb, null);
-        // US-101
         eventsToolBar.add(customRb, null);
         eventsToolBar.add(customTextField, null);
         eventsToolBar.add(goButton);
@@ -216,7 +217,7 @@ public class EventsPanel extends JPanel {
         customTextField.setVisible(false);
         goButton.setVisible(false);
         
-        // US-53 adds listeners for each view radio button
+        // adds listeners for each view radio button
         dayRb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dayRbEventB_actionPerformed(e);
@@ -262,7 +263,7 @@ public class EventsPanel extends JPanel {
                 removeEventB.setEnabled(false);
                 ppRemoveEvent.setEnabled(false);
                 
-                // disables radio button views if not current date US-53 
+                // disables radio button views if not current date
                 boolean setRb = d.equals(CalendarDate.today());
                 if (!setRb){
                 	dayRb.setVisible(false);
@@ -329,7 +330,7 @@ public class EventsPanel extends JPanel {
             if (rep == EventsManager.REPEAT_DAILY) {
                 dlg.dailyRepeatRB.setSelected(true);
                 dlg.dailyRepeatRB_actionPerformed(null);
-                dlg.daySpin.setValue(new Integer(ev.getPeriod()));
+                dlg.daySpin.setValue(Integer.valueOf(ev.getPeriod()));	//Find Bugs fix
             }
             else if (rep == EventsManager.REPEAT_WEEKLY) {
                 dlg.weeklyRepeatRB.setSelected(true);
@@ -344,12 +345,12 @@ public class EventsPanel extends JPanel {
             else if (rep == EventsManager.REPEAT_MONTHLY) {
                 dlg.monthlyRepeatRB.setSelected(true);
                 dlg.monthlyRepeatRB_actionPerformed(null);
-                dlg.dayOfMonthSpin.setValue(new Integer(ev.getPeriod()));
+                dlg.dayOfMonthSpin.setValue(Integer.valueOf(ev.getPeriod()));	//Find Bugs fix
             }
 	    else if (rep == EventsManager.REPEAT_YEARLY) {
 		dlg.yearlyRepeatRB.setSelected(true);
 		dlg.yearlyRepeatRB_actionPerformed(null);
-		dlg.dayOfMonthSpin.setValue(new Integer(ev.getPeriod()));
+		dlg.dayOfMonthSpin.setValue(Integer.valueOf(ev.getPeriod()));	//Find Bugs fix
 	    }
         if (ev.getEndDate() != null) {
            dlg.endDate.getModel().setValue(ev.getEndDate().getDate());
@@ -407,7 +408,7 @@ public class EventsPanel extends JPanel {
             if (rep == EventsManager.REPEAT_DAILY) {
                 dlg.dailyRepeatRB.setSelected(true);
                 dlg.dailyRepeatRB_actionPerformed(null);
-                dlg.daySpin.setValue(new Integer(ev.getPeriod()));
+                dlg.daySpin.setValue(Integer.valueOf(ev.getPeriod()));   	//Find Bugs fix            
             }
             else if (rep == EventsManager.REPEAT_WEEKLY) {
                 dlg.weeklyRepeatRB.setSelected(true);
@@ -422,12 +423,12 @@ public class EventsPanel extends JPanel {
             else if (rep == EventsManager.REPEAT_MONTHLY) {
                 dlg.monthlyRepeatRB.setSelected(true);
                 dlg.monthlyRepeatRB_actionPerformed(null);
-                dlg.dayOfMonthSpin.setValue(new Integer(ev.getPeriod()));
+                dlg.dayOfMonthSpin.setValue(Integer.valueOf(ev.getPeriod()));	//Find Bugs fix
             }
 	    else if (rep == EventsManager.REPEAT_YEARLY) {
 		dlg.yearlyRepeatRB.setSelected(true);
 		dlg.yearlyRepeatRB_actionPerformed(null);
-		dlg.dayOfMonthSpin.setValue(new Integer(ev.getPeriod()));
+		dlg.dayOfMonthSpin.setValue(Integer.valueOf(ev.getPeriod()));	//Find Bugs fix
 	    }
         if (ev.getEndDate() != null) {
            dlg.endDate.getModel().setValue(ev.getEndDate().getDate());
@@ -452,7 +453,7 @@ public class EventsPanel extends JPanel {
 		calendar.setTime(((Date)dlg.timeSpin.getModel().getValue()));//Fix deprecated methods to get hours
 		int hh = calendar.get(Calendar.HOUR_OF_DAY);//Fix deprecated methods to get hours
 		int mm = calendar.get(Calendar.MINUTE);//Fix deprecated methods to get hours
-		Date schedDate = dlg.getEventDate();	//US-53
+		Date schedDate = dlg.getEventDate();	
         String text = dlg.textField.getText();
         if (dlg.noRepeatRB.isSelected())
    	    EventsManager.createEvent(CurrentDate.get(), hh, mm, text, schedDate);
@@ -666,8 +667,7 @@ public class EventsPanel extends JPanel {
      * Description: When the custom day range radio button is selected, the custom range text
      * field is displayed. US-101
      */
-    void customRbEventB_actionPerformed(ActionEvent e) {
-    	
+	void customRbEventB_actionPerformed(ActionEvent e) {
         newEventB.setEnabled(false);           
         ppNewEvent.setEnabled(false);
         editEventB.setEnabled(false);
@@ -687,40 +687,48 @@ public class EventsPanel extends JPanel {
      * Returns: void
      * 
      * Description: When the user enters a custom day range, the go button is pressed and
-     * creates and displays the table for the events for the current day plus day range US-101
+     * creates and displays the table for the events for the current day plus day range. US-101
      */
-    void goButtonEventB_actionPerformed(ActionEvent e) {   
-        int dayRange = getDayRange();
+    void goButtonEventB_actionPerformed(ActionEvent e) {  
+    	String customDaysText = customTextField.getText().trim();
+        int dayRange = getDayRange(customDaysText, false);
         scrollPane.getViewport().add(exTable, null);
         exTable.initCustomRangeTable(CalendarDate.today(), dayRange);
     }
     
     /**
      * Method: getDayRange()
-     * Inputs: none
-     * Returns: int of days
+     * Inputs: String customDaysString - string representation of number of days
+     * Returns: int dayRange - number of days to search events for
      * 
      * Description: Converts the days range entered by the user in the custom text box from a 
-     * String to an int US-101
+     * String to an integer and checks if the input is valid. US-101
      */
-    int getDayRange() {
-    	int dayRange = 0;
-    	String customText = customTextField.getText().trim();
+    int getDayRange(String customDaysText, boolean mock) { 	
     	
-    	// check length of number
-    	if (customText.length() > 3) {
-    		Util.debug("Display popup that entry is too large");
+    	int dayRange = 0;
+    	
+    	// verifies if input is a number
+    	try {
+    		dayRange = Integer.parseInt(customDaysText);
+    	}
+    	catch (NumberFormatException ex) {
+    		if (!mock) {
+    			JOptionPane.showMessageDialog(null, "Please enter a valid number ranging from 1 to 999", 
+	  			    "Notice", JOptionPane.WARNING_MESSAGE);
+    		}
+    		return -1;
+    	}
+    			
+    	// checks size of input number
+    	if (dayRange > _MAX_DAYS || dayRange < 1) {
+    		if (!mock) {
+    			JOptionPane.showMessageDialog(null, "Please enter a number of days ranging from 1 to 999", 
+	  			    "Notice", JOptionPane.WARNING_MESSAGE);
+    		}
     		return -1;
     	}
     	else {
-        	try {
-        		dayRange = Integer.parseInt(customText);
-        	}
-        	catch (NumberFormatException ex) {
-        		Util.debug("Display popup that entered value is not a number");
-        		return -1;
-        	}
-    		
     		return dayRange;
     	}
     }
