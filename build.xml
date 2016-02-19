@@ -15,7 +15,7 @@
     <property name="build.dir"             value="${basedir}/build"/>
     <property name="build.classes.dir"     value="${build.dir}"/>
     <property name="main.class"            value="net.sf.memoranda.Start"/>
-    <property name="tests.dir"             value="${build.dir}/tests"/>
+    <property name="tests.dir"             value="${build.dir}/test"/>
     <property name="tests.junit.dir"       value="${tests.dir}/junit"/>
     <property name="tests.jacoco.dir"      value="${tests.dir}/jacoco"/>
     <property name="tests.findbugs.dir"    value="${tests.dir}/findbugs"/>
