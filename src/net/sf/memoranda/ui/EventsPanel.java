@@ -669,7 +669,6 @@ public class EventsPanel extends JPanel {
      * field is displayed. US-101
      * 
      * @param e	indicates the user selected the custom range button
-     * @return void
      */
 	private void customRbEventB_actionPerformed(ActionEvent e) {
         newEventB.setEnabled(false);           
@@ -690,7 +689,6 @@ public class EventsPanel extends JPanel {
      * creates and displays the table for the events for the current day plus day range. US-101
      * 
      * @param e	indicates goButton selected by user
-     * @return void
      */
     private void goButtonEventB_actionPerformed(ActionEvent e) {  
     	String customDaysText = customTextField.getText().trim();

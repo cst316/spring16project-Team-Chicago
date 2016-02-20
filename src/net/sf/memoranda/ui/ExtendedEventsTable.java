@@ -84,8 +84,7 @@ public class ExtendedEventsTable extends EventsTable {
      * current day. US-101
      * 
      * @param d				current selected date
-     * @param numOfDays		number of days to search
-     * @return void			
+     * @param numOfDays		number of days to search	
      */
     public void initCustomRangeTable(CalendarDate d, int numOfDays) {
         _events = (Vector)EventsManager.getEventsForCustomRange(d, numOfDays);

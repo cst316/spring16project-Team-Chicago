@@ -165,9 +165,9 @@ public class EventsManager {
 	 * Takes the current selected calendar day and makes a collection of all events
 	 * of that day and following custom day range. US-101.
 	 * 
-	 * @param date 			     current selected date
-	 * @param dayRange 			 number of days to search
-	 * @return customRangeEvent  collection of Events within range
+	 * @param date 			      current selected date
+	 * @param dayRange 			  number of days to search
+	 * @return customRangeEvents  vector of the events in the range
 	 */
 	public static Collection getEventsForCustomRange(CalendarDate date, int dayRange) {  	
     	Vector customRangeEvents = new Vector();
