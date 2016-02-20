@@ -9,7 +9,7 @@ import net.sf.memoranda.ui.EventsPanel;
 
 public class EventsPanelTest {
 	
-	EventsPanel ep = new EventsPanel(null);
+	private EventsPanel _ep = new EventsPanel(null);
 	
 	private String _customDaysText1;
 	private String _customDaysText2;
@@ -36,14 +36,14 @@ public class EventsPanelTest {
 
 	@Test
 	public void testGetDayRange() {
-		assertEquals(-1, ep.getDayRange(_customDaysText1, true));
-		assertEquals(100, ep.getDayRange(_customDaysText2, true));
-		assertEquals(-1, ep.getDayRange(_customDaysText3, true));
-		assertEquals(-1, ep.getDayRange(_customDaysText4, true));
-		assertEquals(-1, ep.getDayRange(_customDaysText5, true));
-		assertEquals(90, ep.getDayRange(_customDaysText6, true));
-		assertEquals(-1, ep.getDayRange(_customDaysText7, true));
-		assertEquals(-1, ep.getDayRange(_customDaysText8, true));
+		assertEquals(-1, _ep.getDayRange(_customDaysText1, true));
+		assertEquals(100, _ep.getDayRange(_customDaysText2, true));
+		assertEquals(-1, _ep.getDayRange(_customDaysText3, true));
+		assertEquals(-1, _ep.getDayRange(_customDaysText4, true));
+		assertEquals(-1, _ep.getDayRange(_customDaysText5, true));
+		assertEquals(90, _ep.getDayRange(_customDaysText6, true));
+		assertEquals(-1, _ep.getDayRange(_customDaysText7, true));
+		assertEquals(-1, _ep.getDayRange(_customDaysText8, true));
 	}
 
 }

@@ -43,6 +43,11 @@ import net.sf.memoranda.util.Util;
 /*$Id: EventsPanel.java,v 1.25 2005/02/19 10:06:25 rawsushi Exp $*/
 public class EventsPanel extends JPanel {
 	private final int _MAX_DAYS = 999;	// max number of days to allow custom events searching US-101 
+	private final String _DAY_BUTTON = "Today";
+	private final String _WEEK_BUTTON = "7 Days";
+	private final String _MONTH_BUTTON = "30 Days";
+	private final String _CUSTOM_BUTTON = "Custom Rage";
+	private final String _GO_BUTTON = "Go";
 	
     BorderLayout borderLayout1 = new BorderLayout();
     JButton historyBackB = new JButton();
@@ -53,14 +58,14 @@ public class EventsPanel extends JPanel {
     JButton removeEventB = new JButton();
     
     // US-53 create view buttons
-    JRadioButton dayRb = new JRadioButton("Today");
-    JRadioButton weekRb = new JRadioButton("7 Days");
-    JRadioButton monthRb = new JRadioButton("30 Days");
-    JRadioButton customRb = new JRadioButton("Custom Range");	// US-101
+    JRadioButton dayRb = new JRadioButton(_DAY_BUTTON);
+    JRadioButton weekRb = new JRadioButton(_WEEK_BUTTON);
+    JRadioButton monthRb = new JRadioButton(_MONTH_BUTTON);
+    JRadioButton customRb = new JRadioButton(_CUSTOM_BUTTON);	// US-101
     
     // create text field and go button for custom user input US-101
-    JTextField customTextField = new JTextField(50);
-    JButton goButton = new JButton("Go");
+    JTextField customTextField = new JTextField();
+    JButton goButton = new JButton(_GO_BUTTON);
     
     JScrollPane scrollPane = new JScrollPane();
     static private EventsTable eventsTable = new EventsTable();	
@@ -608,7 +613,7 @@ public class EventsPanel extends JPanel {
      * Description: Performs actions when the day radio button is selected. This is the default 
      * view as normal - meaning editing can be performed. US-53.
      */
-    void dayRbEventB_actionPerformed(ActionEvent e) {
+    private void dayRbEventB_actionPerformed(ActionEvent e) {
     	customTextField.setVisible(false);
     	goButton.setVisible(false);
         newEventB.setEnabled(true);           
@@ -625,7 +630,7 @@ public class EventsPanel extends JPanel {
      * Description: Performs actions when the 7 day radio button is selected. Opens up new table 
      * to display all events from current day +6. US-53.
      */
-    void weekRbEventB_actionPerformed(ActionEvent e) {
+    private void weekRbEventB_actionPerformed(ActionEvent e) {
     	customTextField.setVisible(false);
     	goButton.setVisible(false);
         newEventB.setEnabled(false);           
@@ -646,7 +651,7 @@ public class EventsPanel extends JPanel {
      * Description: Performs actions when the 30 day radio button is selected. Opens up new table 
      * to display all events from current day +29. US-53.
      */
-    void monthRbEventB_actionPerformed(ActionEvent e) {
+    private void monthRbEventB_actionPerformed(ActionEvent e) {
     	customTextField.setVisible(false);
     	goButton.setVisible(false);
         newEventB.setEnabled(false);           
@@ -660,14 +665,13 @@ public class EventsPanel extends JPanel {
     }
     
     /**
-     * Method: customRbEventB_actionPerformed()
-     * Inputs: ActionEvent e
-     * Returns: void
-     * 
-     * Description: When the custom day range radio button is selected, the custom range text
+     * When the custom day range radio button is selected, the custom range text
      * field is displayed. US-101
+     * 
+     * @param e	indicates the user selected the custom range button
+     * @return void
      */
-	void customRbEventB_actionPerformed(ActionEvent e) {
+	private void customRbEventB_actionPerformed(ActionEvent e) {
         newEventB.setEnabled(false);           
         ppNewEvent.setEnabled(false);
         editEventB.setEnabled(false);
@@ -682,14 +686,13 @@ public class EventsPanel extends JPanel {
     }
     
     /**
-     * Method: goButtonEventB_actionPerformed()
-     * Inputs: ActionEvent e
-     * Returns: void
-     * 
-     * Description: When the user enters a custom day range, the go button is pressed and
+     * When the user enters a custom day range, the go button is pressed and
      * creates and displays the table for the events for the current day plus day range. US-101
+     * 
+     * @param e	indicates goButton selected by user
+     * @return void
      */
-    void goButtonEventB_actionPerformed(ActionEvent e) {  
+    private void goButtonEventB_actionPerformed(ActionEvent e) {  
     	String customDaysText = customTextField.getText().trim();
         int dayRange = getDayRange(customDaysText, false);
         scrollPane.getViewport().add(exTable, null);
@@ -697,13 +700,12 @@ public class EventsPanel extends JPanel {
     }
     
     /**
-     * Method: getDayRange()
-     * Inputs: String customDaysString - string representation of number of days
-     * 	       boolean mock - used in testing; bypasses popup in testing
-     * Returns: int dayRange - number of days to search events for
-     * 
-     * Description: Converts the days range entered by the user in the custom text box from a 
+     * Converts the days range entered by the user in the custom text box from a 
      * String to an integer and checks if the input is valid. US-101
+     * 
+     * @param customDaysText	string value of number entered in text field
+     * @param mock				boolean indicating if method is under test
+     * @return dayRange			int value of days in range
      */
     public int getDayRange(String customDaysText, boolean mock) { 	
     	

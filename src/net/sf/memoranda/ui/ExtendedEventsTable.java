@@ -80,12 +80,12 @@ public class ExtendedEventsTable extends EventsTable {
     }
     
     /**
-     * Method: initCustomRangeTable()
-     * Inputs: CalendarDate d, int numOfDays
-     * Returns: void
-     * 
-     * Description: Fills the table with all Events occurring in a custom time period from the
+     * Fills the table with all Events occurring in a custom time period from the
      * current day. US-101
+     * 
+     * @param d				current selected date
+     * @param numOfDays		number of days to search
+     * @return void			
      */
     public void initCustomRangeTable(CalendarDate d, int numOfDays) {
         _events = (Vector)EventsManager.getEventsForCustomRange(d, numOfDays);
