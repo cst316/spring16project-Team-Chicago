@@ -163,7 +163,8 @@ public class EventsManager {
 	
 	/**
 	 * Method: getEventsForCustomRange()
-	 * Inputs: CalendarDate date
+	 * Inputs: CalendarDate date,
+	 * 		   int dateRange
 	 * Returns: Vector monthEvents
 	 * 
 	 * Description: Takes the current selected calendar day and makes a collection of all events
@@ -178,8 +179,7 @@ public class EventsManager {
     		nextDay++;
     		date = CalendarDate.nextDay(nextDay);
     		customRangeEvents.addAll(events);
-    	}
-    	
+    	}   	
 		return customRangeEvents;
 	}
 	

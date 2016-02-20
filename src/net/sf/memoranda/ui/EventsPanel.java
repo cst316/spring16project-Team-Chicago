@@ -699,6 +699,7 @@ public class EventsPanel extends JPanel {
     /**
      * Method: getDayRange()
      * Inputs: String customDaysString - string representation of number of days
+     * 	       boolean mock - used in testing; bypasses popup in testing
      * Returns: int dayRange - number of days to search events for
      * 
      * Description: Converts the days range entered by the user in the custom text box from a 
@@ -714,8 +715,8 @@ public class EventsPanel extends JPanel {
     	}
     	catch (NumberFormatException ex) {
     		if (!mock) {
-    			JOptionPane.showMessageDialog(null, "Please enter a valid number ranging from 1 to 999", 
-	  			    "Notice", JOptionPane.WARNING_MESSAGE);
+    			JOptionPane.showMessageDialog(null, "Please enter a valid number ranging "
+    					+ "from 1 to 999", "Notice", JOptionPane.WARNING_MESSAGE);
     		}
     		return -1;
     	}
