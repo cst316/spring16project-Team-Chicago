@@ -225,27 +225,27 @@ public class EventsPanel extends JPanel {
         // adds listeners for each view radio button
         dayRb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                dayRbEventB_actionPerformed(e);
+                _dayRbEventB_actionPerformed(e);
             }
         });
         weekRb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                weekRbEventB_actionPerformed(e);
+                _weekRbEventB_actionPerformed(e);
             }
         });
         monthRb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                monthRbEventB_actionPerformed(e);
+                _monthRbEventB_actionPerformed(e);
             }
         });
         customRb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                customRbEventB_actionPerformed(e);
+                _customRbEventB_actionPerformed(e);
             }
         });
         goButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                goButtonEventB_actionPerformed(e);
+                _goButtonEventB_actionPerformed(e);
             }
         });
         
@@ -606,98 +606,6 @@ public class EventsPanel extends JPanel {
     }
     
     /**
-     * Method: dayRbEventB_actionPerformed()
-     * Inputs: ActionEvent e
-     * Returns: void
-     * 
-     * Description: Performs actions when the day radio button is selected. This is the default 
-     * view as normal - meaning editing can be performed. US-53.
-     */
-    private void dayRbEventB_actionPerformed(ActionEvent e) {
-    	customTextField.setVisible(false);
-    	goButton.setVisible(false);
-        newEventB.setEnabled(true);           
-        ppNewEvent.setEnabled(true);
-    	scrollPane.getViewport().add(eventsTable, null);
-    	eventsTable.refresh();
-    }
-    
-    /**
-     * Method: weekRbEventB_actionPerformed()
-     * Inputs: ActionEvent e
-     * Returns: void
-     * 
-     * Description: Performs actions when the 7 day radio button is selected. Opens up new table 
-     * to display all events from current day +6. US-53.
-     */
-    private void weekRbEventB_actionPerformed(ActionEvent e) {
-    	customTextField.setVisible(false);
-    	goButton.setVisible(false);
-        newEventB.setEnabled(false);           
-        ppNewEvent.setEnabled(false);
-        editEventB.setEnabled(false);
-        ppEditEvent.setEnabled(false);
-        removeEventB.setEnabled(false);
-        ppRemoveEvent.setEnabled(false);
-        scrollPane.getViewport().add(exTable, null);
-        exTable.initWeekTable(CalendarDate.today());               
-    }
-    
-    /**
-     * Method: monthRbEventB_actionPerformed()
-     * Inputs: ActionEvent e
-     * Returns: void
-     * 
-     * Description: Performs actions when the 30 day radio button is selected. Opens up new table 
-     * to display all events from current day +29. US-53.
-     */
-    private void monthRbEventB_actionPerformed(ActionEvent e) {
-    	customTextField.setVisible(false);
-    	goButton.setVisible(false);
-        newEventB.setEnabled(false);           
-        ppNewEvent.setEnabled(false);
-        editEventB.setEnabled(false);
-        ppEditEvent.setEnabled(false);
-        removeEventB.setEnabled(false);
-        ppRemoveEvent.setEnabled(false);
-        scrollPane.getViewport().add(exTable, null);
-        exTable.initMonthTable(CalendarDate.today());
-    }
-    
-    /**
-     * When the custom day range radio button is selected, the custom range text
-     * field is displayed. US-101
-     * 
-     * @param e	indicates the user selected the custom range button
-     */
-	private void customRbEventB_actionPerformed(ActionEvent e) {
-        newEventB.setEnabled(false);           
-        ppNewEvent.setEnabled(false);
-        editEventB.setEnabled(false);
-        ppEditEvent.setEnabled(false);
-        removeEventB.setEnabled(false);
-        ppRemoveEvent.setEnabled(false);
-        customTextField.setEnabled(true);
-        customTextField.setVisible(true);
-        goButton.setEnabled(true);
-        goButton.setVisible(true);
-        eventsToolBar.revalidate();
-    }
-    
-    /**
-     * When the user enters a custom day range, the go button is pressed and
-     * creates and displays the table for the events for the current day plus day range. US-101
-     * 
-     * @param e	indicates goButton selected by user
-     */
-    private void goButtonEventB_actionPerformed(ActionEvent e) {  
-    	String customDaysText = customTextField.getText().trim();
-        int dayRange = getDayRange(customDaysText, false);
-        scrollPane.getViewport().add(exTable, null);
-        exTable.initCustomRangeTable(CalendarDate.today(), dayRange);
-    }
-    
-    /**
      * Converts the days range entered by the user in the custom text box from a 
      * String to an integer and checks if the input is valid. US-101
      * 
@@ -732,6 +640,98 @@ public class EventsPanel extends JPanel {
     	else {
     		return dayRange;
     	}
+    }
+    
+    /**
+     * Method: dayRbEventB_actionPerformed()
+     * Inputs: ActionEvent e
+     * Returns: void
+     * 
+     * Description: Performs actions when the day radio button is selected. This is the default 
+     * view as normal - meaning editing can be performed. US-53.
+     */
+    private void _dayRbEventB_actionPerformed(ActionEvent e) {
+    	customTextField.setVisible(false);
+    	goButton.setVisible(false);
+        newEventB.setEnabled(true);           
+        ppNewEvent.setEnabled(true);
+    	scrollPane.getViewport().add(eventsTable, null);
+    	eventsTable.refresh();
+    }
+    
+    /**
+     * Method: weekRbEventB_actionPerformed()
+     * Inputs: ActionEvent e
+     * Returns: void
+     * 
+     * Description: Performs actions when the 7 day radio button is selected. Opens up new table 
+     * to display all events from current day +6. US-53.
+     */
+    private void _weekRbEventB_actionPerformed(ActionEvent e) {
+    	customTextField.setVisible(false);
+    	goButton.setVisible(false);
+        newEventB.setEnabled(false);           
+        ppNewEvent.setEnabled(false);
+        editEventB.setEnabled(false);
+        ppEditEvent.setEnabled(false);
+        removeEventB.setEnabled(false);
+        ppRemoveEvent.setEnabled(false);
+        scrollPane.getViewport().add(exTable, null);
+        exTable.initWeekTable(CalendarDate.today());               
+    }
+    
+    /**
+     * Method: monthRbEventB_actionPerformed()
+     * Inputs: ActionEvent e
+     * Returns: void
+     * 
+     * Description: Performs actions when the 30 day radio button is selected. Opens up new table 
+     * to display all events from current day +29. US-53.
+     */
+    private void _monthRbEventB_actionPerformed(ActionEvent e) {
+    	customTextField.setVisible(false);
+    	goButton.setVisible(false);
+        newEventB.setEnabled(false);           
+        ppNewEvent.setEnabled(false);
+        editEventB.setEnabled(false);
+        ppEditEvent.setEnabled(false);
+        removeEventB.setEnabled(false);
+        ppRemoveEvent.setEnabled(false);
+        scrollPane.getViewport().add(exTable, null);
+        exTable.initMonthTable(CalendarDate.today());
+    }
+    
+    /**
+     * When the custom day range radio button is selected, the custom range text
+     * field is displayed. US-101
+     * 
+     * @param e	indicates the user selected the custom range button
+     */
+	private void _customRbEventB_actionPerformed(ActionEvent e) {
+        newEventB.setEnabled(false);           
+        ppNewEvent.setEnabled(false);
+        editEventB.setEnabled(false);
+        ppEditEvent.setEnabled(false);
+        removeEventB.setEnabled(false);
+        ppRemoveEvent.setEnabled(false);
+        customTextField.setEnabled(true);
+        customTextField.setVisible(true);
+        goButton.setEnabled(true);
+        goButton.setVisible(true);
+        eventsToolBar.revalidate();
+    }
+    
+    /**
+     * When the user enters a custom day range, the go button is pressed and
+     * creates and displays the table for the events for the current day plus day range. US-101
+     * 
+     * @param e	indicates goButton selected by user
+     */
+    private void _goButtonEventB_actionPerformed(ActionEvent e) {  
+    	String customDaysText = customTextField.getText().trim();
+        int dayRange = getDayRange(customDaysText, false);
+        scrollPane.getViewport().add(exTable, null);
+        exTable.initCustomRangeTable(CalendarDate.today(), dayRange);
     }
     
     class PopupListener extends MouseAdapter {
