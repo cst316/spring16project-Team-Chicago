@@ -212,7 +212,7 @@ public class AgendaPanel extends JPanel {
 
 					}
 				}
-			}
+
 		});
 		historyBackB.setAction(History.historyBackAction);
 		historyBackB.setFocusable(false);
