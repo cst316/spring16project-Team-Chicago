@@ -9,20 +9,45 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.DefaultFormatter;
+import javax.swing.text.Document;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.NumberFormatter;
+
 import net.sf.memoranda.util.Local;
+import oracle.jrockit.jfr.parser.ParseException;
+
+import org.apache.commons.validator.routines.EmailValidator;
+
+import com.google.i18n.phonenumbers.AsYouTypeFormatter;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 public class ContactDialog extends JDialog implements WindowListener {	
+	private static PhoneNumberUtil _phoneNumberUtil = PhoneNumberUtil.getInstance();
+	private static EmailValidator _emailValidator = EmailValidator.getInstance();
     public boolean CANCELLED = false;
     boolean ignoreStartChanged = false;
     boolean ignoreEndChanged = false;
@@ -40,8 +65,8 @@ public class ContactDialog extends JDialog implements WindowListener {
     JLabel lblAddToProject = new JLabel();
     public JTextField txtFirstName = new JTextField();
     public JTextField txtLastName = new JTextField();
-    public JTextField txtEmailAddress = new JTextField();
-    public JTextField txtTelephone = new JTextField();
+    public EmailField txtEmailAddress = new EmailField();
+    public PhoneNumberField txtTelephone = new PhoneNumberField();
     public JTextField txtOrganization = new JTextField();
     JCheckBox cbAddToProject = new JCheckBox();
     JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
@@ -204,7 +229,9 @@ public class ContactDialog extends JDialog implements WindowListener {
     }
 
     void okB_actionPerformed(ActionEvent e) {
-        this.dispose();
+    	if (txtTelephone.isValidNumber() && txtEmailAddress.isValidEmail()) {
+    		this.dispose();
+    	}
     }
 
     void cancelB_actionPerformed(ActionEvent e) {
@@ -228,5 +255,117 @@ public class ContactDialog extends JDialog implements WindowListener {
 	public void windowActivated( WindowEvent e ) {}
 
 	public void windowDeactivated( WindowEvent e ) {}
+	
+	class PhoneNumberField extends JTextField {
+		
+		private boolean _isValidNumber = true;
+		private PhoneNumber _phoneNumber = null;
+		
+		public PhoneNumberField() {
+			super();
+
+			AbstractDocument doc = (AbstractDocument)this.getDocument();
+			
+			doc.setDocumentFilter(new DocumentFilter() {
+				public void insertString(DocumentFilter.FilterBypass fb, int offset, String string, AttributeSet attr) {
+					string.replaceAll("\\s", "");
+					if(offset == 0) {
+						if(!string.matches("(\\d|\\+)(\\d)*")) {
+							string = "";
+						}
+					}
+					else {
+						if(!string.matches("(\\d)*")) {
+							string = "";
+						}
+					}
+				}
+			});
+			
+			this.addFocusListener(new FocusListener() {
+
+				@Override
+				public void focusGained(FocusEvent event) {
+					setBackground(Color.white);
+				}
+
+				@Override
+				public void focusLost(FocusEvent event) {
+					if (!getText().isEmpty()) {
+						try {
+							if (_phoneNumber == null){
+								_phoneNumber = _phoneNumberUtil.parse(getText(), "US");
+							}
+							else {
+								_phoneNumberUtil.parse(getText(), "US", _phoneNumber);
+							}
+							if (_phoneNumberUtil.isValidNumber(_phoneNumber)) {
+								setText(_phoneNumberUtil.format(_phoneNumber, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL));
+								setBackground(Color.white);
+								_isValidNumber = true;
+							}
+							else {
+								setBackground(Color.pink);
+								_isValidNumber = false;
+							}
+						}
+						catch (NumberParseException e) {
+							setBackground(Color.pink);
+							_isValidNumber = false;
+						}
+					}
+					else {
+						setBackground(Color.white);
+						_isValidNumber = true;
+					}
+				}
+				
+			});
+		}
+		
+		public boolean isValidNumber() {
+			return _isValidNumber;
+		}
+	}
+	
+	class EmailField extends JTextField {
+		private EmailValidator _emailValidator = EmailValidator.getInstance(true, true);
+		private boolean _isValidEmail = true;
+		
+		public EmailField() {
+			super();
+			
+			this.addFocusListener(new FocusListener() {
+
+				@Override
+				public void focusGained(FocusEvent event) {
+					setBackground(Color.white);
+				}
+
+				@Override
+				public void focusLost(FocusEvent event) {
+					if (!getText().isEmpty()) {
+						if(_emailValidator.isValid(getText())) {
+							setBackground(Color.white);
+							_isValidEmail = true;
+						}
+						else {
+							setBackground(Color.pink);
+							_isValidEmail = false;
+						}
+					}
+					else {
+						setBackground(Color.white);
+						_isValidEmail = true;
+					}
+				}
+				
+			});
+		}
+		
+		public boolean isValidEmail() {
+			return _isValidEmail;
+		}
+	}
 }
 
