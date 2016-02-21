@@ -40,8 +40,8 @@ import javax.swing.event.HyperlinkListener;
  */
 public class ImportSticker {
 
-	 String name;        
-	 JEditorPane viewer = new JEditorPane("text/html", "");
+	 private String name;        
+	 private JEditorPane viewer = new JEditorPane("text/html", "");
 	
 	public ImportSticker(String x) {
 		name = x;
