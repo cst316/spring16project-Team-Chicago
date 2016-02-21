@@ -58,18 +58,18 @@ public class EventsPanel extends JPanel {
     JButton removeEventB = new JButton();
     
     // US-53 create view buttons
-    JRadioButton dayRb = new JRadioButton(_DAY_BUTTON);
-    JRadioButton weekRb = new JRadioButton(_WEEK_BUTTON);
-    JRadioButton monthRb = new JRadioButton(_MONTH_BUTTON);
-    JRadioButton customRb = new JRadioButton(_CUSTOM_BUTTON);	// US-101
+    private JRadioButton _dayRb = new JRadioButton(_DAY_BUTTON);
+    private JRadioButton _weekRb = new JRadioButton(_WEEK_BUTTON);
+    private JRadioButton _monthRb = new JRadioButton(_MONTH_BUTTON);
+    private JRadioButton _customRb = new JRadioButton(_CUSTOM_BUTTON);	// US-101
     
     // create text field and go button for custom user input US-101
-    JTextField customTextField = new JTextField();
-    JButton goButton = new JButton(_GO_BUTTON);
+    private JTextField _customTextField = new JTextField();
+    private JButton _goButton = new JButton(_GO_BUTTON);
     
     JScrollPane scrollPane = new JScrollPane();
-    static private EventsTable eventsTable = new EventsTable();	
-    static private ExtendedEventsTable exTable = new ExtendedEventsTable();
+    static private EventsTable _eventsTable = new EventsTable();	
+    static private ExtendedEventsTable _exTable = new ExtendedEventsTable();
     JPopupMenu eventPPMenu = new JPopupMenu();
     JMenuItem ppEditEvent = new JMenuItem();
     JMenuItem ppRemoveEvent = new JMenuItem();
@@ -87,7 +87,6 @@ public class EventsPanel extends JPanel {
     }
     void jbInit() throws Exception {
         eventsToolBar.setFloatable(false);
-
         historyBackB.setAction(History.historyBackAction);
         historyBackB.setFocusable(false);
         historyBackB.setBorderPainted(false);
@@ -156,19 +155,19 @@ public class EventsPanel extends JPanel {
             new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/event_remove.png")));
 
         // US-53 creates view radio button set
-        ButtonGroup viewGroup = new ButtonGroup();
-        viewGroup.add(dayRb);
-        viewGroup.add(weekRb);
-        viewGroup.add(monthRb);
-        viewGroup.add(customRb);	// US-101
-        dayRb.setSelected(true);  // makes today default       
+        final ButtonGroup viewGroup = new ButtonGroup();
+        viewGroup.add(_dayRb);
+        viewGroup.add(_weekRb);
+        viewGroup.add(_monthRb);
+        viewGroup.add(_customRb);	// US-101
+        _dayRb.setSelected(true);  // makes today default       
         
         this.setLayout(borderLayout1);
         scrollPane.getViewport().setBackground(Color.white);
-        eventsTable.setMaximumSize(new Dimension(32767, 32767));
-        eventsTable.setRowHeight(24);
-        exTable.setMaximumSize(new Dimension(32767, 32767));
-        exTable.setRowHeight(24);
+        _eventsTable.setMaximumSize(new Dimension(32767, 32767));
+        _eventsTable.setRowHeight(24);
+        _exTable.setMaximumSize(new Dimension(32767, 32767));
+        _exTable.setRowHeight(24);
         eventPPMenu.setFont(new java.awt.Font("Dialog", 1, 10));
         ppEditEvent.setFont(new java.awt.Font("Dialog", 1, 11));
         ppEditEvent.setText(Local.getString("Edit event") + "...");
@@ -199,7 +198,7 @@ public class EventsPanel extends JPanel {
         });
         ppNewEvent.setIcon(
             new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/event_new.png")));
-        scrollPane.getViewport().add(eventsTable, null);
+        scrollPane.getViewport().add(_eventsTable, null);
         this.add(scrollPane, BorderLayout.CENTER);
         eventsToolBar.add(historyBackB, null);
         eventsToolBar.add(historyForwardB, null);
@@ -212,38 +211,38 @@ public class EventsPanel extends JPanel {
         
         // adds view radio buttons group to tool bar
         eventsToolBar.addSeparator(new Dimension(8, 24));
-        eventsToolBar.add(dayRb, null);
-        eventsToolBar.add(weekRb, null);
-        eventsToolBar.add(monthRb, null);
-        eventsToolBar.add(customRb, null);
-        eventsToolBar.add(customTextField, null);
-        eventsToolBar.add(goButton);
+        eventsToolBar.add(_dayRb, null);
+        eventsToolBar.add(_weekRb, null);
+        eventsToolBar.add(_monthRb, null);
+        eventsToolBar.add(_customRb, null);
+        eventsToolBar.add(_customTextField, null);
+        eventsToolBar.add(_goButton);
         eventsToolBar.addSeparator(new Dimension(550, 24));
-        customTextField.setVisible(false);
-        goButton.setVisible(false);
+        _customTextField.setVisible(false);
+        _goButton.setVisible(false);
         
         // adds listeners for each view radio button
-        dayRb.addActionListener(new java.awt.event.ActionListener() {
+        _dayRb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 _dayRbEventB_actionPerformed(e);
             }
         });
-        weekRb.addActionListener(new java.awt.event.ActionListener() {
+        _weekRb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 _weekRbEventB_actionPerformed(e);
             }
         });
-        monthRb.addActionListener(new java.awt.event.ActionListener() {
+        _monthRb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 _monthRbEventB_actionPerformed(e);
             }
         });
-        customRb.addActionListener(new java.awt.event.ActionListener() {
+        _customRb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 _customRbEventB_actionPerformed(e);
             }
         });
-        goButton.addActionListener(new java.awt.event.ActionListener() {
+        _goButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 _goButtonEventB_actionPerformed(e);
             }
@@ -253,13 +252,13 @@ public class EventsPanel extends JPanel {
 
         PopupListener ppListener = new PopupListener();
         scrollPane.addMouseListener(ppListener);
-        eventsTable.addMouseListener(ppListener);
+        _eventsTable.addMouseListener(ppListener);
 
         CurrentDate.addDateListener(new DateListener() {
             public void dateChange(CalendarDate d) {      
-                dayRb.setSelected(true);
-                eventsTable.initTable(d);  
-                scrollPane.getViewport().add(eventsTable, null);
+                _dayRb.setSelected(true);
+                _eventsTable.initTable(d);  
+                scrollPane.getViewport().add(_eventsTable, null);
                 boolean enbl = d.after(CalendarDate.today()) || d.equals(CalendarDate.today());
                 newEventB.setEnabled(enbl);           
                 ppNewEvent.setEnabled(enbl);
@@ -271,25 +270,25 @@ public class EventsPanel extends JPanel {
                 // disables radio button views if not current date
                 boolean setRb = d.equals(CalendarDate.today());
                 if (!setRb){
-                	dayRb.setVisible(false);
-                	weekRb.setVisible(false);
-                	monthRb.setVisible(false);
-                	customRb.setVisible(false);
-                	customTextField.setVisible(false);
-                	goButton.setVisible(false);
+                	_dayRb.setVisible(false);
+                	_weekRb.setVisible(false);
+                	_monthRb.setVisible(false);
+                	_customRb.setVisible(false);
+                	_customTextField.setVisible(false);
+                	_goButton.setVisible(false);
                 }
                 else {
-                	dayRb.setVisible(true);
-                	weekRb.setVisible(true);
-                	monthRb.setVisible(true);
-                	customRb.setVisible(true);
+                	_dayRb.setVisible(true);
+                	_weekRb.setVisible(true);
+                	_monthRb.setVisible(true);
+                	_customRb.setVisible(true);
                 }
             }
         });
 
-        eventsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        _eventsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
-                boolean enbl = eventsTable.getSelectedRow() > -1;
+                boolean enbl = _eventsTable.getSelectedRow() > -1;
                 editEventB.setEnabled(enbl);
                 ppEditEvent.setEnabled(enbl);
                 removeEventB.setEnabled(enbl);
@@ -304,9 +303,9 @@ public class EventsPanel extends JPanel {
         eventPPMenu.add(ppRemoveEvent);
 		
 		// remove events using the DEL key
-		eventsTable.addKeyListener(new KeyListener() {
+		_eventsTable.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e){
-				if(eventsTable.getSelectedRows().length>0 
+				if(_eventsTable.getSelectedRows().length>0 
 					&& e.getKeyCode()==KeyEvent.VK_DELETE)
 					ppRemoveEvent_actionPerformed(null);
 			}
@@ -318,8 +317,8 @@ public class EventsPanel extends JPanel {
     void editEventB_actionPerformed(ActionEvent e) {
         EventDialog dlg = new EventDialog(App.getFrame(), Local.getString("Event"));
         net.sf.memoranda.Event ev =
-            (net.sf.memoranda.Event) eventsTable.getModel().getValueAt(
-                eventsTable.getSelectedRow(),
+            (net.sf.memoranda.Event) _eventsTable.getModel().getValueAt(
+                _eventsTable.getSelectedRow(),
                 EventsTable.EVENT);
         
         dlg.timeSpin.getModel().setValue(ev.getTime());
@@ -519,7 +518,7 @@ public class EventsPanel extends JPanel {
 
     static private void saveEvents() {
 	CurrentStorage.get().storeEventsManager();
-        eventsTable.refresh();
+        _eventsTable.refresh();
         EventsScheduler.init();
         parentPanel.calendar.jnCalendar.updateUI();
         parentPanel.updateIndicators();
@@ -561,12 +560,12 @@ public class EventsPanel extends JPanel {
 		String msg;
 		net.sf.memoranda.Event ev;
 
-		if(eventsTable.getSelectedRows().length > 1) 
-			msg = Local.getString("Remove") + " " + eventsTable.getSelectedRows().length 
+		if(_eventsTable.getSelectedRows().length > 1) 
+			msg = Local.getString("Remove") + " " + _eventsTable.getSelectedRows().length 
 				+ " " + Local.getString("events") + "\n" + Local.getString("Are you sure?");
 		else {
-			ev = (net.sf.memoranda.Event) eventsTable.getModel().getValueAt(
-                eventsTable.getSelectedRow(),
+			ev = (net.sf.memoranda.Event) _eventsTable.getModel().getValueAt(
+                _eventsTable.getSelectedRow(),
                 EventsTable.EVENT);
 			msg = Local.getString("Remove event") + "\n'" 
 				+ ev.getText() + "'\n" + Local.getString("Are you sure?");
@@ -580,12 +579,12 @@ public class EventsPanel extends JPanel {
                 JOptionPane.YES_NO_OPTION);
         if (n != JOptionPane.YES_OPTION) return;
 
-        for(int i=0; i< eventsTable.getSelectedRows().length;i++) {
-			ev = (net.sf.memoranda.Event) eventsTable.getModel().getValueAt(
-                  eventsTable.getSelectedRows()[i], EventsTable.EVENT);
+        for(int i=0; i< _eventsTable.getSelectedRows().length;i++) {
+			ev = (net.sf.memoranda.Event) _eventsTable.getModel().getValueAt(
+                  _eventsTable.getSelectedRows()[i], EventsTable.EVENT);
         EventsManager.removeEvent(ev);
 		}
-        eventsTable.getSelectionModel().clearSelection();
+        _eventsTable.getSelectionModel().clearSelection();
 /*        CurrentStorage.get().storeEventsManager();
         eventsTable.refresh();
         EventsScheduler.init();
@@ -651,12 +650,12 @@ public class EventsPanel extends JPanel {
      * view as normal - meaning editing can be performed. US-53.
      */
     private void _dayRbEventB_actionPerformed(ActionEvent e) {
-    	customTextField.setVisible(false);
-    	goButton.setVisible(false);
+    	_customTextField.setVisible(false);
+    	_goButton.setVisible(false);
         newEventB.setEnabled(true);           
         ppNewEvent.setEnabled(true);
-    	scrollPane.getViewport().add(eventsTable, null);
-    	eventsTable.refresh();
+    	scrollPane.getViewport().add(_eventsTable, null);
+    	_eventsTable.refresh();
     }
     
     /**
@@ -668,16 +667,16 @@ public class EventsPanel extends JPanel {
      * to display all events from current day +6. US-53.
      */
     private void _weekRbEventB_actionPerformed(ActionEvent e) {
-    	customTextField.setVisible(false);
-    	goButton.setVisible(false);
+    	_customTextField.setVisible(false);
+    	_goButton.setVisible(false);
         newEventB.setEnabled(false);           
         ppNewEvent.setEnabled(false);
         editEventB.setEnabled(false);
         ppEditEvent.setEnabled(false);
         removeEventB.setEnabled(false);
         ppRemoveEvent.setEnabled(false);
-        scrollPane.getViewport().add(exTable, null);
-        exTable.initWeekTable(CalendarDate.today());               
+        scrollPane.getViewport().add(_exTable, null);
+        _exTable.initWeekTable(CalendarDate.today());               
     }
     
     /**
@@ -689,16 +688,16 @@ public class EventsPanel extends JPanel {
      * to display all events from current day +29. US-53.
      */
     private void _monthRbEventB_actionPerformed(ActionEvent e) {
-    	customTextField.setVisible(false);
-    	goButton.setVisible(false);
+    	_customTextField.setVisible(false);
+    	_goButton.setVisible(false);
         newEventB.setEnabled(false);           
         ppNewEvent.setEnabled(false);
         editEventB.setEnabled(false);
         ppEditEvent.setEnabled(false);
         removeEventB.setEnabled(false);
         ppRemoveEvent.setEnabled(false);
-        scrollPane.getViewport().add(exTable, null);
-        exTable.initMonthTable(CalendarDate.today());
+        scrollPane.getViewport().add(_exTable, null);
+        _exTable.initMonthTable(CalendarDate.today());
     }
     
     /**
@@ -714,10 +713,10 @@ public class EventsPanel extends JPanel {
         ppEditEvent.setEnabled(false);
         removeEventB.setEnabled(false);
         ppRemoveEvent.setEnabled(false);
-        customTextField.setEnabled(true);
-        customTextField.setVisible(true);
-        goButton.setEnabled(true);
-        goButton.setVisible(true);
+        _customTextField.setEnabled(true);
+        _customTextField.setVisible(true);
+        _goButton.setEnabled(true);
+        _goButton.setVisible(true);
         eventsToolBar.revalidate();
     }
     
@@ -728,16 +727,16 @@ public class EventsPanel extends JPanel {
      * @param e	indicates goButton selected by user
      */
     private void _goButtonEventB_actionPerformed(ActionEvent e) {  
-    	String customDaysText = customTextField.getText().trim();
+    	String customDaysText = _customTextField.getText().trim();
         int dayRange = getDayRange(customDaysText, false);
-        scrollPane.getViewport().add(exTable, null);
-        exTable.initCustomRangeTable(CalendarDate.today(), dayRange);
+        scrollPane.getViewport().add(_exTable, null);
+        _exTable.initCustomRangeTable(CalendarDate.today(), dayRange);
     }
     
     class PopupListener extends MouseAdapter {
 
         public void mouseClicked(MouseEvent e) {
-            if ((e.getClickCount() == 2) && (eventsTable.getSelectedRow() > -1))
+            if ((e.getClickCount() == 2) && (_eventsTable.getSelectedRow() > -1))
                 editEventB_actionPerformed(null);
         }
 

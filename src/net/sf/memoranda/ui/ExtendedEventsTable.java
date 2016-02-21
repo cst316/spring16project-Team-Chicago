@@ -150,7 +150,7 @@ public class ExtendedEventsTable extends EventsTable {
      */
     private class ExtendedEventsTableModel extends AbstractTableModel {
 
-        private String[] columnNames = {Local.getString("Date"),
+        private String[] _columnNames = {Local.getString("Date"),
         								Local.getString("Time"),
         								Local.getString("Text")
         							   };
@@ -200,7 +200,7 @@ public class ExtendedEventsTable extends EventsTable {
         }
 
         public String getColumnName(int col) {
-            return columnNames[col];
+            return _columnNames[col];
         }
     }
 }
