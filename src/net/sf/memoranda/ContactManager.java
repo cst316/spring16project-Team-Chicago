@@ -18,8 +18,9 @@ public class ContactManager {
 	private static HashMap<String, Contact> _masterContactList;
 	private static HashMap<String, HashMap<String, Contact>> _projectContactIDs;
 	private static ArrayList<ContactManagerListener> _listeners;
-	private static final int MASTERLF = 50;
-	private static final int PROJECTLF = 20;
+	private static final int MASTER_LF = 50;
+	private static final int PROJECT_LF = 20;
+	private static final int MASTER_MIN_SIZE = 100;
 
 	static {
 		Document doc = CurrentStorage.get().openMasterContactList();
@@ -212,7 +213,7 @@ public class ContactManager {
 
 		if (project != null) {
 			if (!_projectContactIDs.containsKey(project.getID())) {
-				_projectContactIDs.put(project.getID(), new HashMap<String, Contact>(PROJECTLF, PROJECTLF));
+				_projectContactIDs.put(project.getID(), new HashMap<String, Contact>(PROJECT_LF, PROJECT_LF));
 			}
 			_mergeImportContacts(document, project);
 			_notifyListeners();
@@ -297,12 +298,12 @@ public class ContactManager {
 		// Master contacts hashmap size should be a minimum of 100 and increase
 		// in MASTERLF intervals
 		final int size = root.getChildElements().size();
-		int initHashSize = MASTERLF * ((size / MASTERLF) + 1);
+		int initHashSize = MASTER_LF * ((size / MASTER_LF) + 1);
 
-		if (initHashSize < 100) {
-			initHashSize = 100;
+		if (initHashSize < MASTER_MIN_SIZE) {
+			initHashSize = MASTER_MIN_SIZE;
 		}
-		_masterContactList = new HashMap<String, Contact>(initHashSize, MASTERLF);
+		_masterContactList = new HashMap<String, Contact>(initHashSize, MASTER_LF);
 
 		// Add contacts to list
 		for (int i = 0; i < size; i++) {
@@ -312,7 +313,7 @@ public class ContactManager {
 	}
 
 	private static void _initialize(Document doc) {
-		_projectContactIDs = new HashMap<String, HashMap<String, Contact>>(PROJECTLF, PROJECTLF);
+		_projectContactIDs = new HashMap<String, HashMap<String, Contact>>(PROJECT_LF, PROJECT_LF);
 		_listeners = new ArrayList<ContactManagerListener>();
 		_buildElements(doc);
 
@@ -378,7 +379,7 @@ public class ContactManager {
 				HashMap<String, Contact> contactHash = _projectContactIDs.get(id);
 
 				if (contactHash == null) {
-					contactHash = new HashMap<String, Contact>(PROJECTLF, PROJECTLF);
+					contactHash = new HashMap<String, Contact>(PROJECT_LF, PROJECT_LF);
 					_projectContactIDs.put(id, contactHash);
 				}
 

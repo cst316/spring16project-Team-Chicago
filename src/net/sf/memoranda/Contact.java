@@ -71,9 +71,9 @@ public class Contact {
 	public Contact(Element element) {
 
 		final Elements children = element.getChildElements();
-		final int numelems = element.getChildCount();
+		final int numElems = element.getChildCount();
 
-		for (int i = 0; i < numelems; i++) {
+		for (int i = 0; i < numElems; i++) {
 			if (children.get(i).getLocalName().equalsIgnoreCase("FirstName")) {
 				this._firstName = children.get(i).getValue();
 			}
