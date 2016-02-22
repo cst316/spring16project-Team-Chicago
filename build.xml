@@ -258,7 +258,7 @@
     <!-- =================================================================== -->
     <target name="checkstyle" depends="compile" description="Runs checkstyle">
         <mkdir dir="${tests.checkstyle.dir}"/>
-        <checkstyle config="${lib.dir}/CST316CheckstyleConfig.xml"
+        <checkstyle config="${lib.dir}/CST316-chicago Project Checkstyle Config.dat"
             failureProperty="checkstyle.failure"
             failOnViolation="false">
             <classpath>
