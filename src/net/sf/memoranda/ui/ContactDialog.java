@@ -34,6 +34,7 @@ import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.NumberFormatter;
 
+import net.sf.memoranda.Contact;
 import net.sf.memoranda.util.Local;
 import oracle.jrockit.jfr.parser.ParseException;
 
@@ -256,17 +257,29 @@ public class ContactDialog extends JDialog implements WindowListener {
 
 	public void windowDeactivated( WindowEvent e ) {}
 	
+	
+	/**
+	 * A JTextField which only accepts valid phone numbers based on what <code>Contact</code> defines as valid. 
+	 * @author Jonathan Hinkle
+	 *
+	 */
 	class PhoneNumberField extends JTextField {
 		
 		private boolean _isValidNumber = true;
 		private PhoneNumber _phoneNumber = null;
 		
+		/**
+		 * The constructor for the PhoneNumberField
+		 */
 		public PhoneNumberField() {
 			super();
 
 			AbstractDocument doc = (AbstractDocument)this.getDocument();
 			
 			doc.setDocumentFilter(new DocumentFilter() {
+				/* (non-Javadoc)
+				 * @see javax.swing.text.DocumentFilter#insertString(javax.swing.text.DocumentFilter.FilterBypass, int, java.lang.String, javax.swing.text.AttributeSet)
+				 */
 				public void insertString(DocumentFilter.FilterBypass fb, int offset, String string, AttributeSet attr) {
 					string.replaceAll("\\s", "");
 					if(offset == 0) {
@@ -284,34 +297,28 @@ public class ContactDialog extends JDialog implements WindowListener {
 			
 			this.addFocusListener(new FocusListener() {
 
+				/* (non-Javadoc)
+				 * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
+				 */
 				@Override
 				public void focusGained(FocusEvent event) {
 					setBackground(Color.white);
 				}
 
+				/* (non-Javadoc)
+				 * @see java.awt.event.FocusListener#focusLost(java.awt.event.FocusEvent)
+				 */
 				@Override
 				public void focusLost(FocusEvent event) {
-					if (!getText().isEmpty()) {
-						try {
-							if (_phoneNumber == null){
-								_phoneNumber = _phoneNumberUtil.parse(getText(), "US");
-							}
-							else {
-								_phoneNumberUtil.parse(getText(), "US", _phoneNumber);
-							}
-							if (_phoneNumberUtil.isValidNumber(_phoneNumber)) {
-								setText(_phoneNumberUtil.format(_phoneNumber, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL));
-								setBackground(Color.white);
-								_isValidNumber = true;
-							}
-							else {
-								setBackground(Color.pink);
-								_isValidNumber = false;
-							}
+					final String phoneNumber = getText();
+					if (!phoneNumber.isEmpty()) {
+						_isValidNumber = Contact.isValidPhoneNumber(phoneNumber);
+						if(_isValidNumber) {
+							setText(Contact.parsePhoneNumber(phoneNumber));
+							setBackground(Color.white);
 						}
-						catch (NumberParseException e) {
+						else {
 							setBackground(Color.pink);
-							_isValidNumber = false;
 						}
 					}
 					else {
@@ -328,30 +335,42 @@ public class ContactDialog extends JDialog implements WindowListener {
 		}
 	}
 	
+	/**
+	 * A JTextField which only accepts valid emails based on what <code>Contact</code> defines as valid. 
+	 * @author Jonathan Hinkle
+	 *
+	 */
 	class EmailField extends JTextField {
-		private EmailValidator _emailValidator = EmailValidator.getInstance(true, true);
 		private boolean _isValidEmail = true;
 		
+		/**
+		 * The constructor for the EmailField
+		 */
 		public EmailField() {
 			super();
 			
 			this.addFocusListener(new FocusListener() {
 
+				/* (non-Javadoc)
+				 * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
+				 */
 				@Override
 				public void focusGained(FocusEvent event) {
 					setBackground(Color.white);
 				}
 
+				/* (non-Javadoc)
+				 * @see java.awt.event.FocusListener#focusLost(java.awt.event.FocusEvent)
+				 */
 				@Override
 				public void focusLost(FocusEvent event) {
 					if (!getText().isEmpty()) {
-						if(_emailValidator.isValid(getText())) {
+						_isValidEmail = Contact.isValidEmail(getText());
+						if(_isValidEmail) {
 							setBackground(Color.white);
-							_isValidEmail = true;
 						}
 						else {
 							setBackground(Color.pink);
-							_isValidEmail = false;
 						}
 					}
 					else {

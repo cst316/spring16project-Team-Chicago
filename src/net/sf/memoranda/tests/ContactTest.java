@@ -7,8 +7,13 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import net.sf.memoranda.Contact;
+import net.sf.memoranda.IllegalEmailException;
+import net.sf.memoranda.IllegalPhoneNumberException;
 import net.sf.memoranda.Project;
 import net.sf.memoranda.ProjectImpl;
 import net.sf.memoranda.ProjectManager;
@@ -21,13 +26,14 @@ public class ContactTest {
 
 	private Contact[] testContacts;
 	
-	
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 	
 	@Before
 	public void setUp() throws Exception {
 		this.testContacts=new Contact[]{
 				new Contact("Tom","Jones","256-345-1211","tjones@att.net"),
-				new Contact("Melissa", "Little","286-3421","hr@acmeco.com"),
+				new Contact("Melissa", "Little","602-286-3421","hr@acmeco.com"),
 				new Contact("Bill", "James"),
 				new Contact("Beth","Parker")
 		};
@@ -58,7 +64,7 @@ public class ContactTest {
 	public final void testContactElement() {
 		Contact test = new Contact(testContacts[1].toElement());
 		assertEquals(test.getFirstName(),"Melissa");
-		assertEquals(test.getPhoneNumber(),"286-3421");
+		assertEquals(test.getPhoneNumber(),"+1 602-286-3421");
 		assertTrue(test.getID() != null);
 		
 	}
@@ -206,6 +212,68 @@ public class ContactTest {
 		ProjectManager.removeProject(project1.getID());
 		ProjectManager.removeProject(project2.getID());
 		ProjectManager.removeProject(project3.getID());
-		
+	}
+	
+	@Test
+	public final void testValidEmail() {
+		final String email1 = "TLDemail@tld"; // TLD valid email
+		final String email2 = "testemail@testemail.com";
+		assertTrue(Contact.isValidEmail(email1));
+		assertTrue(Contact.isValidEmail(email2));
+		testContacts[0].setEmailAddress(email1);
+		testContacts[1].setEmailAddress(email2);
+		assertEquals(email1, testContacts[0].getEmailAddress());
+		assertEquals(email2, testContacts[1].getEmailAddress());
+	}
+	
+	@Test
+	public final void testInvalidEmail() {
+		thrown.expect(IllegalEmailException.class);
+		final String email1 = "bademail@_.com";
+		assertTrue(!Contact.isValidEmail(email1)); // Email1 should not be valid
+		testContacts[0].setEmailAddress(email1);
+	}
+	
+	@Test
+	public final void testValidPhone() {
+		final String phone1 = "8552785080"; // Arizona State University
+		final String phone2 = "+498921800"; // University of Munich
+		assertTrue(Contact.isValidPhoneNumber(phone1));
+		assertTrue(Contact.isValidPhoneNumber(phone2));
+		testContacts[0].setPhoneNumber(phone1);
+		testContacts[1].setPhoneNumber(phone2);
+		assertEquals("+1 855-278-5080", testContacts[0].getPhoneNumber());
+		assertEquals("+49 89 21800", testContacts[1].getPhoneNumber());
+	}
+	
+	@Test
+	public final void testInvalidPhoneUS() {
+		thrown.expect(IllegalPhoneNumberException.class);
+		final String phone = "9998765432"; // Invalid area code
+		assertTrue(!Contact.isValidPhoneNumber(phone));
+		testContacts[0].setPhoneNumber(phone);
+	}
+	
+	@Test
+	public final void testInvalidPhoneInternational() {
+		thrown.expect(IllegalPhoneNumberException.class);
+		final String phone = "+44186527000"; // Invalid international number
+		assertTrue(!Contact.isValidPhoneNumber(phone));
+		testContacts[0].setPhoneNumber(phone);
+	}
+	
+	@Test
+	public final void testValidParseNumber() {
+		final String phone1 = "8552785080"; // Arizona State University
+		final String phone2 = "+498921800"; // University of Munich
+		assertEquals("+1 855-278-5080", Contact.parsePhoneNumber(phone1));
+		assertEquals("+49 89 21800", Contact.parsePhoneNumber(phone2));
+	}
+	
+	@Test
+	public final void testInvalidParseNumber() {
+		thrown.expect(IllegalPhoneNumberException.class);
+		final String phone = "+44186527000"; // Invalid international number
+		Contact.parsePhoneNumber(phone);
 	}
 }
