@@ -310,7 +310,6 @@ public class Contact {
 	 */
 	@Override
 	public String toString() {
-
 		String contact = "Name: " + this.getFirstName() + " " + this.getLastName();
 		contact += ", Phone Number: " + this.getPhoneNumber();
 		contact += ", Email Address: " + this.getEmailAddress();
