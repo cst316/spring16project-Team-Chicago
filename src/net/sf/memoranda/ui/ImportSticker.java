@@ -51,31 +51,31 @@ public class ImportSticker {
 	 * 
 	 * @return boolean
 	 */
-    public boolean import_file(){
+    public boolean importFile(){
     	boolean result = true;
     	String current;
     	JFileChooser fx = new JFileChooser(new java.io.File("."));
         fx.setDialogTitle("Import Location");
         fx.setFileFilter(new FileTypeFilter(".html","HTML File"));
         int exportResult = fx.showSaveDialog(null);
-        	if (exportResult == JFileChooser.APPROVE_OPTION){
-        		File fi = fx.getSelectedFile(); 
-                    try {
-                    		String tempLocation = fi.getPath();
-                            System.out.println(tempLocation);
-                            BufferedReader br = new BufferedReader(new FileReader(tempLocation));
-                    			while ((current = br.readLine()) != null) {
-                    				EventsManager.createSticker(current, 1);
-                    				CurrentStorage.get().storeEventsManager();
-                    			}
+        if (exportResult == JFileChooser.APPROVE_OPTION){
+        	File fi = fx.getSelectedFile(); 
+        		try {
+        			String tempLocation = fi.getPath();
+                    System.out.println(tempLocation);
+                    BufferedReader br = new BufferedReader(new FileReader(tempLocation));
+                    while ((current = br.readLine()) != null) {
+                    EventsManager.createSticker(current, 1);
+                    CurrentStorage.get().storeEventsManager();
+                    }
                          
-                    } catch (IOException e) {
+                } catch (IOException e) {
                     	e.printStackTrace();
                     	JOptionPane.showMessageDialog(null,Local.getString("Import Failed"));
-                    }	
+                   }	
                     
-                    }              
-           return result;
+        }              
+        return result;
     }
                 
 

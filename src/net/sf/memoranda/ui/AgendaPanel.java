@@ -206,7 +206,7 @@ public class AgendaPanel extends JPanel {
 						 //JOptionPane.showMessageDialog(null,name);
 					}else if (d.startsWith("memoranda:importstickers")) {
 						//Create file chooser window opens in working folder
-						new ImportSticker("").import_file();
+						new ImportSticker("").importFile();
 						refresh(CurrentDate.get()); 
 				        }
 
