@@ -206,19 +206,13 @@ public class AgendaPanel extends JPanel {
 						 //JOptionPane.showMessageDialog(null,name);
 					}else if (d.startsWith("memoranda:importstickers")) {
 						//Create file chooser window opens in working folder
-				        JFileChooser fileChooser = new JFileChooser();
-				        fileChooser.setDialogTitle("Import location");
-				        fileChooser.setCurrentDirectory(new java.io.File("."));
-				        int returnValue = fileChooser.showOpenDialog(null);
-				        if (returnValue == JFileChooser.APPROVE_OPTION) {
-				          File selectedFile = fileChooser.getSelectedFile();
-				          System.out.println(selectedFile.getName());
+						new ImportSticker("").import_file();
+						refresh(CurrentDate.get()); 
 				        }
-						//String name = JOptionPane.showInputDialog(parent,Local.getString("Enter name of file to import"),null);
-						//new ImportSticker(name).import_file();
+
 					}
 				}
-			}
+
 		});
 		historyBackB.setAction(History.historyBackAction);
 		historyBackB.setFocusable(false);
