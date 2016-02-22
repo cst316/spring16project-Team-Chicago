@@ -264,7 +264,7 @@ public class Contact {
 		String parsedNumber = "";
 		if(isValidPhoneNumber(phoneNumber)) {
 			try {
-				PhoneNumber number = _phoneNumberUtil.parse(phoneNumber, "US");
+				final PhoneNumber number = _phoneNumberUtil.parse(phoneNumber, "US");
 				parsedNumber = _phoneNumberUtil.format(number, PhoneNumberFormat.INTERNATIONAL);
 			}
 			catch (NumberParseException e) {
