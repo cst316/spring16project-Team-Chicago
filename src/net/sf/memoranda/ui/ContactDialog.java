@@ -22,211 +22,301 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import net.sf.memoranda.util.Local;
 
-public class ContactDialog extends JDialog implements WindowListener {	
-    public boolean CANCELLED = false;
-    boolean ignoreStartChanged = false;
-    boolean ignoreEndChanged = false;
-    JPanel topPanel = new JPanel(new BorderLayout());
-    JPanel bottomPanel = new JPanel(new BorderLayout());
-    JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    public JLabel header = new JLabel();
-    JPanel contactPanel = new JPanel(new GridBagLayout());
-    GridBagConstraints gbc;
-    JLabel lblFirstName = new JLabel();
-    JLabel lblLastName = new JLabel();
-    JLabel lblEmailAddress = new JLabel();
-    JLabel lblTelephone = new JLabel();
-    JLabel lblOrganization = new JLabel();
-    JLabel lblAddToProject = new JLabel();
-    public JTextField txtFirstName = new JTextField();
-    public JTextField txtLastName = new JTextField();
-    public JTextField txtEmailAddress = new JTextField();
-    public JTextField txtTelephone = new JTextField();
-    public JTextField txtOrganization = new JTextField();
-    JCheckBox cbAddToProject = new JCheckBox();
-    JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-    JButton okB = new JButton();
-    JButton cancelB = new JButton();
-    
-    public ContactDialog(Frame frame, String title) {
-        super(frame, title, true);
-        try {
-            jbInit();
-            pack();
-        }
-        catch (Exception ex) {
-            new ExceptionDialog(ex);
-        }
-        super.addWindowListener(this);
-    }
+@SuppressWarnings("serial")
+public class ContactDialog extends JDialog implements WindowListener {
 
-    void jbInit() throws Exception {
-    	this.setResizable(false);
-        // Build headerPanel
-        headerPanel.setBackground(Color.WHITE);
-        headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-        header.setFont(new java.awt.Font("Dialog", 0, 20));
-        header.setForeground(new Color(0, 0, 124));
-        header.setText(Local.getString("Contact"));
-        header.setIcon(new ImageIcon(net.sf.memoranda.ui.EventDialog.class.getResource(
-            "resources/icons/contact48.png")));
-        headerPanel.add(header);
-        
-        // Build eventPanel
-        lblFirstName.setText(Local.getString("First Name"));
-        lblFirstName.setMinimumSize(new Dimension(60, 24));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0; gbc.gridy = 0;
-        gbc.insets = new Insets(10, 10, 5, 10);
-        gbc.anchor = GridBagConstraints.WEST;
-        contactPanel.add(lblFirstName, gbc);
-        lblLastName.setText(Local.getString("Last Name"));
-        lblLastName.setMinimumSize(new Dimension(60, 24));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0; gbc.gridy = 1;
-        gbc.insets = new Insets(10, 10, 5, 10);
-        gbc.anchor = GridBagConstraints.WEST;
-        contactPanel.add(lblLastName, gbc);
-        lblEmailAddress.setText(Local.getString("Email"));
-        lblEmailAddress.setMinimumSize(new Dimension(60, 24));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0; gbc.gridy = 2;
-        gbc.insets = new Insets(10, 10, 5, 10);
-        gbc.anchor = GridBagConstraints.WEST;
-        contactPanel.add(lblEmailAddress, gbc);
-        lblTelephone.setText(Local.getString("Telephone"));
-        lblTelephone.setMinimumSize(new Dimension(60, 24));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0; gbc.gridy = 3;
-        gbc.insets = new Insets(10, 10, 5, 10);
-        gbc.anchor = GridBagConstraints.WEST;
-        contactPanel.add(lblTelephone, gbc);
-        lblOrganization.setText(Local.getString("Organization"));
-        lblOrganization.setMinimumSize(new Dimension(60, 24));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0; gbc.gridy = 4;
-        gbc.insets = new Insets(10, 10, 5, 10);
-        gbc.anchor = GridBagConstraints.WEST;
-        contactPanel.add(lblOrganization, gbc);
-        cbAddToProject.setText(Local.getString("Add to current project"));
-        cbAddToProject.setMinimumSize(new Dimension(375, 24));
-        cbAddToProject.setSelected(true);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0; gbc.gridy = 5;
-        gbc.insets = new Insets(10, 10, 5, 10);
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        contactPanel.add(cbAddToProject, gbc);
+	private boolean _cancelled = false;
+	private JPanel _topPanel = new JPanel(new BorderLayout());
+	private JPanel _bottomPanel = new JPanel(new BorderLayout());
+	private JPanel _headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	private JLabel _header = new JLabel();
+	private JPanel _contactPanel = new JPanel(new GridBagLayout());
+	private GridBagConstraints _gbc;
+	private JLabel _lblFirstName = new JLabel();
+	private JLabel _lblLastName = new JLabel();
+	private JLabel _lblEmailAddress = new JLabel();
+	private JLabel _lblTelephone = new JLabel();
+	private JLabel _lblOrganization = new JLabel();
+	private JTextField _txtFirstName = new JTextField();
+	private JTextField _txtLastName = new JTextField();
+	private JTextField _txtEmailAddress = new JTextField();
+	private JTextField _txtTelephone = new JTextField();
+	private JTextField _txtOrganization = new JTextField();
+	private JCheckBox _cbAddToProject = new JCheckBox();
+	private JPanel _buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+	private JButton _okB = new JButton();
+	private JButton _cancelB = new JButton();
 
-        txtFirstName.setMinimumSize(new Dimension(375, 24));
-        txtFirstName.setPreferredSize(new Dimension(375, 24));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1; gbc.gridy = 0;
-        gbc.gridwidth = 6;
-        gbc.insets = new Insets(5, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        contactPanel.add(txtFirstName, gbc);
-        txtLastName.setMinimumSize(new Dimension(375, 24));
-        txtLastName.setPreferredSize(new Dimension(375, 24));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1; gbc.gridy = 1;
-        gbc.gridwidth = 6;
-        gbc.insets = new Insets(5, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        contactPanel.add(txtLastName, gbc);
-        txtEmailAddress.setMinimumSize(new Dimension(375, 24));
-        txtEmailAddress.setPreferredSize(new Dimension(375, 24));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1; gbc.gridy = 2;
-        gbc.gridwidth = 6;
-        gbc.insets = new Insets(5, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        contactPanel.add(txtEmailAddress, gbc);
-        txtTelephone.setMinimumSize(new Dimension(375, 24));
-        txtTelephone.setPreferredSize(new Dimension(375, 24));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1; gbc.gridy = 3;
-        gbc.gridwidth = 6;
-        gbc.insets = new Insets(5, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        contactPanel.add(txtTelephone, gbc);
-        txtOrganization.setMinimumSize(new Dimension(375, 24));
-        txtOrganization.setPreferredSize(new Dimension(375, 24));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1; gbc.gridy = 4;
-        gbc.gridwidth = 6;
-        gbc.insets = new Insets(5, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        contactPanel.add(txtOrganization, gbc);
-        /*lblAddToProject.setText(Local.getString("Add to current project"));
-        lblAddToProject.setMinimumSize(new Dimension(375, 24));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1; gbc.gridy = 5;
-        gbc.insets = new Insets(10, 10, 5, 10);
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        contactPanel.add(lblAddToProject, gbc);*/
-        
-        // Build ButtonsPanel
-        okB.setMaximumSize(new Dimension(100, 26));
-        okB.setMinimumSize(new Dimension(100, 26));
-        okB.setPreferredSize(new Dimension(100, 26));
-        okB.setText(Local.getString("Ok"));
-        okB.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                okB_actionPerformed(e);
-            }
-        });
-        this.getRootPane().setDefaultButton(okB);
-        cancelB.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                cancelB_actionPerformed(e);
-            }
-        });
-        cancelB.setText(Local.getString("Cancel"));
-        cancelB.setPreferredSize(new Dimension(100, 26));
-        cancelB.setMinimumSize(new Dimension(100, 26));
-        cancelB.setMaximumSize(new Dimension(100, 26));
-        buttonsPanel.add(okB);
-        buttonsPanel.add(cancelB);
-        
-        // Finally build the Dialog
-        topPanel.add(headerPanel, BorderLayout.NORTH);
-        topPanel.add(contactPanel, BorderLayout.SOUTH);
-        bottomPanel.add(buttonsPanel, BorderLayout.SOUTH);
-        this.getContentPane().add(topPanel, BorderLayout.NORTH);
-        this.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
-    }
+	/**
+	 * Constructor for the ContactDialog.
+	 * 
+	 * @param frame The owner frame.
+	 * @param title The title of the dialog box.
+	 * @see javax.swing.JDialog
+	 */
+	public ContactDialog(Frame frame, String title) {
+		super(frame, title, true);
+		_jbInit();
+		pack();
+		super.addWindowListener(this);
+	}
 
-    void okB_actionPerformed(ActionEvent e) {
-        this.dispose();
-    }
+	public boolean isCancelled() {
+		return _cancelled;
+	}
 
-    void cancelB_actionPerformed(ActionEvent e) {
-        CANCELLED = true;
-        this.dispose();
-    }
-    
-    public void windowOpened( WindowEvent e ) {}
+	public JCheckBox getCBAddToProject() {
+		return _cbAddToProject;
+	}
 
-    public void windowClosing( WindowEvent e ) {
-        CANCELLED = true;
-        this.dispose();
-    }
-	
-    public void windowClosed( WindowEvent e ) {}
+	public JTextField getTxtFirstName() {
+		return _txtFirstName;
+	}
 
-	public void windowIconified( WindowEvent e ) {}
+	public JTextField getTxtLastName() {
+		return _txtLastName;
+	}
 
-	public void windowDeiconified( WindowEvent e ) {}
+	public JTextField getTxtEmailAddress() {
+		return _txtEmailAddress;
+	}
 
-	public void windowActivated( WindowEvent e ) {}
+	public JTextField getTxtTelephone() {
+		return _txtTelephone;
+	}
 
-	public void windowDeactivated( WindowEvent e ) {}
+	public JTextField getTxtOrganization() {
+		return _txtOrganization;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * java.awt.event.WindowListener#windowOpened(java.awt.event.WindowEvent)
+	 */
+	@Override
+	public void windowOpened(WindowEvent event) {}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * java.awt.event.WindowListener#windowClosing(java.awt.event.WindowEvent)
+	 */
+	@Override
+	public void windowClosing(WindowEvent event) {
+		_cancelled = true;
+		this.dispose();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * java.awt.event.WindowListener#windowClosed(java.awt.event.WindowEvent)
+	 */
+	@Override
+	public void windowClosed(WindowEvent event) {}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * java.awt.event.WindowListener#windowIconified(java.awt.event.WindowEvent)
+	 */
+	@Override
+	public void windowIconified(WindowEvent event) {}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.awt.event.WindowListener#windowDeiconified(java.awt.event.
+	 * WindowEvent)
+	 */
+	@Override
+	public void windowDeiconified(WindowEvent event) {}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * java.awt.event.WindowListener#windowActivated(java.awt.event.WindowEvent)
+	 */
+	@Override
+	public void windowActivated(WindowEvent event) {}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.awt.event.WindowListener#windowDeactivated(java.awt.event.
+	 * WindowEvent)
+	 */
+	@Override
+	public void windowDeactivated(WindowEvent event) {}
+
+	private void _jbInit() {
+		this.setResizable(false);
+		// Build headerPanel
+		_headerPanel.setBackground(Color.WHITE);
+		_headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+		_header.setFont(new java.awt.Font("Dialog", 0, 20));
+		_header.setForeground(new Color(0, 0, 124));
+		_header.setText(Local.getString("Contact"));
+		_header.setIcon(
+				new ImageIcon(net.sf.memoranda.ui.EventDialog.class.getResource("resources/icons/contact48.png")));
+		_headerPanel.add(_header);
+
+		// Build eventPanel
+		_lblFirstName.setText(Local.getString("First Name"));
+		_lblFirstName.setMinimumSize(new Dimension(60, 24));
+		_gbc = new GridBagConstraints();
+		_gbc.gridx = 0;
+		_gbc.gridy = 0;
+		_gbc.insets = new Insets(10, 10, 5, 10);
+		_gbc.anchor = GridBagConstraints.WEST;
+		_contactPanel.add(_lblFirstName, _gbc);
+		_lblLastName.setText(Local.getString("Last Name"));
+		_lblLastName.setMinimumSize(new Dimension(60, 24));
+		_gbc = new GridBagConstraints();
+		_gbc.gridx = 0;
+		_gbc.gridy = 1;
+		_gbc.insets = new Insets(10, 10, 5, 10);
+		_gbc.anchor = GridBagConstraints.WEST;
+		_contactPanel.add(_lblLastName, _gbc);
+		_lblEmailAddress.setText(Local.getString("Email"));
+		_lblEmailAddress.setMinimumSize(new Dimension(60, 24));
+		_gbc = new GridBagConstraints();
+		_gbc.gridx = 0;
+		_gbc.gridy = 2;
+		_gbc.insets = new Insets(10, 10, 5, 10);
+		_gbc.anchor = GridBagConstraints.WEST;
+		_contactPanel.add(_lblEmailAddress, _gbc);
+		_lblTelephone.setText(Local.getString("Telephone"));
+		_lblTelephone.setMinimumSize(new Dimension(60, 24));
+		_gbc = new GridBagConstraints();
+		_gbc.gridx = 0;
+		_gbc.gridy = 3;
+		_gbc.insets = new Insets(10, 10, 5, 10);
+		_gbc.anchor = GridBagConstraints.WEST;
+		_contactPanel.add(_lblTelephone, _gbc);
+		_lblOrganization.setText(Local.getString("Organization"));
+		_lblOrganization.setMinimumSize(new Dimension(60, 24));
+		_gbc = new GridBagConstraints();
+		_gbc.gridx = 0;
+		_gbc.gridy = 4;
+		_gbc.insets = new Insets(10, 10, 5, 10);
+		_gbc.anchor = GridBagConstraints.WEST;
+		_contactPanel.add(_lblOrganization, _gbc);
+		_cbAddToProject.setText(Local.getString("Add to current project"));
+		_cbAddToProject.setMinimumSize(new Dimension(375, 24));
+		_cbAddToProject.setSelected(true);
+		_gbc = new GridBagConstraints();
+		_gbc.gridx = 0;
+		_gbc.gridy = 5;
+		_gbc.insets = new Insets(10, 10, 5, 10);
+		_gbc.anchor = GridBagConstraints.WEST;
+		_gbc.fill = GridBagConstraints.HORIZONTAL;
+		_contactPanel.add(_cbAddToProject, _gbc);
+
+		_txtFirstName.setMinimumSize(new Dimension(375, 24));
+		_txtFirstName.setPreferredSize(new Dimension(375, 24));
+		_gbc = new GridBagConstraints();
+		_gbc.gridx = 1;
+		_gbc.gridy = 0;
+		_gbc.gridwidth = 6;
+		_gbc.insets = new Insets(5, 10, 10, 10);
+		_gbc.anchor = GridBagConstraints.WEST;
+		_gbc.fill = GridBagConstraints.HORIZONTAL;
+		_contactPanel.add(_txtFirstName, _gbc);
+		_txtLastName.setMinimumSize(new Dimension(375, 24));
+		_txtLastName.setPreferredSize(new Dimension(375, 24));
+		_gbc = new GridBagConstraints();
+		_gbc.gridx = 1;
+		_gbc.gridy = 1;
+		_gbc.gridwidth = 6;
+		_gbc.insets = new Insets(5, 10, 10, 10);
+		_gbc.anchor = GridBagConstraints.WEST;
+		_gbc.fill = GridBagConstraints.HORIZONTAL;
+		_contactPanel.add(_txtLastName, _gbc);
+		_txtEmailAddress.setMinimumSize(new Dimension(375, 24));
+		_txtEmailAddress.setPreferredSize(new Dimension(375, 24));
+		_gbc = new GridBagConstraints();
+		_gbc.gridx = 1;
+		_gbc.gridy = 2;
+		_gbc.gridwidth = 6;
+		_gbc.insets = new Insets(5, 10, 10, 10);
+		_gbc.anchor = GridBagConstraints.WEST;
+		_gbc.fill = GridBagConstraints.HORIZONTAL;
+		_contactPanel.add(_txtEmailAddress, _gbc);
+		_txtTelephone.setMinimumSize(new Dimension(375, 24));
+		_txtTelephone.setPreferredSize(new Dimension(375, 24));
+		_gbc = new GridBagConstraints();
+		_gbc.gridx = 1;
+		_gbc.gridy = 3;
+		_gbc.gridwidth = 6;
+		_gbc.insets = new Insets(5, 10, 10, 10);
+		_gbc.anchor = GridBagConstraints.WEST;
+		_gbc.fill = GridBagConstraints.HORIZONTAL;
+		_contactPanel.add(_txtTelephone, _gbc);
+		_txtOrganization.setMinimumSize(new Dimension(375, 24));
+		_txtOrganization.setPreferredSize(new Dimension(375, 24));
+		_gbc = new GridBagConstraints();
+		_gbc.gridx = 1;
+		_gbc.gridy = 4;
+		_gbc.gridwidth = 6;
+		_gbc.insets = new Insets(5, 10, 10, 10);
+		_gbc.anchor = GridBagConstraints.WEST;
+		_gbc.fill = GridBagConstraints.HORIZONTAL;
+		_contactPanel.add(_txtOrganization, _gbc);
+		/*
+		 * lblAddToProject.setText(Local.getString("Add to current project"));
+		 * lblAddToProject.setMinimumSize(new Dimension(375, 24)); gbc = new
+		 * GridBagConstraints(); gbc.gridx = 1; gbc.gridy = 5; gbc.insets = new
+		 * Insets(10, 10, 5, 10); gbc.anchor = GridBagConstraints.WEST; gbc.fill
+		 * = GridBagConstraints.HORIZONTAL; contactPanel.add(lblAddToProject,
+		 * gbc);
+		 */
+
+		// Build ButtonsPanel
+		_okB.setMaximumSize(new Dimension(100, 26));
+		_okB.setMinimumSize(new Dimension(100, 26));
+		_okB.setPreferredSize(new Dimension(100, 26));
+		_okB.setText(Local.getString("Ok"));
+		_okB.addActionListener(new java.awt.event.ActionListener() {
+
+			public void actionPerformed(ActionEvent event) {
+				okActionPerformed(event);
+			}
+		});
+		this.getRootPane().setDefaultButton(_okB);
+		_cancelB.addActionListener(new java.awt.event.ActionListener() {
+
+			public void actionPerformed(ActionEvent event) {
+				cancelActionPerformed(event);
+			}
+		});
+		_cancelB.setText(Local.getString("Cancel"));
+		_cancelB.setPreferredSize(new Dimension(100, 26));
+		_cancelB.setMinimumSize(new Dimension(100, 26));
+		_cancelB.setMaximumSize(new Dimension(100, 26));
+		_buttonsPanel.add(_okB);
+		_buttonsPanel.add(_cancelB);
+
+		// Finally build the Dialog
+		_topPanel.add(_headerPanel, BorderLayout.NORTH);
+		_topPanel.add(_contactPanel, BorderLayout.SOUTH);
+		_bottomPanel.add(_buttonsPanel, BorderLayout.SOUTH);
+		this.getContentPane().add(_topPanel, BorderLayout.NORTH);
+		this.getContentPane().add(_bottomPanel, BorderLayout.SOUTH);
+	}
+
+	private void okActionPerformed(ActionEvent event) {
+		this.dispose();
+	}
+
+	private void cancelActionPerformed(ActionEvent event) {
+		_cancelled = true;
+		this.dispose();
+	}
 }
-
