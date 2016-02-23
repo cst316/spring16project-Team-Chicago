@@ -42,24 +42,23 @@ public class ImportSticker {
         if (exportResult == JFileChooser.APPROVE_OPTION){
         	final File fi = fx.getSelectedFile(); 
         	final String tempLocation = fi.getPath();
+        	try {
+        		final BufferedReader  br = new BufferedReader(new FileReader(tempLocation));
         		try {
-        			final BufferedReader  br = new BufferedReader(new FileReader(tempLocation));
-        			try {
-        				while ((current = br.readLine()) != null) {
+        			while ((current = br.readLine()) != null) {
         				EventsManager.createSticker(current, 1);
         				CurrentStorage.get().storeEventsManager();
-        				}
-        			}	
-        				finally {
-            				br.close();
-            			}
-                } 
-        		catch (IOException e) {
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(null,Local.getString("Import Failed"));
-                    result = false;
-                   }
-               
+        			}
+        		}	
+        		finally {
+        			br.close();
+            	}
+            } 
+        	catch (IOException e) {
+        		e.printStackTrace();
+        		JOptionPane.showMessageDialog(null,Local.getString("Import Failed"));
+                result = false;
+            }       
         }              
         return result;
     }
