@@ -50,18 +50,21 @@ public class ImportSticker {
         				CurrentStorage.get().storeEventsManager();
         			}
         		}	
-        		finally {
+        		catch(IOException e) {
+        			e.printStackTrace();
+            		JOptionPane.showMessageDialog(null,Local.getString("Import Failed"));
+                    result = false;
         			br.close();
             	}
             } 
-        	catch (IOException e) {
+        	catch (Exception e) {
         		e.printStackTrace();
         		JOptionPane.showMessageDialog(null,Local.getString("Import Failed"));
                 result = false;
             }       
         }              
         return result;
-    }
+	}
                 
 
         
