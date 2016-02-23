@@ -46,8 +46,6 @@ public class TaskTableModel extends AbstractTreeTableModel implements TreeTableM
             Local.getString("Priority"), Local.getString("Status"),
             "% " + Local.getString("done") };
 
-    protected EventListenerList listenerList = new EventListenerList();
-
     private boolean activeOnly = check_activeOnly();
         
     /**

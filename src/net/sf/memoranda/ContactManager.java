@@ -307,8 +307,13 @@ public class ContactManager {
 
 		// Add contacts to list
 		for (int i = 0; i < size; i++) {
-			final Contact importedContact = new Contact(root.getChildElements().get(i));
-			_addContact(importedContact);
+			try {
+				final Contact importedContact = new Contact(root.getChildElements().get(i));
+				_addContact(importedContact);
+			}
+			catch (IllegalArgumentException e) {
+				continue;
+			}
 		}
 	}
 
@@ -421,11 +426,16 @@ public class ContactManager {
 		final Element root = doc.getRootElement();
 		final Elements contactListElements = root.getChildElements();
 		int size = contactListElements.size();
-		Contact importedContact;
+		Contact importedContact = null;
 
 		// Process each contact element in the document
 		for (int i = 0; i < size; i++) {
-			importedContact = new Contact(contactListElements.get(i));
+			try {
+				importedContact = new Contact(contactListElements.get(i));
+			}
+			catch (IllegalArgumentException e) {
+				continue;
+			}
 			importedContacts.put(importedContact.getID(), importedContact);
 
 			// Check if the contact is in the master list. If it exists,

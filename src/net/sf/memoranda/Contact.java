@@ -41,10 +41,15 @@ public class Contact {
 	 * @param lname Last name
 	 * @param phoneNumber Phone number
 	 * @param emailAddress Email Address
+	 * @throws IllegalArgumentException If the first name is empty
+	 * @throws IllegalEmailException If the email address is in an invalid
+	 *             format
+	 * @throws IllegalPhoneNumberException If the phone number is in an invalid
+	 *             format
 	 */
-	public Contact(String fname, String lname, String phoneNumber, String emailAddress) {
-
-		this._firstName = fname;
+	public Contact(String fname, String lname, String phoneNumber, String emailAddress)
+			throws IllegalArgumentException, IllegalEmailException, IllegalPhoneNumberException {
+		this.setFirstName(fname);
 		this._lastName = lname;
 		this.setPhoneNumber(phoneNumber);
 		this.setEmailAddress(emailAddress);
@@ -59,10 +64,10 @@ public class Contact {
 	 * 
 	 * @param fname First name
 	 * @param lname Last name
+	 * @throws IllegalArgumentException If the first name is empty
 	 */
-	public Contact(String fname, String lname) {
-
-		this._firstName = fname;
+	public Contact(String fname, String lname) throws IllegalArgumentException {
+		this.setFirstName(fname);
 		this._lastName = lname;
 		this.setPhoneNumber("");
 		this.setEmailAddress("");
@@ -76,15 +81,21 @@ public class Contact {
 	 * Empty String If id exists uses it else generates new id.
 	 * 
 	 * @param element An Element representation of a Contact
+	 * @throws IllegalArgumentException If the first name is empty
+	 * @throws IllegalEmailException If the email address is in an invalid
+	 *             format
+	 * @throws IllegalPhoneNumberException If the phone number is in an invalid
+	 *             format
 	 */
-	public Contact(Element element) {
-
+	public Contact(Element element)
+			throws IllegalArgumentException, IllegalEmailException, IllegalPhoneNumberException {
 		final Elements children = element.getChildElements();
 		final int numElems = element.getChildCount();
 
 		for (int i = 0; i < numElems; i++) {
 			if (children.get(i).getLocalName().equalsIgnoreCase("FirstName")) {
-				this._firstName = children.get(i).getValue();
+				this.setFirstName(children.get(i).getValue());
+
 			}
 			else if (children.get(i).getLocalName().equalsIgnoreCase("LastName")) {
 				this._lastName = children.get(i).getValue();
@@ -95,12 +106,7 @@ public class Contact {
 					this.setPhoneNumber("");
 				}
 				else {
-					if(isValidPhoneNumber(phoneNumber)) {
-						this.setPhoneNumber(phoneNumber);
-					}
-					else {
-						this.setPhoneNumber("");
-					}
+					this.setPhoneNumber(phoneNumber);
 				}
 			}
 			else if (children.get(i).getLocalName().equalsIgnoreCase("E-Mail")) {
@@ -109,12 +115,7 @@ public class Contact {
 					this.setEmailAddress("");
 				}
 				else {
-					if(isValidEmail(email)) {
-						this.setEmailAddress(email);
-					}
-					else {
-						this.setEmailAddress("");
-					}
+					this.setEmailAddress(email);
 				}
 			}
 			else if (children.get(i).getLocalName().equalsIgnoreCase("Organization")) {
@@ -178,9 +179,15 @@ public class Contact {
 		return _firstName;
 	}
 
-	public void setFirstName(String name) {
-		this.resetTimestamp();
-		this._firstName = name;
+	public void setFirstName(String name) throws IllegalArgumentException {
+		name = name.trim();
+		if (name.length() > 0) {
+			this.resetTimestamp();
+			this._firstName = name;
+		}
+		else {
+			throw new IllegalArgumentException("Empty first name");
+		}
 	}
 
 	public String getLastName() {
@@ -196,7 +203,7 @@ public class Contact {
 		return _phoneNumber;
 	}
 
-	public void setPhoneNumber(String phoneNumber) throws IllegalPhoneNumberException{
+	public void setPhoneNumber(String phoneNumber) throws IllegalPhoneNumberException {
 		if (phoneNumber.length() > 0) {
 			this._phoneNumber = parsePhoneNumber(phoneNumber);
 			this.resetTimestamp();
@@ -211,10 +218,9 @@ public class Contact {
 		return _emailAddress;
 	}
 
-	public void setEmailAddress(String emailAddress) throws IllegalEmailException{
-		
+	public void setEmailAddress(String emailAddress) throws IllegalEmailException {
 		if (!_emailValidator.isValid(emailAddress) && emailAddress.length() > 0) {
-			throw new IllegalEmailException();
+			throw new IllegalEmailException("Not a valid email format: " + emailAddress);
 		}
 		else {
 			this.resetTimestamp();
@@ -230,16 +236,18 @@ public class Contact {
 		this.resetTimestamp();
 		this._organization = organization;
 	}
-	
+
 	/**
-	 * Checks if the phone number entered is a valid phone number. This does not check to see if the
-	 * phone number is active, only if it is the correct format for a possible number.
+	 * Checks if the phone number entered is a valid phone number. This does not
+	 * check to see if the phone number is active, only if it is the correct
+	 * format for a possible number.
+	 * 
 	 * @param phone The phone number to be tested
 	 * @return True if the phone number is valid, false if not
 	 */
 	public static boolean isValidPhoneNumber(String phone) {
 		boolean valid = false;
-		if(phone.length() > 0) {
+		if (phone.length() > 0) {
 			try {
 				final PhoneNumber number = _phoneNumberUtil.parse(phone, "US");
 				if (_phoneNumberUtil.isValidNumber(number)) {
@@ -252,42 +260,51 @@ public class Contact {
 		}
 		return valid;
 	}
-	
+
 	/**
-	 * Parses a phone number and returns a formatted version. If the phoneNumber string is not a valid
-	 * phone number, an IllegalPhoneNumberException is thrown.
+	 * Parses a phone number and returns a formatted version. If the phoneNumber
+	 * string is not a valid phone number, an IllegalPhoneNumberException is
+	 * thrown.
+	 * 
 	 * @param phoneNumber The phone number to be parsed.
 	 * @return A formatted String of the parsed phone number.
-	 * @throws IllegalPhoneNumberException Thrown if the phone number entered is not valid
+	 * @throws IllegalPhoneNumberException Thrown if the phone number entered is
+	 *             not valid
 	 */
 	public static String parsePhoneNumber(String phoneNumber) throws IllegalPhoneNumberException {
 		String parsedNumber = "";
-		if(isValidPhoneNumber(phoneNumber)) {
+		if (isValidPhoneNumber(phoneNumber)) {
 			try {
 				final PhoneNumber number = _phoneNumberUtil.parse(phoneNumber, "US");
 				parsedNumber = _phoneNumberUtil.format(number, PhoneNumberFormat.INTERNATIONAL);
 			}
 			catch (NumberParseException e) {
-				throw new IllegalPhoneNumberException();
+				throw new IllegalPhoneNumberException("Not a valid phone number format: " + phoneNumber);
 			}
 		}
 		else {
-			throw new IllegalPhoneNumberException();
+			throw new IllegalPhoneNumberException("Not a valid phone number format: " + phoneNumber);
 		}
 		return parsedNumber;
 	}
-	
+
 	/**
-	 * Tests if the input string is a valid email. Valid emails are case-insensitive and allow the domain name to be an ip address or a Top-level domain. Examples of valid email addresses are as follows: <p>john.doe@email.com
-	 * kelly@localhost
-	 * paul@192.168.42.10</p>. This does not check if the email address is active, but only checks if it is a valid format.
+	 * Tests if the input string is a valid email. Valid emails are
+	 * case-insensitive and allow the domain name to be an ip address or a
+	 * Top-level domain. Examples of valid email addresses are as follows:
+	 * <p>
+	 * john.doe@email.com kelly@localhost paul@192.168.42.10
+	 * </p>
+	 * . This does not check if the email address is active, but only checks if
+	 * it is a valid format.
+	 * 
 	 * @param email The email address to be tested
 	 * @return True if the email is valid, false if not.
 	 */
 	public static boolean isValidEmail(String email) {
 		boolean valid = false;
-		if(email.length() > 0) {
-			if(_emailValidator.isValid(email)) {
+		if (email.length() > 0) {
+			if (_emailValidator.isValid(email)) {
 				valid = true;
 			}
 		}

@@ -257,8 +257,9 @@ public class FileStorage implements Storage {
         String id = prj.getID();
         File f = new File(JN_DOCPATH + id);
         File[] files = f.listFiles();
-        for (int i = 0; i < files.length; i++)
+        for (int i = 0; i < files.length; i++) {
             files[i].delete();
+        }
         f.delete();
     }
 

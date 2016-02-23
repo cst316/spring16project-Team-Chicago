@@ -30,7 +30,7 @@ public class EventsPanelTest {
 		_customDaysText5 = "80p";		
 		_customDaysText6 = "90";		
 		_customDaysText7 = "abcd";		
-		_customDaysText7 = "";			
+		_customDaysText8 = "";			
 		
 	}
 

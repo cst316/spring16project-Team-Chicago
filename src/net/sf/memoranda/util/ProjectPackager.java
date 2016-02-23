@@ -145,7 +145,9 @@ public class ProjectPackager {
     {
        File[] theFiles = theDirectory.listFiles();
        File stDirectory = new File(startingDirectory);
-       System.out.println("Path="+stDirectory.getPath()+";length="+stDirectory.getPath().length() + "==>"+theFiles[0]);
+       if (theFiles != null) {
+    	   System.out.println("Path="+stDirectory.getPath()+";length="+stDirectory.getPath().length() + "==>"+theFiles[0]);
+       }
        int j = stDirectory.getPath().length();
        for ( int i=0 ; i<theFiles.length ; i++ )
        {

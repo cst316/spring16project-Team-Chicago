@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
 import net.sf.memoranda.Contact;
@@ -44,7 +45,7 @@ public class ContactDialog extends JDialog implements WindowListener {
 	private JLabel _lblEmailAddress = new JLabel();
 	private JLabel _lblTelephone = new JLabel();
 	private JLabel _lblOrganization = new JLabel();
-	private JTextField _txtFirstName = new JTextField();
+	private FirstNameField _txtFirstName = new FirstNameField();
 	private JTextField _txtLastName = new JTextField();
 	private EmailField _txtEmailAddress = new EmailField();
 	private PhoneNumberField _txtTelephone = new PhoneNumberField();
@@ -91,7 +92,7 @@ public class ContactDialog extends JDialog implements WindowListener {
 	public JTextField getTxtTelephone() {
 		return _txtTelephone;
 	}
-	
+
 	public JTextField getTxtOrganization() {
 		return _txtOrganization;
 	}
@@ -319,71 +320,153 @@ public class ContactDialog extends JDialog implements WindowListener {
 	}
 
 	private void okActionPerformed(ActionEvent event) {
-		if (_txtTelephone.isValidNumber() && _txtEmailAddress.isValidEmail()) {
-    		this.dispose();
-    	}
+		if (_txtTelephone.isValidText() && _txtEmailAddress.isValidText() && _txtFirstName.isValidText()) {
+			this.dispose();
+		}
 	}
 
 	private void cancelActionPerformed(ActionEvent event) {
 		_cancelled = true;
 		this.dispose();
 	}
-	
+
 	/**
-	 * A JTextField which only accepts valid phone numbers based on what <code>Contact</code> defines as valid. 
+	 * A JTextField which only accepts non-empty text. <code>Contact</code>
+	 * defines as valid.
+	 * 
 	 * @author Jonathan Hinkle
 	 *
 	 */
-	class PhoneNumberField extends JTextField {
-		
-		private boolean _isValidNumber = true;
-		
+
+	class FirstNameField extends JTextField {
+
+		private boolean _isValidText = false;
+
 		/**
-		 * The constructor for the PhoneNumberField.
+		 * The constructor for the FirstNameField.
 		 */
-		PhoneNumberField() {
+		FirstNameField() {
 			super();
 
-			final AbstractDocument doc = (AbstractDocument)this.getDocument();
-			
-			doc.setDocumentFilter(new DocumentFilter() {
-				/* (non-Javadoc)
-				 * @see javax.swing.text.DocumentFilter#insertString(javax.swing.text.DocumentFilter.FilterBypass, int, java.lang.String, javax.swing.text.AttributeSet)
-				 */
-				public void insertString(DocumentFilter.FilterBypass fb, int offset, String string, AttributeSet attr) {
-					string.replaceAll("\\s", "");
-					if(offset == 0) {
-						if(!string.matches("(\\d|\\+)(\\d)*")) {
-							string = "";
-						}
-					}
-					else {
-						if(!string.matches("(\\d)*")) {
-							string = "";
-						}
-					}
-				}
-			});
-			
 			this.addFocusListener(new FocusListener() {
 
-				/* (non-Javadoc)
-				 * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @see java.awt.event.FocusListener#focusGained(java.awt.event.
+				 * FocusEvent)
 				 */
 				@Override
 				public void focusGained(FocusEvent event) {
 					setBackground(Color.white);
 				}
 
-				/* (non-Javadoc)
-				 * @see java.awt.event.FocusListener#focusLost(java.awt.event.FocusEvent)
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @see java.awt.event.FocusListener#focusLost(java.awt.event.
+				 * FocusEvent)
+				 */
+				@Override
+				public void focusLost(FocusEvent event) {
+					final String text = getText().trim();
+					if (text.isEmpty()) {
+						setBackground(Color.pink);
+						_isValidText = false;
+					}
+					else {
+						setBackground(Color.white);
+						_isValidText = true;
+					}
+				}
+
+			});
+		}
+
+		public boolean isValidText() {
+			return _isValidText;
+		}
+	}
+
+	/**
+	 * A JTextField which only accepts valid phone numbers based on what
+	 * <code>Contact</code> defines as valid.
+	 * 
+	 * @author Jonathan Hinkle
+	 *
+	 */
+	class PhoneNumberField extends JTextField {
+
+		private boolean _isValidText = true;
+
+		/**
+		 * The constructor for the PhoneNumberField.
+		 */
+		PhoneNumberField() {
+			super();
+
+			final AbstractDocument doc = (AbstractDocument) this.getDocument();
+
+			doc.setDocumentFilter(new DocumentFilter() {
+
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @see
+				 * javax.swing.text.DocumentFilter#replace(javax.swing.text.
+				 * DocumentFilter.FilterBypass, int, int, java.lang.String,
+				 * javax.swing.text.AttributeSet)
+				 */
+				public void replace(DocumentFilter.FilterBypass fb, int offset, int length, String text,
+						AttributeSet attrs) {
+					if (isFocusOwner()) {
+						if (offset == 0) {
+							if (!text.matches("^(\\d|\\+)(\\d|\\s)*")) {
+								text = "";
+							}
+						}
+						else {
+							if (!text.matches("^(\\d|\\s)*")) {
+								text = "";
+							}
+						}
+					}
+					if (!text.isEmpty()) {
+						try {
+							super.replace(fb, offset, length, text, attrs);
+						}
+						catch (BadLocationException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			});
+
+			this.addFocusListener(new FocusListener() {
+
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @see java.awt.event.FocusListener#focusGained(java.awt.event.
+				 * FocusEvent)
+				 */
+				@Override
+				public void focusGained(FocusEvent event) {
+					setBackground(Color.white);
+				}
+
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @see java.awt.event.FocusListener#focusLost(java.awt.event.
+				 * FocusEvent)
 				 */
 				@Override
 				public void focusLost(FocusEvent event) {
 					final String phoneNumber = getText();
 					if (!phoneNumber.isEmpty()) {
-						_isValidNumber = Contact.isValidPhoneNumber(phoneNumber);
-						if(_isValidNumber) {
+						_isValidText = Contact.isValidPhoneNumber(phoneNumber);
+						if (_isValidText) {
 							setText(Contact.parsePhoneNumber(phoneNumber));
 							setBackground(Color.white);
 						}
@@ -393,50 +476,59 @@ public class ContactDialog extends JDialog implements WindowListener {
 					}
 					else {
 						setBackground(Color.white);
-						_isValidNumber = true;
+						_isValidText = true;
 					}
 				}
-				
+
 			});
 		}
-		
-		public boolean isValidNumber() {
-			return _isValidNumber;
+
+		public boolean isValidText() {
+			return _isValidText;
 		}
 	}
-	
+
 	/**
-	 * A JTextField which only accepts valid emails based on what <code>Contact</code> defines as valid. 
+	 * A JTextField which only accepts valid emails based on what
+	 * <code>Contact</code> defines as valid.
+	 * 
 	 * @author Jonathan Hinkle
 	 *
 	 */
 	class EmailField extends JTextField {
-		private boolean _isValidEmail = true;
-		
+
+		private boolean _isValidText = true;
+
 		/**
 		 * The constructor for the EmailField.
 		 */
 		EmailField() {
 			super();
-			
+
 			this.addFocusListener(new FocusListener() {
 
-				/* (non-Javadoc)
-				 * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @see java.awt.event.FocusListener#focusGained(java.awt.event.
+				 * FocusEvent)
 				 */
 				@Override
 				public void focusGained(FocusEvent event) {
 					setBackground(Color.white);
 				}
 
-				/* (non-Javadoc)
-				 * @see java.awt.event.FocusListener#focusLost(java.awt.event.FocusEvent)
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @see java.awt.event.FocusListener#focusLost(java.awt.event.
+				 * FocusEvent)
 				 */
 				@Override
 				public void focusLost(FocusEvent event) {
 					if (!getText().isEmpty()) {
-						_isValidEmail = Contact.isValidEmail(getText());
-						if(_isValidEmail) {
+						_isValidText = Contact.isValidEmail(getText());
+						if (_isValidText) {
 							setBackground(Color.white);
 						}
 						else {
@@ -445,15 +537,15 @@ public class ContactDialog extends JDialog implements WindowListener {
 					}
 					else {
 						setBackground(Color.white);
-						_isValidEmail = true;
+						_isValidText = true;
 					}
 				}
-				
+
 			});
 		}
-		
-		public boolean isValidEmail() {
-			return _isValidEmail;
+
+		public boolean isValidText() {
+			return _isValidText;
 		}
 	}
 }
