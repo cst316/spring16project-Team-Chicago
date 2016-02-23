@@ -52,16 +52,16 @@ public class ImportSticker {
         		}	
         		catch(IOException e) {
         			e.printStackTrace();
-            		JOptionPane.showMessageDialog(null,Local.getString("Import Failed"));
-                    result = false;
+        			JOptionPane.showMessageDialog(null,Local.getString("Import Failed"));
+        			result = false;
         			br.close();
-            	}
-            } 
+        		}
+        	} 
         	catch (Exception e) {
         		e.printStackTrace();
         		JOptionPane.showMessageDialog(null,Local.getString("Import Failed"));
-                result = false;
-            }       
+        		result = false;
+        	}       
         }              
         return result;
 	}
