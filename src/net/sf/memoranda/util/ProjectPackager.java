@@ -126,6 +126,7 @@ public class ProjectPackager {
             CurrentStorage.get().storeProjectManager();
             Document doc = CurrentStorage.get().openProjectContactList(prj);
             ContactManager.importProjectContacts(doc, prj);
+            ContactManager.saveContactList();
         }
         catch (Exception ex) {
             new ExceptionDialog(ex, "Failed to read from "+zipfile, "Make sure that this file is a Memoranda project archive.");

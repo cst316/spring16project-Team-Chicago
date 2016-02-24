@@ -57,11 +57,12 @@ public class ProjectManager {
         return null;
     }
 
-    public static Vector getAllProjects() {
-        Elements prjs = _root.getChildElements("project");
-        Vector v = new Vector();
-        for (int i = 0; i < prjs.size(); i++)
+    public static Vector<Project> getAllProjects() {
+        final Elements prjs = _root.getChildElements("project");
+        final Vector<Project> v = new Vector<Project>();
+        for (int i = 0; i < prjs.size(); i++) {
             v.add(new ProjectImpl((Element) prjs.get(i)));
+        }
         return v;
     }
 
