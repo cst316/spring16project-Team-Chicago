@@ -91,7 +91,7 @@ public class JNCalendarPanel extends JPanel {
   public Action monthBackAction =
 	        new AbstractAction(
 	            "Go one month back",
-	            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/back16.png"))) {
+	            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/backmonth16.png"))) {
 	        public void actionPerformed(ActionEvent e) {
 	            monthBackB_actionPerformed(e);
 	        }
@@ -109,7 +109,7 @@ public class JNCalendarPanel extends JPanel {
   public Action monthForwardAction =
 	        new AbstractAction(
 	            "Go one month forward",
-	            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/forward16.png"))) {
+	            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/forwardmonth16.png"))) {
 	        public void actionPerformed(ActionEvent e) {
 	            monthForwardB_actionPerformed(e);
 	        }
