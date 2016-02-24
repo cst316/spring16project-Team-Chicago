@@ -19,21 +19,25 @@ public class FrontSplitEvent extends SplitEvent {
 		else if (this.getPosition() == SplitPosition.LAST_POSITION) {
 			this.splitAtLastPosition();
 		}
-		else {
-			Util.debug("Error assigning split position");
-		}
 	}
 
 	public void splitAtFirstPosition() {
-		//TODO
+		this.setNewStartDate(null);
+		this.setNewEndDate(null);
 	}
 
 	public void splitAtMiddlePosition() {
-		//TODO
+		this.setNewStartDate(getOrigStartDate());
+		this.setNewEndDate(decrementDateDay(this.getSelectedDate()));
+		
+		this.checkForSameDate();
 	}
 	
 	public void splitAtLastPosition() {
-		//TODO
+		this.setNewStartDate(getOrigStartDate());
+		this.setNewEndDate(this.decrementDateDay(getSelectedDate()));
+		
+		this.checkForSameDate();
 	}
 
 }

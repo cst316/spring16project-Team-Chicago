@@ -435,6 +435,7 @@ public class EventsManager {
 	}
 	
 	/* REMOVE THIS SMELL - UNUSED METHOD - SPECULATIVE GENERALITY
+	 * !!!!Remove this as its own commit for evidence!!!!
 	public static void removeEvent(CalendarDate date, int hh, int mm) {
 		Day d = getDay(date);
 		if (d == null)
@@ -443,14 +444,16 @@ public class EventsManager {
 
 	public static void removeEvent(Event ev) {
 		if (ev.isRepeatable()){ 	// and if the user wants to delete single event
-			_splitRepeatableEvent(ev);			
+			boolean go = true;
+			if (go) {
+				_splitRepeatableEvent(ev);	
+			}
 		}
 		ParentNode parent = ev.getContent().getParent();
 		parent.removeChild(ev.getContent());
 	}
 	
 	private static void _splitRepeatableEvent(Event ev) {
-		Util.debug("Running split");
 
 		FrontSplitEvent frontSplit = new FrontSplitEvent(ev.getRepeat(),   // send repeat type
 											 ev.getStartDate(),			   // send orig start
@@ -458,22 +461,43 @@ public class EventsManager {
 											 DailyItemsPanel.currentDate);
 		
 		if (!(frontSplit.getNewStartDate() == null && frontSplit.getNewEndDate() == null)) {
-			createRepeatableEvent(ev.getRepeat(), frontSplit.getNewStartDate(),
-								  frontSplit.getNewEndDate(), ev.getPeriod(), ev.getHour(),
-								  ev.getMinute(), ev.getText(), ev.getWorkingDays());
+			
+			if (frontSplit.getCreateRepeating()) {
+				createRepeatableEvent(ev.getRepeat(), frontSplit.getNewStartDate(),
+								  	frontSplit.getNewEndDate(), ev.getPeriod(), ev.getHour(),
+								  	ev.getMinute(), ev.getText(), ev.getWorkingDays());
+			}
+			else {
+				Date newSchedDate = CalendarDate.toDate(frontSplit.getNewStartDate().getDay(),
+														frontSplit.getNewStartDate().getMonth(),
+														frontSplit.getNewStartDate().getYear());
+				
+				createEvent(frontSplit.getNewStartDate(), ev.getHour(), ev.getMinute(),
+							ev.getText(), newSchedDate);
+			}
 		}
 		
 		BackSplitEvent backSplit = new BackSplitEvent(ev.getRepeat(),     // send repeat type
 				 									  ev.getStartDate(),  // send orig start
-				 									  ev.getEndDate(),			   // send orig end
+				 									  ev.getEndDate(),	  // send orig end
 				 									  DailyItemsPanel.currentDate);
 		
-		// what kind of check here?
-		createRepeatableEvent(ev.getRepeat(), backSplit.getNewStartDate(),
-							  backSplit.getNewEndDate(), ev.getPeriod(), ev.getHour(),
-							  ev.getMinute(), ev.getText(), ev.getWorkingDays());
-		
-		Util.debug("Split ended");
+		if (!(backSplit.getNewStartDate() == null && backSplit.getNewEndDate() == null)) {
+			Util.debug("Start = " + backSplit.getNewStartDate());
+			if (backSplit.getCreateRepeating()) {
+				createRepeatableEvent(ev.getRepeat(), backSplit.getNewStartDate(),
+							  		backSplit.getNewEndDate(), ev.getPeriod(), ev.getHour(),
+							  		ev.getMinute(), ev.getText(), ev.getWorkingDays());
+			}
+			else {
+				Date newSchedDate = CalendarDate.toDate(backSplit.getSelectedDate().getDay(),
+														backSplit.getSelectedDate().getMonth(),
+														backSplit.getSelectedDate().getYear());
+			
+				createEvent(backSplit.getNewStartDate(), ev.getHour(), ev.getMinute(),
+							ev.getText(), newSchedDate);
+			}
+		}
 	}
 
 	private static Day createDay(CalendarDate date) {

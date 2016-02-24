@@ -12,6 +12,7 @@ public abstract class SplitEvent {
 	private final CalendarDate _origEndDate;
 	private final CalendarDate _selectedDate;
 	private final SplitPosition _position;
+	private boolean _createRepeating;
 	private CalendarDate _newStartDate;
 	private CalendarDate _newEndDate;
 
@@ -22,7 +23,12 @@ public abstract class SplitEvent {
 		_position = _determineSplitPosition();
 		_newStartDate = null;
 		_newEndDate = null;
+		_createRepeating = true;
 	} 
+	
+	public boolean getCreateRepeating() {
+		return this._createRepeating;
+	}
 
 	public CalendarDate getNewEndDate() {
 		return this._newEndDate;
@@ -77,6 +83,12 @@ public abstract class SplitEvent {
 		int downYear = year - 1;
 		return downYear;
 	}
+	
+	public void checkForSameDate() {		// indicates whether to make a rep or single event
+		if (this.getNewStartDate().equals(getNewEndDate())) {
+			_setCreateRepeating(false);
+		}
+	}
 
 	public abstract void splitAtFirstPosition();
 
@@ -84,9 +96,16 @@ public abstract class SplitEvent {
 
 	public abstract void splitAtLastPosition();
 	
-	private SplitPosition _determineSplitPosition() {
+	private void _setCreateRepeating(boolean makeSingle) {
+		this._createRepeating = makeSingle;
+	}
+	
+	private SplitPosition _determineSplitPosition() {		
 		if (this._origStartDate.equals(this._selectedDate)) {
 			return SplitPosition.FIRST_POSITION;
+		}
+		else if (this._origEndDate == null) {
+			return SplitPosition.MIDDLE_POSITION;
 		}
 		else if (this._origEndDate.equals(this._selectedDate)) {
 			return SplitPosition.LAST_POSITION;

@@ -25,15 +25,32 @@ public class BackSplitEvent extends SplitEvent {
 	}
 
 	public void splitAtFirstPosition() {
-		//TODO
+		this.setNewStartDate(this.incrementDateDay(getSelectedDate()));
+		if (this.getOrigEndDate() == null) {
+			this.setNewEndDate(null);
+		}
+		else  {
+			this.setNewEndDate(this.getOrigEndDate());
+		}
+		
+		this.checkForSameDate();
 	}
 
 	public void splitAtMiddlePosition() {
-		//TODO
+		this.setNewStartDate(this.incrementDateDay(getSelectedDate()));
+		if (this.getOrigEndDate() == null) {
+			this.setNewEndDate(null);
+		}
+		else  {
+			this.setNewEndDate(this.getOrigEndDate());
+		}
+		
+		this.checkForSameDate();
 	}
 	
 	public void splitAtLastPosition() {
-		//TODO
+		this.setNewStartDate(null);
+		this.setNewEndDate(null);
 	}
 
 }
