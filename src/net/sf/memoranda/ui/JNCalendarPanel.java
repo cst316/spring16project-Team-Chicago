@@ -48,7 +48,9 @@ public class JNCalendarPanel extends JPanel {
   JPanel mntyPanel = new JPanel(new BorderLayout());
   JPanel navbPanel = new JPanel(new BorderLayout());
   JButton dayForwardB = new JButton();
+  JButton monthForwardB = new JButton();
   JPanel dayForwardBPanel = new JPanel();
+  JPanel monthForwardBPanel = new JPanel();
   JButton todayB = new JButton();
   JPanel todayBPanel = new JPanel();
   JPanel dayBackBPanel = new JPanel();
@@ -86,6 +88,15 @@ public class JNCalendarPanel extends JPanel {
         }
   };
   
+  public Action monthBackAction =
+	        new AbstractAction(
+	            "Go one month back",
+	            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/back16.png"))) {
+	        public void actionPerformed(ActionEvent e) {
+	            monthBackB_actionPerformed(e);
+	        }
+	  };
+  
   public Action dayForwardAction =
         new AbstractAction(
             "Go one day forward",
@@ -94,6 +105,15 @@ public class JNCalendarPanel extends JPanel {
             dayForwardB_actionPerformed(e);
         }
   };
+  
+  public Action monthForwardAction =
+	        new AbstractAction(
+	            "Go one month forward",
+	            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/forward16.png"))) {
+	        public void actionPerformed(ActionEvent e) {
+	            monthForwardB_actionPerformed(e);
+	        }
+	  };
   
   public Action todayAction =
         new AbstractAction(
@@ -116,6 +136,23 @@ public class JNCalendarPanel extends JPanel {
     border2 = BorderFactory.createEmptyBorder();
     this.setLayout(new BorderLayout());
     navigationBar.setFloatable(false);
+    
+    monthForwardB.setAction(monthForwardAction);
+    monthForwardB.setMinimumSize(new Dimension(24, 24));
+    monthForwardB.setOpaque(false);
+    monthForwardB.setPreferredSize(new Dimension(24, 24));
+    monthForwardB.setRequestFocusEnabled(false);
+    monthForwardB.setBorderPainted(false);
+    monthForwardB.setFocusPainted(false);
+    monthForwardB.setIcon(new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/forwardmonth.png")));
+    monthForwardB.setText("");
+    monthForwardB.setToolTipText(Local.getString("One month forward"));
+    
+    monthForwardBPanel.setAlignmentX((float) 0.0);
+    monthForwardBPanel.setMinimumSize(new Dimension(40, 24));
+    monthForwardBPanel.setOpaque(false);
+    monthForwardBPanel.setPreferredSize(new Dimension(40, 24));
+    
     dayForwardB.setAction(dayForwardAction);
     dayForwardB.setMinimumSize(new Dimension(24, 24));
     dayForwardB.setOpaque(false);
@@ -279,6 +316,14 @@ public class JNCalendarPanel extends JPanel {
     refreshView();
     notifyListeners();
   }
+  
+  void monthBackB_actionPerformed(ActionEvent e) {
+	    Calendar cal = _date.getCalendar();
+	    cal.add(Calendar.DATE, -30); cal.getTime();
+	    _date = new CalendarDate(cal);
+	    refreshView();
+	    notifyListeners();
+	  }
 
   void todayB_actionPerformed(ActionEvent e) {
     _date = CalendarDate.today();
@@ -292,6 +337,14 @@ public class JNCalendarPanel extends JPanel {
     _date = new CalendarDate(cal);
     refreshView();
     notifyListeners();
+  }
+  
+  void monthForwardB_actionPerformed(ActionEvent e) {
+	    Calendar cal = _date.getCalendar();
+	    cal.add(Calendar.DATE, 30); cal.getTime();
+	    _date = new CalendarDate(cal);
+	    refreshView();
+	    notifyListeners();
   }
 
 
