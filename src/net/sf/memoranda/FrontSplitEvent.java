@@ -6,9 +6,9 @@ import net.sf.memoranda.util.Util;
 public class FrontSplitEvent extends SplitEvent {
 	
 	public FrontSplitEvent(int type, CalendarDate startDate, CalendarDate endDate,
-					  CalendarDate selected) {
+					  CalendarDate selected, int period) {
 
-		super(type, startDate, endDate, selected);
+		super(type, startDate, endDate, selected, period);
 
 		if (this.getPosition() == SplitPosition.FIRST_POSITION) {
 			this.splitAtFirstPosition();
@@ -27,16 +27,27 @@ public class FrontSplitEvent extends SplitEvent {
 	}
 
 	public void splitAtMiddlePosition() {
-		this.setNewStartDate(getOrigStartDate());
-		this.setNewEndDate(decrementDateDay(this.getSelectedDate()));
+		if (this.getType() == this.YEARLY) {
+			this.setNewStartDate(getOrigStartDate());
+			this.setNewEndDate(decrementDateYear(this.getSelectedDate()));
+		}
+		else {
+			this.setNewStartDate(getOrigStartDate());
+			this.setNewEndDate(decrementDateDay(this.getSelectedDate()));
+		}
 		
 		this.checkForSameDate();
 	}
 	
 	public void splitAtLastPosition() {
-		this.setNewStartDate(getOrigStartDate());
-		this.setNewEndDate(this.decrementDateDay(getSelectedDate()));
-		
+		if (this.getType() == this.YEARLY) {
+			this.setNewStartDate(getOrigStartDate());
+			this.setNewEndDate(this.decrementDateYear(getSelectedDate()));
+		}
+		else {
+			this.setNewStartDate(getOrigStartDate());
+			this.setNewEndDate(this.decrementDateDay(getSelectedDate()));
+		}
 		this.checkForSameDate();
 	}
 

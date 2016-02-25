@@ -9,14 +9,12 @@ package net.sf.memoranda;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
-
 import java.util.Map;
 import java.util.Collections;
 import java.util.Date;
@@ -24,6 +22,7 @@ import java.util.Date;
 import net.sf.memoranda.date.CalendarDate;
 import net.sf.memoranda.ui.DailyItemsPanel;
 import net.sf.memoranda.util.CurrentStorage;
+import net.sf.memoranda.util.Local;
 import net.sf.memoranda.util.Util;
 import nu.xom.Attribute;
 //import nu.xom.Comment;
@@ -433,69 +432,80 @@ public class EventsManager {
 		}
 		return null;
 	}
-	
-	/* REMOVE THIS SMELL - UNUSED METHOD - SPECULATIVE GENERALITY
-	 * !!!!Remove this as its own commit for evidence!!!!
-	public static void removeEvent(CalendarDate date, int hh, int mm) {
-		Day d = getDay(date);
-		if (d == null)
-			d.getElement().removeChild(getEvent(date, hh, mm).getContent());
-	}*/
 
-	public static void removeEvent(Event ev) {
-		if (ev.isRepeatable()){ 	// and if the user wants to delete single event
-			boolean go = true;
-			if (go) {
-				_splitRepeatableEvent(ev);	
+	public static void removeEvent(Event ev, boolean edit) {	
+		if (ev.isRepeatable()&& edit == false){ 	
+			
+			String endDate;
+			Object[] options = { 
+					"Remove single event",
+					"Remove event series",
+					"Cancel"
+			};
+			
+			if (ev.getEndDate() == null) {
+				endDate = "Recurring";
 			}
-		}
+			else {
+				endDate = ev.getEndDate().getShortDateString();
+			}
+			
+			int n = JOptionPane.showOptionDialog(null, "Do you wish to remove the following event "
+					+ "individually or the entire event series?\n\n" + ev.getText() + "\nStart Date:  " 
+					+ ev.getStartDate().getShortDateString() + "\nEnd Date:    " + endDate + "\n\n",
+					Local.getString("Remove event"), JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
+			
+			if (n == JOptionPane.YES_OPTION) {
+				_splitRepeatableEvent(ev);		
+			}
+			else if (n == JOptionPane.CLOSED_OPTION || n == JOptionPane.CANCEL_OPTION) {
+				return;
+			}
+		}		
+		
+		// removes entire series
 		ParentNode parent = ev.getContent().getParent();
 		parent.removeChild(ev.getContent());
 	}
 	
 	private static void _splitRepeatableEvent(Event ev) {
 
-		FrontSplitEvent frontSplit = new FrontSplitEvent(ev.getRepeat(),   // send repeat type
-											 ev.getStartDate(),			   // send orig start
-											 ev.getEndDate(),			   // send orig end
-											 DailyItemsPanel.currentDate);
+		FrontSplitEvent frontSplit = new FrontSplitEvent(ev.getRepeat(), ev.getStartDate(),
+				ev.getEndDate(), DailyItemsPanel.currentDate, ev.getPeriod());
 		
 		if (!(frontSplit.getNewStartDate() == null && frontSplit.getNewEndDate() == null)) {
 			
 			if (frontSplit.getCreateRepeating()) {
-				createRepeatableEvent(ev.getRepeat(), frontSplit.getNewStartDate(),
-								  	frontSplit.getNewEndDate(), ev.getPeriod(), ev.getHour(),
-								  	ev.getMinute(), ev.getText(), ev.getWorkingDays());
+				createRepeatableEvent(ev.getRepeat(), frontSplit.getNewStartDate(), 
+						frontSplit.getNewEndDate(), ev.getPeriod(), ev.getHour(), ev.getMinute(), 
+						ev.getText(), ev.getWorkingDays());
 			}
 			else {
-				Date newSchedDate = CalendarDate.toDate(frontSplit.getNewStartDate().getDay(),
-														frontSplit.getNewStartDate().getMonth(),
-														frontSplit.getNewStartDate().getYear());
+				Date newSchedDate = CalendarDate.toDate(frontSplit.getNewStartDate().getDay(), 
+						frontSplit.getNewStartDate().getMonth(), frontSplit.getNewStartDate().getYear());
 				
 				createEvent(frontSplit.getNewStartDate(), ev.getHour(), ev.getMinute(),
 							ev.getText(), newSchedDate);
 			}
 		}
 		
-		BackSplitEvent backSplit = new BackSplitEvent(ev.getRepeat(),     // send repeat type
-				 									  ev.getStartDate(),  // send orig start
-				 									  ev.getEndDate(),	  // send orig end
-				 									  DailyItemsPanel.currentDate);
+		BackSplitEvent backSplit = new BackSplitEvent(ev.getRepeat(), ev.getStartDate(),
+				ev.getEndDate(), DailyItemsPanel.currentDate, ev.getPeriod());
 		
 		if (!(backSplit.getNewStartDate() == null && backSplit.getNewEndDate() == null)) {
-			Util.debug("Start = " + backSplit.getNewStartDate());
+			
 			if (backSplit.getCreateRepeating()) {
-				createRepeatableEvent(ev.getRepeat(), backSplit.getNewStartDate(),
-							  		backSplit.getNewEndDate(), ev.getPeriod(), ev.getHour(),
-							  		ev.getMinute(), ev.getText(), ev.getWorkingDays());
+				createRepeatableEvent(ev.getRepeat(), backSplit.getNewStartDate(), 
+						backSplit.getNewEndDate(), ev.getPeriod(), ev.getHour(), ev.getMinute(), 
+						ev.getText(), ev.getWorkingDays());
 			}
 			else {
-				Date newSchedDate = CalendarDate.toDate(backSplit.getSelectedDate().getDay(),
-														backSplit.getSelectedDate().getMonth(),
-														backSplit.getSelectedDate().getYear());
+				Date newSchedDate = CalendarDate.toDate(backSplit.getSelectedDate().getDay(), 
+						backSplit.getSelectedDate().getMonth(), backSplit.getSelectedDate().getYear());
 			
-				createEvent(backSplit.getNewStartDate(), ev.getHour(), ev.getMinute(),
-							ev.getText(), newSchedDate);
+				createEvent(backSplit.getNewStartDate(), ev.getHour(), ev.getMinute(),ev.getText(),
+						newSchedDate);
 			}
 		}
 	}
