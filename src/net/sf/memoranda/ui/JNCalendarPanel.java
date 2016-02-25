@@ -44,17 +44,16 @@ import net.sf.memoranda.util.Local;
 public class JNCalendarPanel extends JPanel {
 
   CalendarDate _date = CurrentDate.get();
-  JToolBar navigationBar = new JToolBar();
+  JPanel navigationBar = new JPanel(new BorderLayout());
   JPanel mntyPanel = new JPanel(new BorderLayout());
-  JPanel navbPanel = new JPanel(new BorderLayout());
+  JPanel navbPanelLeft = new JPanel(new BorderLayout());
+  JPanel navbPanelCenter = new JPanel(new BorderLayout());
+  JPanel navbPanelRight = new JPanel(new BorderLayout());
   JButton dayForwardB = new JButton();
   JButton monthForwardB = new JButton();
-  JPanel dayForwardBPanel = new JPanel();
-  JPanel monthForwardBPanel = new JPanel();
   JButton todayB = new JButton();
-  JPanel todayBPanel = new JPanel();
-  JPanel dayBackBPanel = new JPanel();
   JButton dayBackB = new JButton();
+  JButton monthBackB = new JButton();
   JComboBox monthsCB = new JComboBox(Local.getMonthNames());
   BorderLayout borderLayout4 = new BorderLayout();
   JNCalendar jnCalendar = new JNCalendar(CurrentDate.get());
@@ -81,7 +80,7 @@ public class JNCalendarPanel extends JPanel {
 
   public Action dayBackAction =
         new AbstractAction(
-            "Go one day back",
+        	"Go one day back",
             new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/back16.png"))) {
         public void actionPerformed(ActionEvent e) {
             dayBackB_actionPerformed(e);
@@ -135,7 +134,13 @@ public class JNCalendarPanel extends JPanel {
     border1 = BorderFactory.createEmptyBorder(0,0,5,0);
     border2 = BorderFactory.createEmptyBorder();
     this.setLayout(new BorderLayout());
-    navigationBar.setFloatable(false);
+
+    //Right Side of Calender Panel + Buttons
+    
+    navbPanelRight.setAlignmentX((float) 0.0);
+    navbPanelRight.setMinimumSize(new Dimension(50, 24));
+    navbPanelRight.setOpaque(false);
+    navbPanelRight.setPreferredSize(new Dimension(50, 24));
     
     monthForwardB.setAction(monthForwardAction);
     monthForwardB.setMinimumSize(new Dimension(24, 24));
@@ -147,12 +152,7 @@ public class JNCalendarPanel extends JPanel {
     monthForwardB.setIcon(new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/forwardmonth.png")));
     monthForwardB.setText("");
     monthForwardB.setToolTipText(Local.getString("One month forward"));
-    
-    monthForwardBPanel.setAlignmentX((float) 0.0);
-    monthForwardBPanel.setMinimumSize(new Dimension(40, 24));
-    monthForwardBPanel.setOpaque(false);
-    monthForwardBPanel.setPreferredSize(new Dimension(40, 24));
-    
+        
     dayForwardB.setAction(dayForwardAction);
     dayForwardB.setMinimumSize(new Dimension(24, 24));
     dayForwardB.setOpaque(false);
@@ -164,10 +164,11 @@ public class JNCalendarPanel extends JPanel {
     dayForwardB.setText("");
     dayForwardB.setToolTipText(Local.getString("One day forward"));
     
-    dayForwardBPanel.setAlignmentX((float) 0.0);
-    dayForwardBPanel.setMinimumSize(new Dimension(40, 24));
-    dayForwardBPanel.setOpaque(false);
-    dayForwardBPanel.setPreferredSize(new Dimension(40, 24));
+    //Center Panel Today Button
+    
+    navbPanelCenter.setMinimumSize(new Dimension(20, 24));
+    navbPanelCenter.setOpaque(false);
+    navbPanelCenter.setPreferredSize(new Dimension(20, 24));
     
     todayB.setAction(todayAction);
     todayB.setMinimumSize(new Dimension(24, 24));
@@ -180,10 +181,12 @@ public class JNCalendarPanel extends JPanel {
     todayB.setText("");
     todayB.setToolTipText(Local.getString("To today"));
     
-    dayBackBPanel.setAlignmentX((float) 1.5);
-    dayBackBPanel.setMinimumSize(new Dimension(40, 24));
-    dayBackBPanel.setOpaque(false);
-    dayBackBPanel.setPreferredSize(new Dimension(40, 24));
+    //Left Panel of Calender + Buttons
+    
+    navbPanelLeft.setAlignmentX((float) 1.5);
+    navbPanelLeft.setMinimumSize(new Dimension(50, 24));
+    navbPanelLeft.setOpaque(false);
+    navbPanelLeft.setPreferredSize(new Dimension(50, 24));
     
     dayBackB.setAction(dayBackAction);
     dayBackB.setMinimumSize(new Dimension(24, 24));
@@ -197,27 +200,37 @@ public class JNCalendarPanel extends JPanel {
     dayBackB.setText("");
     dayBackB.setToolTipText(Local.getString("One day back"));
     
+    monthBackB.setAction(monthBackAction);
+    monthBackB.setMinimumSize(new Dimension(24, 24));
+    monthBackB.setOpaque(false);
+    monthBackB.setPreferredSize(new Dimension(24, 24));
+    monthBackB.setRequestFocusEnabled(false);
+    monthBackB.setToolTipText("");
+    monthBackB.setBorderPainted(false);
+    monthBackB.setFocusPainted(false);
+    monthBackB.setIcon(new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/backmonth.png")));
+    monthBackB.setText("");
+    monthBackB.setToolTipText(Local.getString("One month back"));
+    
     yearSpin.setPreferredSize(new Dimension(70, 20));
     yearSpin.setRequestFocusEnabled(false);
-        yearSpin.setEditor(yearSpinner);
-    navbPanel.setMinimumSize(new Dimension(202, 30));
-    navbPanel.setOpaque(false);
-    navbPanel.setPreferredSize(new Dimension(155, 30));
+    yearSpin.setEditor(yearSpinner);
+    navigationBar.setMinimumSize(new Dimension(202, 30));
+    navigationBar.setOpaque(false);
+    navigationBar.setPreferredSize(new Dimension(155, 30));
     jnCalendar.getTableHeader().setFont(new java.awt.Font("Dialog", 1, 10));
     jnCalendar.setFont(new java.awt.Font("Dialog", 0, 10));
     jnCalendar.setGridColor(Color.lightGray);
     jnCalendarPanel.setLayout(borderLayout5);
-    todayBPanel.setMinimumSize(new Dimension(68, 24));
-    todayBPanel.setOpaque(false);
-    todayBPanel.setPreferredSize(new Dimension(51, 24));
     this.add(navigationBar, BorderLayout.NORTH);
-    navigationBar.add(navbPanel, null);
-    navbPanel.add(dayBackBPanel, BorderLayout.WEST);
-    dayBackBPanel.add(dayBackB, null);
-    navbPanel.add(todayBPanel, BorderLayout.CENTER);
-    todayBPanel.add(todayB, null);
-    navbPanel.add(dayForwardBPanel, BorderLayout.EAST);
-    dayForwardBPanel.add(dayForwardB, null);
+    navigationBar.add(navbPanelLeft, BorderLayout.WEST);
+    navigationBar.add(navbPanelRight, BorderLayout.EAST);
+    navigationBar.add(navbPanelCenter, BorderLayout.CENTER);
+    navbPanelLeft.add(monthBackB, BorderLayout.WEST);
+    navbPanelLeft.add(dayBackB, BorderLayout.EAST);
+    navbPanelCenter.add(todayB, BorderLayout.CENTER);
+    navbPanelRight.add(dayForwardB, BorderLayout.WEST);
+    navbPanelRight.add(monthForwardB, BorderLayout.EAST);
     this.add(mntyPanel,  BorderLayout.SOUTH);
     mntyPanel.add(monthsCB, BorderLayout.CENTER);
     mntyPanel.add(yearSpin,  BorderLayout.EAST);
@@ -226,7 +239,8 @@ public class JNCalendarPanel extends JPanel {
     jnCalendarPanel.add(jnCalendar.getTableHeader(), BorderLayout.NORTH);
     jnCalendarPanel.add(jnCalendar, BorderLayout.CENTER);
     jnCalendar.addSelectionListener(new ActionListener()  {
-      public void actionPerformed(ActionEvent e) {
+      
+    public void actionPerformed(ActionEvent e) {
         setCurrentDateDay(jnCalendar.get(), jnCalendar.get().getDay());
       }
     });
@@ -316,6 +330,12 @@ public class JNCalendarPanel extends JPanel {
     refreshView();
     notifyListeners();
   }
+
+	/**
+	 * monthBackB action
+	 * 
+	 * Moves calender forward 30 days
+	 */
   
   void monthBackB_actionPerformed(ActionEvent e) {
 	    Calendar cal = _date.getCalendar();
@@ -338,7 +358,11 @@ public class JNCalendarPanel extends JPanel {
     refreshView();
     notifyListeners();
   }
-  
+	/**
+	 * monthForwardB action
+	 * 
+	 * Moves calender forward 30 days
+	 */
   void monthForwardB_actionPerformed(ActionEvent e) {
 	    Calendar cal = _date.getCalendar();
 	    cal.add(Calendar.DATE, 30); cal.getTime();
