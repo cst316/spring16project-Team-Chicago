@@ -80,6 +80,23 @@ public class ExtendedEventsTable extends EventsTable {
     }
     
     /**
+     * Fills the table with all Events occurring in a custom time period from the
+     * current day. US-101
+     * 
+     * @param d				current selected date
+     * @param numOfDays		number of days to search	
+     */
+    public void initCustomRangeTable(CalendarDate d, int numOfDays) {
+        _events = (Vector)EventsManager.getEventsForCustomRange(d, numOfDays);
+        getColumnModel().getColumn(0).setPreferredWidth(100);	// date column
+        getColumnModel().getColumn(0).setMaxWidth(100);			
+        getColumnModel().getColumn(1).setPreferredWidth(80);	// time column
+        getColumnModel().getColumn(1).setMaxWidth(80);			
+        clearSelection();
+        updateUI();
+    }
+    
+    /**
      * Method: getCellRenderer()
      * Inputs: int row, int column
      * Returns: TableCellRenderer object
@@ -133,7 +150,7 @@ public class ExtendedEventsTable extends EventsTable {
      */
     private class ExtendedEventsTableModel extends AbstractTableModel {
 
-        private String[] columnNames = {Local.getString("Date"),
+        private String[] _columnNames = {Local.getString("Date"),
         								Local.getString("Time"),
         								Local.getString("Text")
         							   };
@@ -183,7 +200,7 @@ public class ExtendedEventsTable extends EventsTable {
         }
 
         public String getColumnName(int col) {
-            return columnNames[col];
+            return _columnNames[col];
         }
     }
 }
