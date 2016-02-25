@@ -2,16 +2,14 @@ package net.sf.memoranda.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-
-import javax.xml.transform.TransformerException;
+import java.util.Vector;
 
 import biweekly.*;
 import biweekly.component.VEvent;
+import biweekly.property.Summary;
 import biweekly.util.ICalDate;
 import net.sf.memoranda.date.CalendarDate;
 import net.sf.memoranda.ui.ExceptionDialog;
@@ -44,7 +42,7 @@ public class CalendarICS {
 				int hour = iDate.getHours();
 				int minute = iDate.getMinutes();
 				Date date = new Date(iDate.getDate(),iDate.getMonth(),iDate.getYear()+1900);
-				Event mevent = EventsManager.createEvent(cdate,hour,minute,event.getSummary().getValue(),date);
+				EventsManager.createEvent(cdate,hour,minute,event.getSummary().getValue(),date);
 				CurrentStorage.get().storeEventsManager();
 				
 			} 
@@ -59,9 +57,40 @@ public class CalendarICS {
 	 * @param prj project to be exported
 	 * @param f name of file to save to
 	 */
-	public static void exportCal(Project prj,File f){
+	public static void exportCal(Project proj,File f){
 		
+		 ICalendar ical = new ICalendar();
+		 TaskList tasks = CurrentStorage.get().openTaskList(proj);
+		 Vector<Task> vecTasks =  (Vector<Task>) tasks.getTopLevelTasks();
+		 for(int i=0;i<vecTasks.size();i++){
+			 VEvent event = new VEvent();
+			 Summary summary = event.setSummary(vecTasks.get(i).getText());
+			 summary.setLanguage("en-us");
+			 
+			 ICalDate sDate =new ICalDate(_convertDate(vecTasks.get(i).getStartDate()));
+			 event.setDateStart(sDate);
+			 
+			 ICalDate eDate = new ICalDate(_convertDate(vecTasks.get(i).getEndDate()));
+			 event.setDateEnd(eDate);
+			 ical.addEvent(event);
+		 }
+		 if (f.getName().indexOf(".ics") ==-1){
+			 f = new File(f.getPath()+".ics");
+		 }
+		 try {
+			Biweekly.write(ical).go(f);
+		} 
+		catch (IOException e) {
+			new ExceptionDialog(e, "Failed to write to "+f, "Select valid file");
+		}
 	}
 	
-	
+	private static ICalDate _convertDate(CalendarDate d){
+		 ICalDate iDate =new ICalDate();
+		 iDate.setDate(d.getDay());
+		 iDate.setYear(d.getYear()-YEAR);
+		 iDate.setMonth(d.getMonth());
+		
+		 return iDate;
+	}
 }

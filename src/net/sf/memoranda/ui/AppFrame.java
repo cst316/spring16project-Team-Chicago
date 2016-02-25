@@ -105,13 +105,13 @@ public class AppFrame extends JFrame {
 
     static Vector exitListeners = new Vector();
 
-    public Action prjPackAction = new AbstractAction("Pack current project") {
+    private Action _prjPackAction = new AbstractAction("Pack current project") {
         public void actionPerformed(ActionEvent e) {
             doPrjPack();
         }
     };
 
-    public Action prjUnpackAction = new AbstractAction("Unpack project") {
+    private Action _prjUnpackAction = new AbstractAction("Unpack project") {
         public void actionPerformed(ActionEvent e) {
             doPrjUnPack();
         }
@@ -136,13 +136,13 @@ public class AppFrame extends JFrame {
         }
     };
 
-    public Action preferencesAction = new AbstractAction("Preferences") {
+    private Action _preferencesAction = new AbstractAction("Preferences") {
         public void actionPerformed(ActionEvent e) {
             showPreferences();
         }
     };
     
-    public Action exportNotesAction =
+    private Action _exportNotesAction =
                 new AbstractAction(Local.getString("Export notes") + "...") {
 
                 public void actionPerformed(ActionEvent e) {
@@ -150,14 +150,14 @@ public class AppFrame extends JFrame {
                 }
         };
         
-        public Action importNotesAction =
+        private Action _importNotesAction =
                         new AbstractAction(Local.getString("Import multiple notes")) {
 
                         public void actionPerformed(ActionEvent e) {
                                 ppImport_actionPerformed(e);
                         }
                 };
-        public Action importOneNoteAction =
+        private Action _importOneNoteAction =
                 new AbstractAction(Local.getString("Import one note")) {
 
                 public void actionPerformed(ActionEvent e) {
@@ -166,14 +166,14 @@ public class AppFrame extends JFrame {
         };
     
     JMenuItem jMenuFileNewPrj = new JMenuItem();
-        JMenuItem jMenuFileNewNote = new JMenuItem(workPanel.dailyItemsPanel.editorPanel.newAction);
-    JMenuItem jMenuFilePackPrj = new JMenuItem(prjPackAction);
-    JMenuItem jMenuFileUnpackPrj = new JMenuItem(prjUnpackAction);
+    JMenuItem jMenuFileNewNote = new JMenuItem(workPanel.dailyItemsPanel.editorPanel.newAction);
+    JMenuItem jMenuFilePackPrj = new JMenuItem(_prjPackAction);
+    JMenuItem jMenuFileUnpackPrj = new JMenuItem(_prjUnpackAction);
     JMenuItem jMenuImportCalendar = new JMenuItem(_importCalAction);
     JMenuItem jMenuExportCalendar = new JMenuItem(_exportCalAction);
-    JMenuItem jMenuFileExportPrj = new JMenuItem(exportNotesAction);
-    JMenuItem jMenuFileImportPrj = new JMenuItem(importNotesAction);
-    JMenuItem jMenuFileImportNote = new JMenuItem(importOneNoteAction);
+    JMenuItem jMenuFileExportPrj = new JMenuItem(_exportNotesAction);
+    JMenuItem jMenuFileImportPrj = new JMenuItem(_importNotesAction);
+    JMenuItem jMenuFileImportNote = new JMenuItem(_importOneNoteAction);
     JMenuItem jMenuFileExportNote = new JMenuItem(
             workPanel.dailyItemsPanel.editorPanel.exportAction);
     JMenuItem jMenuFileMin = new JMenuItem(_minimizeToSystemTrayAction);
@@ -262,7 +262,7 @@ public class AppFrame extends JFrame {
     JMenuItem jMenuGoToday = new JMenuItem(
             workPanel.dailyItemsPanel.calendar.todayAction);
 
-    JMenuItem jMenuEditPref = new JMenuItem(preferencesAction);
+    JMenuItem jMenuEditPref = new JMenuItem(_preferencesAction);
 
     JMenu jMenuInsertSpecial = new JMenu();
     
@@ -942,7 +942,7 @@ public class AppFrame extends JFrame {
         File lastSel = null;
 
         try {
-            lastSel = (java.io.File) Context.get("LAST_SELECTED_PACK_FILE");
+            lastSel = (java.io.File) Context.get("LAST_SELECTED_ICS_FILE");
         }
         catch (ClassCastException cce) {
             lastSel = new File(System.getProperty("user.dir") + File.separator);
@@ -955,7 +955,7 @@ public class AppFrame extends JFrame {
         if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION){
             return;
         }
-        Context.put("LAST_SELECTED_PACK_FILE", chooser.getSelectedFile());        
+        Context.put("LAST_SELECTED_ICS_FILE", chooser.getSelectedFile());        
         java.io.File f = chooser.getSelectedFile();
         CalendarICS.importCalendar(f);
         projectsPanel.prjTablePanel.updateUI();
