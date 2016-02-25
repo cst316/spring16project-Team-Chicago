@@ -46,14 +46,14 @@ public class JNCalendarPanel extends JPanel {
   CalendarDate _date = CurrentDate.get();
   JPanel navigationBar = new JPanel(new BorderLayout());
   JPanel mntyPanel = new JPanel(new BorderLayout());
-  JPanel navbPanelLeft = new JPanel(new BorderLayout());
-  JPanel navbPanelCenter = new JPanel(new BorderLayout());
-  JPanel navbPanelRight = new JPanel(new BorderLayout());
-  JButton dayForwardB = new JButton();
-  JButton monthForwardB = new JButton();
-  JButton todayB = new JButton();
-  JButton dayBackB = new JButton();
-  JButton monthBackB = new JButton();
+  private JPanel navbPanelLeft = new JPanel(new BorderLayout());
+  private JPanel navbPanelCenter = new JPanel(new BorderLayout());
+  private JPanel navbPanelRight = new JPanel(new BorderLayout());
+  private JButton dayForwardB = new JButton();
+  private JButton monthForwardB = new JButton();
+  private JButton todayB = new JButton();
+  private JButton dayBackB = new JButton();
+  private JButton monthBackB = new JButton();
   JComboBox monthsCB = new JComboBox(Local.getMonthNames());
   BorderLayout borderLayout4 = new BorderLayout();
   JNCalendar jnCalendar = new JNCalendar(CurrentDate.get());
@@ -324,11 +324,11 @@ public class JNCalendarPanel extends JPanel {
   }
 
   void dayBackB_actionPerformed(ActionEvent e) {
-    Calendar cal = _date.getCalendar();
-    cal.add(Calendar.DATE, -1); cal.getTime();
-    _date = new CalendarDate(cal);
-    refreshView();
-    notifyListeners();
+	  Calendar cal = _date.getCalendar();
+      cal.add(Calendar.DATE, -1); cal.getTime();
+      _date = new CalendarDate(cal);
+      refreshView();
+      notifyListeners();
   }
 
 	/**
@@ -338,25 +338,25 @@ public class JNCalendarPanel extends JPanel {
 	 */
   
   void monthBackB_actionPerformed(ActionEvent e) {
-	    Calendar cal = _date.getCalendar();
-	    cal.add(Calendar.DATE, -30); cal.getTime();
-	    _date = new CalendarDate(cal);
-	    refreshView();
-	    notifyListeners();
-	  }
+	  Calendar cal = _date.getCalendar();
+	  cal.add(Calendar.DATE, -30); cal.getTime();
+	  _date = new CalendarDate(cal);
+	  refreshView();
+	  notifyListeners();
+  }
 
   void todayB_actionPerformed(ActionEvent e) {
-    _date = CalendarDate.today();
-    refreshView();
-    notifyListeners();
+	  _date = CalendarDate.today();
+	  refreshView();
+	  notifyListeners();
   }
 
   void dayForwardB_actionPerformed(ActionEvent e) {
-    Calendar cal = _date.getCalendar();
-    cal.add(Calendar.DATE, 1); cal.getTime();
-    _date = new CalendarDate(cal);
-    refreshView();
-    notifyListeners();
+	  Calendar cal = _date.getCalendar();
+      cal.add(Calendar.DATE, 1); cal.getTime();
+      _date = new CalendarDate(cal);
+      refreshView();
+      notifyListeners();
   }
 	/**
 	 * monthForwardB action
@@ -364,11 +364,11 @@ public class JNCalendarPanel extends JPanel {
 	 * Moves calender forward 30 days
 	 */
   void monthForwardB_actionPerformed(ActionEvent e) {
-	    Calendar cal = _date.getCalendar();
-	    cal.add(Calendar.DATE, 30); cal.getTime();
-	    _date = new CalendarDate(cal);
-	    refreshView();
-	    notifyListeners();
+	  Calendar cal = _date.getCalendar();
+	  cal.add(Calendar.DATE, 30); cal.getTime();
+	  _date = new CalendarDate(cal);
+	  refreshView();
+	  notifyListeners();
   }
 
 
