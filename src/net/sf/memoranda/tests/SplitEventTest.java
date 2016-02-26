@@ -31,10 +31,10 @@ public class SplitEventTest {
 
 	@Before
 	public void setUp() throws Exception {
-		date1 = new CalendarDate(1,1,2017);		// day edge   - decrement(1 day) to previous year
-		date2 = new CalendarDate(30,4,2017);	// month edge - increment(1 day) to following month
-		date3 = new CalendarDate(30,12,2018);	// year edge  - increment(2 days) to following year
-		date4 = new CalendarDate(15,3,2016);	
+		date1 = new CalendarDate(1,1,2017);		// day/year edge - decrement(1 day) to previous year
+		date2 = new CalendarDate(31,10,2017);	// month edge - increment(1 day) to following month
+		date3 = new CalendarDate(31,12,2018);	// year edge  - increment(2 days) to following year
+		date4 = new CalendarDate(15,3,2018);	
 		
 		se1 = new FrontSplitEvent(1, date1, date2, date1, period1);	// tests date1
 		se2 = new FrontSplitEvent(1, date1, date2, date2, period1);	// tests date2
@@ -46,26 +46,27 @@ public class SplitEventTest {
 
 	@Test
 	public void testIncrementDateDay() {
-		assertEquals("1/2/17", se1.incrementDateDay(date1).getShortDateString());
-		assertEquals("5/1/17", se2.incrementDateDay(date2).getShortDateString());
-		assertEquals("1/1/19", se3.incrementDateDay(date3).getShortDateString());
-		assertEquals("3/25/16", se4.incrementDateDay(date4).getShortDateString());
-		assertEquals("6/23/16", se5.incrementDateDay(date4).getShortDateString());		
+		assertTrue(new CalendarDate(2,1,2017).equals(se1.incrementDateDay(date1)));
+		assertTrue(new CalendarDate(1,11,2017).equals(se2.incrementDateDay(date2)));
+		assertEquals(2, se3.incrementDateDay(date3).getDay());
+		assertEquals(25, se4.incrementDateDay(date4).getDay());
+		assertEquals(6, se5.incrementDateDay(date4).getMonth());		
 	}
 
 	@Test
 	public void testDecrementDateDay() {
-		assertEquals("12/31/16", se1.decrementDateDay(date1).getShortDateString());
+		assertEquals(31, se1.decrementDateDay(date1).getDay());
+		assertEquals(5, se5.decrementDateDay(date4).getDay());
 	}
 
 	@Test
 	public void testIncrementDateYear() {
-		//fail("Not yet implemented");
+		assertEquals(2018, se1.incrementDateYear(date1).getYear());
 	}
 
 	@Test
 	public void testDecrementDateYear() {
-		//fail("Not yet implemented");
+		assertTrue(new CalendarDate(15,3,2017).equals(se4.decrementDateYear(date4)));
 	}
 
 }

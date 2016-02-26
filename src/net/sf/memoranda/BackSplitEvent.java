@@ -106,10 +106,12 @@ public class BackSplitEvent extends SplitEvent {
 	 * the date is created from the selected date on the calendar.
 	 */
 	public void createNewSchedDate() {
+		if (this.getNewStartDate() != null) {
 		Date newSchedDate = CalendarDate.toDate(this.getSelectedDate().getDay(), 
 				this.getSelectedDate().getMonth(), this.getSelectedDate().getYear());
-		
+		Util.debug(newSchedDate.toString());
 		this.setNewSchedDate(newSchedDate);
+		}
 	}
 
 }

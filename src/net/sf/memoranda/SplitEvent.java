@@ -115,10 +115,11 @@ public abstract class SplitEvent {
 	@SuppressWarnings("deprecation")
 	public CalendarDate incrementDateDay(CalendarDate date) {
 		Calendar cal = CalendarDate.convertCalendarDateToCalendar(date);
-		cal.add(Calendar.DATE, + this._periodOfDays);
-		CalendarDate upDate = new CalendarDate(cal.getTime().getDate(),
-												 cal.getTime().getMonth(),
-												 cal.getTime().getYear());
+		cal.add(Calendar.DATE, this._periodOfDays);
+		int day = cal.getTime().getDate();
+		int month = cal.getTime().getMonth();
+		int year = cal.getTime().getYear() + 1900;
+		CalendarDate upDate = new CalendarDate(day, month, year);
 		return upDate;
 	}
 
@@ -129,13 +130,14 @@ public abstract class SplitEvent {
 	 * @return downDate 	The new date decreased by the period
 	 */
 	@SuppressWarnings("deprecation")
-	public CalendarDate decrementDateDay(CalendarDate date) {		
+	public CalendarDate decrementDateDay(CalendarDate date) {	
 		Calendar cal = CalendarDate.convertCalendarDateToCalendar(date);
 		cal.add(Calendar.DATE, - this._periodOfDays);
-		CalendarDate downDate = new CalendarDate(cal.getTime().getDate(),
-												 cal.getTime().getMonth(),
-												 cal.getTime().getYear());
-		System.out.println("DECREMENT " + downDate.getShortDateString());
+		int day = cal.getTime().getDate();
+		int month = cal.getTime().getMonth();
+		int year = cal.getTime().getYear() + 1900;
+		CalendarDate downDate = new CalendarDate(day, month, year);
+
 		return downDate;
 	}
 
