@@ -468,6 +468,7 @@ public class EventsPanel extends JPanel {
 		calendar.setTime(((Date)dlg.timeSpin.getModel().getValue()));//Fix deprecated methods to get hours
 		int hh = calendar.get(Calendar.HOUR_OF_DAY);//Fix deprecated methods to get hours
 		int mm = calendar.get(Calendar.MINUTE);//Fix deprecated methods to get hours
+		
 		Date schedDate = dlg.getEventDate();
         if (schedDate == null) {
         	int newDay = DailyItemsPanel.currentDate.getDay();
@@ -594,8 +595,9 @@ public class EventsPanel extends JPanel {
 			msg = Local.getString("Remove event") + "\n'" 
 				+ ev.getText() + "'\n" + Local.getString("Are you sure?");
 		}
+		
+		// bypasses the confirmation popup if deleting one selected repeating event
 		if (displayMessage) {
-			Util.debug("SKIPPING");
 			int n =
 					JOptionPane.showConfirmDialog(
 					App.getFrame(),

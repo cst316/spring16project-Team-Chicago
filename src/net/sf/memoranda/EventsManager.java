@@ -433,7 +433,15 @@ public class EventsManager {
 		return null;
 	}
 
-	public static void removeEvent(Event ev, boolean edit) {	
+	/**
+	 * Removes an event from the calendar as specified by the user. Provides options to the user
+	 * on how to delete a repeatable event.
+	 * 
+	 * @param ev	The event to be deleted
+	 * @param edit	Indicates if the event is being removed due to editing
+	 */
+	public static void removeEvent(Event ev, boolean edit) {
+		// skips nonrepeatable events and if editing an event
 		if (ev.isRepeatable()&& edit == false){ 	
 			
 			String endDate;
@@ -450,11 +458,12 @@ public class EventsManager {
 				endDate = ev.getEndDate().getShortDateString();
 			}
 			
-			int n = JOptionPane.showOptionDialog(null, "Do you wish to remove the following event "
-					+ "individually or the entire event series?\n\n" + ev.getText() + "\nStart Date:  " 
-					+ ev.getStartDate().getShortDateString() + "\nEnd Date:    " + endDate + "\n\n",
-					Local.getString("Remove event"), JOptionPane.YES_NO_CANCEL_OPTION,
-					JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
+			int n = JOptionPane.showOptionDialog(null, "Do you wish to remove the following selected event"
+					+ " individually or the entire event series?\n\n" + ev.getText() + "\nStart Date:  " 
+					+ ev.getStartDate().getShortDateString() + "\nEnd Date:  " + endDate + "\nSelected"
+					+ " Date:  " + DailyItemsPanel.currentDate.getShortDateString() + "\n\n",
+					Local.getString("Remove event"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, 
+						null, options, options[JOptionPane.CANCEL_OPTION]);
 			
 			if (n == JOptionPane.YES_OPTION) {
 				_splitRepeatableEvent(ev);		
@@ -469,46 +478,23 @@ public class EventsManager {
 		parent.removeChild(ev.getContent());
 	}
 	
+	/**
+	 * Takes the split event and creates new events for each half.
+	 * 
+	 * @param ev The event to be split
+	 */
 	private static void _splitRepeatableEvent(Event ev) {
-
+	
 		FrontSplitEvent frontSplit = new FrontSplitEvent(ev.getRepeat(), ev.getStartDate(),
 				ev.getEndDate(), DailyItemsPanel.currentDate, ev.getPeriod());
-		
-		if (!(frontSplit.getNewStartDate() == null && frontSplit.getNewEndDate() == null)) {
-			
-			if (frontSplit.getCreateRepeating()) {
-				createRepeatableEvent(ev.getRepeat(), frontSplit.getNewStartDate(), 
-						frontSplit.getNewEndDate(), ev.getPeriod(), ev.getHour(), ev.getMinute(), 
-						ev.getText(), ev.getWorkingDays());
-			}
-			else {
-				Date newSchedDate = CalendarDate.toDate(frontSplit.getNewStartDate().getDay(), 
-						frontSplit.getNewStartDate().getMonth(), frontSplit.getNewStartDate().getYear());
-				
-				createEvent(frontSplit.getNewStartDate(), ev.getHour(), ev.getMinute(),
-							ev.getText(), newSchedDate);
-			}
-		}
 		
 		BackSplitEvent backSplit = new BackSplitEvent(ev.getRepeat(), ev.getStartDate(),
 				ev.getEndDate(), DailyItemsPanel.currentDate, ev.getPeriod());
 		
-		if (!(backSplit.getNewStartDate() == null && backSplit.getNewEndDate() == null)) {
-			
-			if (backSplit.getCreateRepeating()) {
-				createRepeatableEvent(ev.getRepeat(), backSplit.getNewStartDate(), 
-						backSplit.getNewEndDate(), ev.getPeriod(), ev.getHour(), ev.getMinute(), 
-						ev.getText(), ev.getWorkingDays());
-			}
-			else {
-				Date newSchedDate = CalendarDate.toDate(backSplit.getSelectedDate().getDay(), 
-						backSplit.getSelectedDate().getMonth(), backSplit.getSelectedDate().getYear());
-			
-				createEvent(backSplit.getNewStartDate(), ev.getHour(), ev.getMinute(),ev.getText(),
-						newSchedDate);
-			}
-		}
+		frontSplit.newSplitEvent(ev);
+		backSplit.newSplitEvent(ev);
 	}
+	
 
 	private static Day createDay(CalendarDate date) {
 		Year y = getYear(date.getYear());
