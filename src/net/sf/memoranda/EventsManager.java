@@ -39,11 +39,15 @@ public class EventsManager {
 /*	public static final String NS_JNEVENTS =
 		"http://www.openmechanics.org/2003/jnotes-events-file";
 */
+
 	public static final int NO_REPEAT = 0;
 	public static final int REPEAT_DAILY = 1;
 	public static final int REPEAT_WEEKLY = 2;
 	public static final int REPEAT_MONTHLY = 3;
 	public static final int REPEAT_YEARLY = 4;
+	private static final String REMOVE_SINGLE = "Remove single event";
+	private static final String REMOVE_SERIES = "Remove event series";
+	private static final String CANCEL = "Cancel";
 
 	public static Document _doc = null;
 	static Element _root = null;
@@ -446,9 +450,9 @@ public class EventsManager {
 			
 			String endDate;
 			final Object[] options = { 
-					"Remove single event",
-					"Remove event series",
-					"Cancel"
+					REMOVE_SINGLE,
+					REMOVE_SERIES,
+					CANCEL
 			};
 			
 			if (ev.getEndDate() == null) {
