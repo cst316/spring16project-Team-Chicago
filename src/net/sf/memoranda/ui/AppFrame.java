@@ -793,16 +793,13 @@ public class AppFrame extends JFrame {
 
     public void doPrjPack() {
         // Fix until Sun's JVM supports more locales...
-        UIManager.put("FileChooser.saveInLabelText", Local
-                .getString("Save in:"));
+        UIManager.put("FileChooser.saveInLabelText", Local.getString("Save in:"));
         UIManager.put("FileChooser.upFolderToolTipText", Local.getString(
                 "Up One Level"));
         UIManager.put("FileChooser.newFolderToolTipText", Local.getString(
                 "Create New Folder"));
-        UIManager.put("FileChooser.listViewButtonToolTipText", Local
-                .getString("List"));
-        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local
-                .getString("Details"));
+        UIManager.put("FileChooser.listViewButtonToolTipText", Local.getString("List"));
+        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local.getString("Details"));
         UIManager.put("FileChooser.fileNameLabelText", Local.getString(
                 "File Name:"));
         UIManager.put("FileChooser.filesOfTypeLabelText", Local.getString(
@@ -810,12 +807,11 @@ public class AppFrame extends JFrame {
         UIManager.put("FileChooser.saveButtonText", Local.getString("Save"));
         UIManager.put("FileChooser.saveButtonToolTipText", Local.getString(
                 "Save selected file"));
-        UIManager
-                .put("FileChooser.cancelButtonText", Local.getString("Cancel"));
+        UIManager.put("FileChooser.cancelButtonText", Local.getString("Cancel"));
         UIManager.put("FileChooser.cancelButtonToolTipText", Local.getString(
                 "Cancel"));
 
-        JFileChooser chooser = new JFileChooser();
+        final JFileChooser chooser = new JFileChooser();
         chooser.setFileHidingEnabled(false);
         chooser.setDialogTitle(Local.getString("Pack project"));
         chooser.setAcceptAllFileFilterUsed(false);
@@ -838,12 +834,14 @@ public class AppFrame extends JFrame {
         }
         //---------------------------------------------------------------------
 
-        if (lastSel != null)
+        if (lastSel != null){
             chooser.setCurrentDirectory(lastSel);
-        if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+        }
+        if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION){
             return;
+        }
         Context.put("LAST_SELECTED_PACK_FILE", chooser.getSelectedFile());        
-        java.io.File f = chooser.getSelectedFile();
+        final java.io.File f = chooser.getSelectedFile();
         ProjectPackager.pack(CurrentProject.get(), f);
     }
 
@@ -894,10 +892,12 @@ public class AppFrame extends JFrame {
         }
         //---------------------------------------------------------------------
 
-        if (lastSel != null)
+        if (lastSel != null){
             chooser.setCurrentDirectory(lastSel);
-        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
+        }
+        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION){
             return;
+        }
         Context.put("LAST_SELECTED_PACK_FILE", chooser.getSelectedFile());        
         java.io.File f = chooser.getSelectedFile();
         ProjectPackager.unpack(f);
@@ -907,16 +907,13 @@ public class AppFrame extends JFrame {
      * Assembles file browser for importing ics file
      */
     public void doImportCal() {
-    	UIManager.put("FileChooser.lookInLabelText", Local
-                .getString("Look in:"));
+    	UIManager.put("FileChooser.lookInLabelText", Local.getString("Look in:"));
         UIManager.put("FileChooser.upFolderToolTipText", Local.getString(
                 "Up One Level"));
         UIManager.put("FileChooser.newFolderToolTipText", Local.getString(
                 "Create New Folder"));
-        UIManager.put("FileChooser.listViewButtonToolTipText", Local
-                .getString("List"));
-        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local
-                .getString("Details"));
+        UIManager.put("FileChooser.listViewButtonToolTipText", Local.getString("List"));
+        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local.getString("Details"));
         UIManager.put("FileChooser.fileNameLabelText", Local.getString(
                 "File Name:"));
         UIManager.put("FileChooser.filesOfTypeLabelText", Local.getString(
@@ -924,12 +921,11 @@ public class AppFrame extends JFrame {
         UIManager.put("FileChooser.openButtonText", Local.getString("Open"));
         UIManager.put("FileChooser.openButtonToolTipText", Local.getString(
                 "Open selected file"));
-        UIManager
-                .put("FileChooser.cancelButtonText", Local.getString("Cancel"));
+        UIManager.put("FileChooser.cancelButtonText", Local.getString("Cancel"));
         UIManager.put("FileChooser.cancelButtonToolTipText", Local.getString(
                 "Cancel"));
 
-        JFileChooser chooser = new JFileChooser();
+        final JFileChooser chooser = new JFileChooser();
         chooser.setFileHidingEnabled(false);
         chooser.setDialogTitle(Local.getString("Import Calendar"));
         chooser.setAcceptAllFileFilterUsed(false);
@@ -956,7 +952,7 @@ public class AppFrame extends JFrame {
             return;
         }
         Context.put("LAST_SELECTED_ICS_FILE", chooser.getSelectedFile());        
-        java.io.File f = chooser.getSelectedFile();
+        final java.io.File f = chooser.getSelectedFile();
         CalendarICS.importCalendar(f);
         projectsPanel.prjTablePanel.updateUI();
 		
@@ -966,16 +962,13 @@ public class AppFrame extends JFrame {
      * Assembles browser for exporting project as ics file
      */
     public void doExportCal(){
-    	UIManager.put("FileChooser.saveInLabelText", Local
-                .getString("Save in:"));
+    	UIManager.put("FileChooser.saveInLabelText", Local.getString("Save in:"));
         UIManager.put("FileChooser.upFolderToolTipText", Local.getString(
                 "Up One Level"));
         UIManager.put("FileChooser.newFolderToolTipText", Local.getString(
                 "Create New Folder"));
-        UIManager.put("FileChooser.listViewButtonToolTipText", Local
-                .getString("List"));
-        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local
-                .getString("Details"));
+        UIManager.put("FileChooser.listViewButtonToolTipText", Local.getString("List"));
+        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local.getString("Details"));
         UIManager.put("FileChooser.fileNameLabelText", Local.getString(
                 "File Name:"));
         UIManager.put("FileChooser.filesOfTypeLabelText", Local.getString(
@@ -983,12 +976,11 @@ public class AppFrame extends JFrame {
         UIManager.put("FileChooser.saveButtonText", Local.getString("Save"));
         UIManager.put("FileChooser.saveButtonToolTipText", Local.getString(
                 "Save selected file"));
-        UIManager
-                .put("FileChooser.cancelButtonText", Local.getString("Cancel"));
+        UIManager.put("FileChooser.cancelButtonText", Local.getString("Cancel"));
         UIManager.put("FileChooser.cancelButtonToolTipText", Local.getString(
                 "Cancel"));
 
-        JFileChooser chooser = new JFileChooser();
+        final JFileChooser chooser = new JFileChooser();
         chooser.setFileHidingEnabled(false);
         chooser.setDialogTitle(Local.getString("Export Project Calendar"));
         chooser.setAcceptAllFileFilterUsed(false);
@@ -1009,12 +1001,14 @@ public class AppFrame extends JFrame {
         }
         //---------------------------------------------------------------------
 
-        if (lastSel != null)
+        if (lastSel != null){
             chooser.setCurrentDirectory(lastSel);
-        if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+        }
+        if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION){
             return;
+        }
         Context.put("LAST_SELECTED_ICS_FILE", chooser.getSelectedFile());        
-        java.io.File f = chooser.getSelectedFile();
+        final java.io.File f = chooser.getSelectedFile();
         CalendarICS.exportCal(CurrentProject.get(), f);
     }
     

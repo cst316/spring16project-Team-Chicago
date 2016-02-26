@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="memoranda" default="package" basedir="." xmlns:jacoco="antlib:org.jacoco.ant" xmlns:cs="antlib:com.puppycrawl.tools.checkstyle.ant">
+<project name="memoranda" default="package" basedir="." 
+	xmlns:jacoco="antlib:org.jacoco.ant" xmlns:cs="antlib:com.puppycrawl.tools.checkstyle.ant">
 	<!-- Build.xml file initially created by Kenneth J. Pouncey              -->
 	<!-- on 5 september 2003.                                                -->
 	<!-- Kenneth is the project-leader of the tn5250j-project on SourceForge -->
@@ -28,16 +29,15 @@
     <property name="optimize"    value="off"/>
     <property name="deprecation" value="off"/>
     
-    <taskdef resource="org/jacoco/ant/antlib.xml"
-    uri="antlib:org.jacoco.ant"
-    classpath="${lib.dir}/jacocoant.jar"/>
+    <taskdef resource="org/jacoco/ant/antlib.xml" uri="antlib:org.jacoco.ant"
+    		classpath="${lib.dir}/jacocoant.jar"/>
     
-    <taskdef name="findbugs"
-    classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
-    classpath="${lib.dir}/findbugs-ant.jar"/>
+    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
+    		classpath="${lib.dir}/findbugs-ant.jar"/>
     
-    <taskdef resource="com/puppycrawl/tools/checkstyle/ant/checkstyle-ant-task.properties"
-    classpath="lib/checkstyle-6.15-all.jar"/>
+    <taskdef 
+    		resource="com/puppycrawl/tools/checkstyle/ant/checkstyle-ant-task.properties"
+    		classpath="lib/checkstyle-6.15-all.jar"/>
 
 	<target name="init">
 		<!-- Create the time stamp -->
@@ -56,7 +56,8 @@
 	<!-- =================================================================== -->
 	<!-- Creates the Jar                                                     -->
 	<!-- =================================================================== -->
-	<target name="package" depends="clean,compile" description="Create a Jar-File of your compiled classes">
+	<target name="package" depends="clean,compile" 
+		description="Create a Jar-File of your compiled classes">
 		<tstamp>
 			<format property="ts" pattern="MM/dd/yyyy HH:mm:ss z"/>
 		</tstamp>
@@ -68,7 +69,8 @@
 				<attribute name="Implementation-Title" value="${name}"/>
 				<attribute name="Implementation-Version" value="${version}"/>
 				<attribute name="Implementation-Vendor" value="http://memoranda.sf.net"/>
-				<attribute name="Build-Id" value="${DSTAMP}.${build.number} (${ts} ${user.name} [${os.name} ${os.version} ${os.arch}])"/>
+				<attribute name="Build-Id" 
+						value="${DSTAMP}.${build.number} (${ts} ${user.name} [${os.name} ${os.version} ${os.arch}])"/>
 			</manifest>
 		</jar>
 	</target>
@@ -110,10 +112,8 @@
 		<antcall target="package"/>
 	</target>
 	<target name="dist-full" depends="init, build-if-needed">
-		<!-- Create the full distribution includes:
-    build (build\)
-    sources (src\)
-    dependencies (\lib)    
+		<!-- Create the full distribution includes: build (build\) sources (src\)
+    			dependencies (\lib)    
     -->
 		<property name="dist.content.dir" value="${dist.dir}/${name}${version}-${DSTAMP}"/>
 		<mkdir dir="${dist.content.dir}"/>
