@@ -1,3 +1,5 @@
+package net.sf.memoranda;
+
 /**
  * File: BackSplitEvent.java
  *
@@ -6,7 +8,6 @@
  *
  * @author lknaron
  */
-package net.sf.memoranda;
 
 import java.util.Date;
 
@@ -17,7 +18,7 @@ import net.sf.memoranda.util.Util;
  * Establishes the new start and end dates of the latter half of a split 
  * event based on where the split occurs within the series.
  */
-public class BackSplitEvent extends SplitEvent {
+public class BackSplitEvent extends AbstractSplitEvent {
 	
 	/**
 	 * Constructor for BackSplitEvent. Calls the method to split at the 
@@ -43,8 +44,6 @@ public class BackSplitEvent extends SplitEvent {
 		else if (this.getPosition() == SplitPosition.LAST_POSITION) {
 			this.splitAtLastPosition();
 		}
-		
-		createNewSchedDate();
 	}
 
 	/**
@@ -100,18 +99,4 @@ public class BackSplitEvent extends SplitEvent {
 		this.setNewStartDate(null);
 		this.setNewEndDate(null);
 	}
-	
-	/**
-	 * Creates the new scheduled date for an event. Since this is for the back split,
-	 * the date is created from the selected date on the calendar.
-	 */
-	public void createNewSchedDate() {
-		if (this.getNewStartDate() != null) {
-		Date newSchedDate = CalendarDate.toDate(this.getSelectedDate().getDay(), 
-				this.getSelectedDate().getMonth(), this.getSelectedDate().getYear());
-		Util.debug(newSchedDate.toString());
-		this.setNewSchedDate(newSchedDate);
-		}
-	}
-
 }

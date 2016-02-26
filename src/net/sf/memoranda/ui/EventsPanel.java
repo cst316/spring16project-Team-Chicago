@@ -581,9 +581,10 @@ public class EventsPanel extends JPanel {
 		net.sf.memoranda.Event ev;
 		boolean displayMessage = true;
 
-		if(_eventsTable.getSelectedRows().length > 1) 
+		if(_eventsTable.getSelectedRows().length > 1) { 
 			msg = Local.getString("Remove") + " " + _eventsTable.getSelectedRows().length 
 				+ " " + Local.getString("events") + "\n" + Local.getString("Are you sure?");
+		}
 		else {
 			ev = (net.sf.memoranda.Event) _eventsTable.getModel().getValueAt(
                 _eventsTable.getSelectedRow(),
@@ -598,7 +599,7 @@ public class EventsPanel extends JPanel {
 		
 		// bypasses the confirmation popup if deleting one selected repeating event
 		if (displayMessage) {
-			int n =
+			final int n =
 					JOptionPane.showConfirmDialog(
 					App.getFrame(),
 					msg,

@@ -1,5 +1,6 @@
+package net.sf.memoranda;
 /**
- * File: SplitEvent.java
+ * File: AbstractSplitEvent.java
  *
  * Provides the functionality to split a repeating event into two new events.
  * A split event is divided into a Front event and a Back event, and the 
@@ -7,26 +8,23 @@
  * 
  * @author lknaron 
  */
-package net.sf.memoranda;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-
 import net.sf.memoranda.date.CalendarDate;
+import net.sf.memoranda.util.Util;
 
 /**
- * The abstract SplitEvent class provides the functions and abstract methods 
+ * The AbstractSplitEvent class provides the functions and abstract methods 
  * used by the concrete classes, FrontSplitEvent and BackSplitEvent, to split a 
  * repeating event into separate dates for new events, in order to isolate the 
  * individual selected event.
  */
-public abstract class SplitEvent {
+public abstract class AbstractSplitEvent {
 	
 	public enum SplitPosition {
 		FIRST_POSITION, MIDDLE_POSITION, LAST_POSITION
-	};
+	}
 	
 	static final int YEARLY = 4;
 	private final int _type;
@@ -49,7 +47,7 @@ public abstract class SplitEvent {
 	 * @param selected 	The date the user selected on the calendar
 	 * @param period	Period of repeating days
 	 */
-	SplitEvent(int type, CalendarDate start, CalendarDate end, CalendarDate selected, int period) {
+	AbstractSplitEvent(int type, CalendarDate start, CalendarDate end, CalendarDate selected, int period) {
 		_type = type;
 		_origStartDate = start;
 		_origEndDate = end;
@@ -98,7 +96,7 @@ public abstract class SplitEvent {
 		this._newEndDate = endDate;
 	}
 	
-	public void setNewSchedDate(Date newDate) {
+	protected void setNewSchedDate(Date newDate) {
 		this._newSchedDate = newDate;
 	}
 
@@ -114,12 +112,12 @@ public abstract class SplitEvent {
 	 */
 	@SuppressWarnings("deprecation")
 	public CalendarDate incrementDateDay(CalendarDate date) {
-		Calendar cal = CalendarDate.convertCalendarDateToCalendar(date);
+		final Calendar cal = CalendarDate.convertCalendarDateToCalendar(date);
 		cal.add(Calendar.DATE, this._periodOfDays);
-		int day = cal.getTime().getDate();
-		int month = cal.getTime().getMonth();
-		int year = cal.getTime().getYear() + 1900;
-		CalendarDate upDate = new CalendarDate(day, month, year);
+		final int day = cal.getTime().getDate();
+		final int month = cal.getTime().getMonth();
+		final int year = cal.getTime().getYear() + 1900;
+		final CalendarDate upDate = new CalendarDate(day, month, year);
 		return upDate;
 	}
 
@@ -131,12 +129,12 @@ public abstract class SplitEvent {
 	 */
 	@SuppressWarnings("deprecation")
 	public CalendarDate decrementDateDay(CalendarDate date) {	
-		Calendar cal = CalendarDate.convertCalendarDateToCalendar(date);
+		final Calendar cal = CalendarDate.convertCalendarDateToCalendar(date);
 		cal.add(Calendar.DATE, - this._periodOfDays);
-		int day = cal.getTime().getDate();
-		int month = cal.getTime().getMonth();
-		int year = cal.getTime().getYear() + 1900;
-		CalendarDate downDate = new CalendarDate(day, month, year);
+		final int day = cal.getTime().getDate();
+		final int month = cal.getTime().getMonth();
+		final int year = cal.getTime().getYear() + 1900;
+		final CalendarDate downDate = new CalendarDate(day, month, year);
 
 		return downDate;
 	}
@@ -148,8 +146,8 @@ public abstract class SplitEvent {
 	 * @return upDate 	The new date increased by one year
 	 */
 	public CalendarDate incrementDateYear(CalendarDate date) {
-		int upYear = date.getYear() + 1;
-		CalendarDate upDate = new CalendarDate(date.getDay(), date.getMonth(), upYear);
+		final int upYear = date.getYear() + 1;
+		final CalendarDate upDate = new CalendarDate(date.getDay(), date.getMonth(), upYear);
 		return upDate;
 	}
 	
@@ -160,8 +158,8 @@ public abstract class SplitEvent {
 	 * @return downDate 	The new date decreased by one year
 	 */
 	public CalendarDate decrementDateYear(CalendarDate date) {
-		int downYear = date.getYear() - 1;
-		CalendarDate downDate = new CalendarDate(date.getDay(), date.getMonth(), downYear);
+		final int downYear = date.getYear() - 1;
+		final CalendarDate downDate = new CalendarDate(date.getDay(), date.getMonth(), downYear);
 		return downDate;
 	}
 	
@@ -183,14 +181,18 @@ public abstract class SplitEvent {
 	 * @param ev	The original event 
 	 */
 	public void newSplitEvent(Event ev) {
-		if (this.getNewStartDate() != null && this.getNewEndDate() != null) {
+		if (!(this.getNewStartDate() == null && this.getNewEndDate() == null)) {
 			
 			if (this.getCreateRepeating()) {
 				EventsManager.createRepeatableEvent(ev.getRepeat(), this.getNewStartDate(), 
 						this.getNewEndDate(), ev.getPeriod(), ev.getHour(), ev.getMinute(), 
 						ev.getText(), ev.getWorkingDays());
 			}
-			else {			
+			else {	
+				if (/*this.getNewStartDate() == null || */this.getNewStartDate().equals(this.getNewEndDate())) {
+					this._createNewSchedDate();
+				}
+				
 				EventsManager.createEvent(this.getNewStartDate(), ev.getHour(), ev.getMinute(),
 						ev.getText(), this._newSchedDate);
 			}
@@ -213,14 +215,19 @@ public abstract class SplitEvent {
 	public abstract void splitAtLastPosition();
 	
 	/**
-	 * Abstract method to create a new scheduled date for an event.
+	 * Creates the new scheduled date for creating a single event.
 	 */
-	public abstract void createNewSchedDate();
+	private void _createNewSchedDate() {
+		Date newSchedDate = CalendarDate.toDate(this.getNewStartDate().getDay(), 
+					this.getNewStartDate().getMonth(), this.getNewStartDate().getYear());
+
+		this.setNewSchedDate(newSchedDate);
+	}
 	
 	/**
 	 * Flags if an event should be created as non-repeating or repeating.
 	 * 
-	 * @param makeSingle	Flags repeating type
+	 * @param makeSingle	Flags repeating type, whether single or repeating
 	 */
 	private void _setCreateRepeating(boolean makeSingle) {
 		this._createRepeating = makeSingle;

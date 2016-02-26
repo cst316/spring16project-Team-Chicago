@@ -1,3 +1,4 @@
+package net.sf.memoranda;
 /**
  * File: FrontSplitEvent.java
  *
@@ -6,7 +7,6 @@
  *
  * @author lknaron
  */
-package net.sf.memoranda;
 
 import java.util.Date;
 
@@ -17,7 +17,7 @@ import net.sf.memoranda.util.Util;
  * Establishes the new start and end dates of the first half of a split 
  * event based on where the split occurs within the series.
  */
-public class FrontSplitEvent extends SplitEvent {
+public class FrontSplitEvent extends AbstractSplitEvent {
 	
 	/**
 	 * Constructor for FrontSplitEvent. Calls the method to split at the 
@@ -43,9 +43,6 @@ public class FrontSplitEvent extends SplitEvent {
 		else if (this.getPosition() == SplitPosition.LAST_POSITION) {
 			this.splitAtLastPosition();
 		}
-		
-		createNewSchedDate();
-
 	}
 
 	/**
@@ -91,18 +88,4 @@ public class FrontSplitEvent extends SplitEvent {
 		
 		this.checkForSameDate();
 	}
-	
-	/**
-	 * Creates the new scheduled date for an event. Since this is for the front split,
-	 * the date is created from the new start date of the event.
-	 */
-	public void createNewSchedDate() {
-		if (this.getNewStartDate() != null) {
-			Date newSchedDate = CalendarDate.toDate(this.getNewStartDate().getDay(), 
-					this.getNewStartDate().getMonth(), this.getNewStartDate().getYear());
-
-			this.setNewSchedDate(newSchedDate);
-		}
-	}
-
 }

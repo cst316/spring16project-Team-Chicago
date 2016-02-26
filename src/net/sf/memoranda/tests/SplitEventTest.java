@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.sf.memoranda.FrontSplitEvent;
-import net.sf.memoranda.SplitEvent;
+import net.sf.memoranda.AbstractSplitEvent;
 import net.sf.memoranda.date.CalendarDate;
 
 /**
@@ -15,11 +15,11 @@ import net.sf.memoranda.date.CalendarDate;
  */
 public class SplitEventTest {
 	
-	SplitEvent se1;	
-	SplitEvent se2;
-	SplitEvent se3;
-	SplitEvent se4;
-	SplitEvent se5;
+	AbstractSplitEvent se1;	
+	AbstractSplitEvent se2;
+	AbstractSplitEvent se3;
+	AbstractSplitEvent se4;
+	AbstractSplitEvent se5;
 	CalendarDate date1;
 	CalendarDate date2;
 	CalendarDate date3;

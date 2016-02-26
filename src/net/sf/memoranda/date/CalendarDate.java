@@ -97,8 +97,13 @@ public class CalendarDate {
         return new CalendarDate(cal);
     }
     
+    /**
+     * Converts CalendarDate to Calendar for use in modifying dates.
+     * @param date Date to be converted
+     * @return cal The parameter date converted to Calender
+     */
     public static Calendar convertCalendarDateToCalendar(CalendarDate date) {
-    	Calendar cal = date.getCalendar();
+    	final Calendar cal = date.getCalendar();
     	return cal;
     }
 

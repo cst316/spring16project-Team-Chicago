@@ -445,7 +445,7 @@ public class EventsManager {
 		if (ev.isRepeatable()&& edit == false){ 	
 			
 			String endDate;
-			Object[] options = { 
+			final Object[] options = { 
 					"Remove single event",
 					"Remove event series",
 					"Cancel"
@@ -458,8 +458,8 @@ public class EventsManager {
 				endDate = ev.getEndDate().getShortDateString();
 			}
 			
-			int n = JOptionPane.showOptionDialog(null, "Do you wish to remove the following selected event"
-					+ " individually or the entire event series?\n\n" + ev.getText() + "\nStart Date:  " 
+			final int n = JOptionPane.showOptionDialog(null, "Do you wish to remove the following selected event"
+					+ " individually or the entire event series?\n\n" + "Event: " + ev.getText() + "\nStart Date:  " 
 					+ ev.getStartDate().getShortDateString() + "\nEnd Date:  " + endDate + "\nSelected"
 					+ " Date:  " + DailyItemsPanel.currentDate.getShortDateString() + "\n\n",
 					Local.getString("Remove event"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, 
@@ -474,7 +474,7 @@ public class EventsManager {
 		}		
 		
 		// removes entire series
-		ParentNode parent = ev.getContent().getParent();
+		final ParentNode parent = ev.getContent().getParent();
 		parent.removeChild(ev.getContent());
 	}
 	
@@ -485,10 +485,10 @@ public class EventsManager {
 	 */
 	private static void _splitRepeatableEvent(Event ev) {
 	
-		FrontSplitEvent frontSplit = new FrontSplitEvent(ev.getRepeat(), ev.getStartDate(),
+		final FrontSplitEvent frontSplit = new FrontSplitEvent(ev.getRepeat(), ev.getStartDate(),
 				ev.getEndDate(), DailyItemsPanel.currentDate, ev.getPeriod());
 		
-		BackSplitEvent backSplit = new BackSplitEvent(ev.getRepeat(), ev.getStartDate(),
+		final BackSplitEvent backSplit = new BackSplitEvent(ev.getRepeat(), ev.getStartDate(),
 				ev.getEndDate(), DailyItemsPanel.currentDate, ev.getPeriod());
 		
 		frontSplit.newSplitEvent(ev);
