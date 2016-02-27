@@ -9,35 +9,35 @@
 	<!--===================================================================== -->
 	<!--$Id: build.xml,v 1.18 2007/04/06 21:12:24 alexeya Exp $ -->
 	<!-- set global properties for this build -->
-	<property name="name" value="memoranda" />
-	<property name="version" value="1.1" />
-	<property name="source.dir" value="${basedir}/src" />
-	<property name="lib.dir" value="${basedir}/lib" />
-	<property name="build.dir" value="${basedir}/build" />
-	<property name="build.classes.dir" value="${build.dir}" />
-	<property name="main.class" value="net.sf.memoranda.Start" />
-	<property name="tests.dir" value="${build.dir}/test" />
-	<property name="tests.junit.dir" value="${tests.dir}/junit" />
-	<property name="tests.jacoco.dir" value="${tests.dir}/jacoco" />
-	<property name="tests.findbugs.dir" value="${tests.dir}/findbugs" />
-	<property name="tests.checkstyle.dir" value="${tests.dir}/checkstyle" />
-	<property name="jarname" value="${name}.jar" />
-	<property name="dist.dir" value="${basedir}/dist" />
-	<!-- compile options -->
-	<property name="debug" value="off" />
-	<property name="debuglevel" value="lines,vars,source" />
-	<property name="optimize" value="off" />
-	<property name="deprecation" value="off" />
-
-	<taskdef resource="org/jacoco/ant/antlib.xml" uri="antlib:org.jacoco.ant"
-		classpath="${lib.dir}/jacocoant.jar" />
-
-	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
-		classpath="${lib.dir}/findbugs-ant.jar" />
-
-	<taskdef
-		resource="com/puppycrawl/tools/checkstyle/ant/checkstyle-ant-task.properties"
-		classpath="lib/checkstyle-6.15-all.jar" />
+	<property name="name"                  value="memoranda"/>
+    <property name="version"               value="1.1"/>
+    <property name="source.dir"            value="${basedir}/src"/>
+    <property name="lib.dir"               value="${basedir}/lib"/>
+    <property name="build.dir"             value="${basedir}/build"/>
+    <property name="build.classes.dir"     value="${build.dir}"/>
+    <property name="main.class"            value="net.sf.memoranda.Start"/>
+    <property name="tests.dir"             value="${build.dir}/test"/>
+    <property name="tests.junit.dir"       value="${tests.dir}/junit"/>
+    <property name="tests.jacoco.dir"      value="${tests.dir}/jacoco"/>
+    <property name="tests.findbugs.dir"    value="${tests.dir}/findbugs"/>
+    <property name="tests.checkstyle.dir"  value="${tests.dir}/checkstyle"/>
+    <property name="jarname"               value="${name}.jar"/>
+    <property name="dist.dir"              value="${basedir}/dist"/>
+    <!-- compile options -->
+    <property name="debug"       value="off"/>
+    <property name="debuglevel"  value="lines,vars,source"/>
+    <property name="optimize"    value="off"/>
+    <property name="deprecation" value="off"/>
+    
+    <taskdef resource="org/jacoco/ant/antlib.xml" uri="antlib:org.jacoco.ant"
+    		classpath="${lib.dir}/jacocoant.jar"/>
+    
+    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
+    		classpath="${lib.dir}/findbugs-ant.jar"/>
+    
+    <taskdef 
+    		resource="com/puppycrawl/tools/checkstyle/ant/checkstyle-ant-task.properties"
+    		classpath="lib/checkstyle-6.15-all.jar"/>
 
 	<target name="init">
 		<!-- Create the time stamp -->
