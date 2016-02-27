@@ -6,12 +6,11 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 
-@SuiteClasses({ CalendarDateNextDayTest.class,
-				CalendarDateTest.class,
+@SuiteClasses({ CalendarDateNextDayTest.class, 
+				CalendarDateTest.class, 
 				ContactTest.class, 
 				EventsManagerTest.class,
-				})
-
+				EventsPanelTest.class})
 public class AllTests {
 
 }
