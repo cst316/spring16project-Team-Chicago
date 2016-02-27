@@ -22,7 +22,7 @@ import nu.xom.Element;
 /*$Id: EventImpl.java,v 1.9 2004/10/06 16:00:11 ivanrise Exp $*/
 public class EventImpl implements Event, Comparable {
 	
-	private String repSchedDate;   
+	private String _repSchedDate;   
     private Element _elem = null;
 
     /**
@@ -33,11 +33,11 @@ public class EventImpl implements Event, Comparable {
     }
     
     public void setRepSchedDate(CalendarDate date) { 	
-    	repSchedDate = date.getShortDateString();
+    	_repSchedDate = date.getShortDateString();
     }
     
     public String getRepSchedDate() {	
-    	return repSchedDate;
+    	return _repSchedDate;
     }
     
     public String getSchedDate() {	
@@ -142,7 +142,19 @@ public class EventImpl implements Event, Comparable {
 		d = calendar.getTime(); //Revision to fix deprecated methods (jcscoobyrs) 12-NOV-2003 14:26:00
         return d;
     }
+    
+    public String getDescription(){
+    	Attribute a = _elem.getAttribute("description");
+    	if(a != null){
+    		return a.getValue();
+    	}
+    	return null;
+    }
 	
+    public void setDescription(String desc){
+    	_elem.addAttribute(new Attribute("description",desc));
+    	
+    }
 	/**
      * @see net.sf.memoranda.Event#getWorkinDays()
      */

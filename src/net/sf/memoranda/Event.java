@@ -36,16 +36,22 @@ public interface Event {
     
     String getText();
     
+    String getDescription();
+    
     nu.xom.Element getContent();
     
     int getRepeat();
     
     CalendarDate getStartDate();
+    
     CalendarDate getEndDate();
+    
     int getPeriod();
+    
     boolean isRepeatable();
     
     Date getTime();
+    
     String getTimeString();
     
 	boolean getWorkingDays();
