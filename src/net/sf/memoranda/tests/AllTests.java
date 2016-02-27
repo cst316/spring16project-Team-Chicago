@@ -10,7 +10,8 @@ import org.junit.runners.Suite.SuiteClasses;
 				CalendarDateTest.class, 
 				ContactTest.class, 
 				EventsManagerTest.class,
-				EventsPanelTest.class})
+				EventsPanelTest.class,
+				SplitEventTest.class})
 public class AllTests {
 
 }

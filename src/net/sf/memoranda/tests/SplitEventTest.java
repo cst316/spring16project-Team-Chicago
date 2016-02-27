@@ -31,14 +31,14 @@ public class SplitEventTest {
 
 	@Before
 	public void setUp() throws Exception {
-		date1 = new CalendarDate(1,1,2017);		// day/year edge - decrement(1 day) to previous year
-		date2 = new CalendarDate(31,10,2017);	// month edge - increment(1 day) to following month
-		date3 = new CalendarDate(31,12,2018);	// year edge  - increment(2 days) to following year
+		date1 = new CalendarDate(1,1,2017);		// day/year edge 
+		date2 = new CalendarDate(31,10,2017);	// month edge 
+		date3 = new CalendarDate(31,12,2018);	// year edge 
 		date4 = new CalendarDate(15,3,2018);	
 		
 		se1 = new FrontSplitEvent(1, date1, date2, date1, period1);	// tests date1
 		se2 = new FrontSplitEvent(1, date1, date2, date2, period1);	// tests date2
-		se3 = new FrontSplitEvent(1, date1, date2, date3, period2);   // tests date3
+		se3 = new FrontSplitEvent(1, date1, date2, date3, period2); // tests date3
 		se4 = new FrontSplitEvent(1, date1, date2, date4, period3);	// tests date4
 		se5 = new FrontSplitEvent(1, date1, date2, date4, period4);	// tests period4
 		
@@ -62,11 +62,13 @@ public class SplitEventTest {
 	@Test
 	public void testIncrementDateYear() {
 		assertEquals(2018, se1.incrementDateYear(date1).getYear());
+		assertTrue(new CalendarDate(1,1,2018).equals(se1.incrementDateYear(date1)));
 	}
 
 	@Test
 	public void testDecrementDateYear() {
-		assertTrue(new CalendarDate(15,3,2017).equals(se4.decrementDateYear(date4)));
+		assertEquals(2017, se4.decrementDateYear(date4).getYear());
+		assertTrue(new CalendarDate(31,12,2017).equals(se1.decrementDateYear(date3)));
 	}
 
 }
