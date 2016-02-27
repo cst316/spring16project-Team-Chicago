@@ -1,174 +1,183 @@
 package net.sf.memoranda.ui;
 
-/**
- * This file contains the SearchPanel class.
- */
-
+import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.swing.JComponent;
-import javax.swing.JLayeredPane;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.event.RowSorterEvent;
-import javax.swing.event.RowSorterListener;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.CaretEvent;
+import javax.swing.text.Document;
 
-import org.jdesktop.swingx.JXList;
+import net.sf.memoranda.CurrentProject;
+import net.sf.memoranda.Note;
+import net.sf.memoranda.NoteList;
+import net.sf.memoranda.Project;
+import net.sf.memoranda.ProjectListener;
+import net.sf.memoranda.ResourcesList;
+import net.sf.memoranda.TaskList;
+import net.sf.memoranda.util.CurrentStorage;
+import net.sf.memoranda.util.Local;
 
-/**
- * This class implements a panel that responds to changes in a JXList. The panel
- * resizes according to filtered items in a JXList up to the maxListDisplay. The
- * panel is anchored to the bottom of a JComponent. The JXList must be using an
- * implementation of IncrementingRowFilter and have a fixed cell height in order
- * to display and filter the list properly.
- * 
- * @author Jonathan Hinkle
- *
- */
-@SuppressWarnings("serial")
-class SearchPanel extends JPanel {
+/*$Id: SearchPanel.java,v 1.5 2004/04/05 10:05:44 alexeya Exp $*/
+public class SearchPanel extends JPanel {
+    BorderLayout borderLayout1 = new BorderLayout();
+    NotesList notesList = new NotesList(NotesList.EMPTY);
+    JScrollPane scrollPane = new JScrollPane();
+    JPanel jPanel1 = new JPanel();
+    BorderLayout borderLayout2 = new BorderLayout();
+    JTextField searchField = new JTextField();
+    JPanel jPanel2 = new JPanel();
+    BorderLayout borderLayout3 = new BorderLayout();
+    Border border1;
+    TitledBorder titledBorder1;
+    JPanel jPanel3 = new JPanel();
+    JPanel jPanel4 = new JPanel();
+    JCheckBox caseSensCB = new JCheckBox();
+    JCheckBox regexpCB = new JCheckBox();
+    JCheckBox wholeWCB = new JCheckBox();
+    JButton searchB = new JButton();
+    BorderLayout borderLayout4 = new BorderLayout();
+    BorderLayout borderLayout5 = new BorderLayout();
+    JProgressBar progressBar = new JProgressBar();
 
-	private int _offsetX;
-	private int _offsetY;
-	private JComponent _anchor;
-	private JXList _list;
-	private int _maxVisibleRows;
-	private JLayeredPane _pane;
+    public SearchPanel() {
+        try {
+            jbInit();
+        }
+        catch (Exception ex) {
+            new ExceptionDialog(ex);
+        }
+    }
+    void jbInit() throws Exception {
+        border1 = BorderFactory.createEmptyBorder(2, 2, 2, 2);
 
-	/**
-	 * Constructor for SearchJPanel.
-	 * 
-	 * @param list A JXList to be used for searching.
-	 * @param anchor The component which the panel will be anchored to.
-	 * @param pane A JLayeredPane where the panel will be displayed.
-	 * @param maxVisibleRows The maximum number of items the panel will display
-	 *            from the list.
-	 */
-	SearchPanel(JXList list, JComponent anchor, JLayeredPane pane, int maxVisibleRows) {
-		super();
-		_pane = pane;
-		_anchor = anchor;
-		_list = list;
-		_maxVisibleRows = maxVisibleRows;
-		_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        titledBorder1 = new TitledBorder(BorderFactory.createEmptyBorder(), Local.getString("Search") + ":");
 
-		_setOffset(new Point(0, _anchor.getHeight()));
-		_setAnchorComponentListener();
-		_setPairFocusListener();
-		_setListRowFilterListener();
+        this.setLayout(borderLayout1);
 
-		_pane.add(this, JLayeredPane.POPUP_LAYER);
-		setVisible(false);
-	}
+        jPanel1.setLayout(borderLayout2);
+        jPanel2.setLayout(borderLayout3);
+        jPanel2.setBorder(titledBorder1);
+        titledBorder1.setTitleFont(new java.awt.Font("Dialog", 1, 11));
+        searchField.setFont(new java.awt.Font("Dialog", 1, 10));
+        searchField.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(CaretEvent e) {
+                searchField_caretUpdate(e);
+            }
+        });
+        jPanel3.setLayout(borderLayout5);
+        caseSensCB.setText(Local.getString("Case sensitive"));
+        caseSensCB.setFont(new java.awt.Font("Dialog", 1, 10));
+        caseSensCB.setMargin(new Insets(0, 0, 0, 0));
 
-	@Override
-	public void setVisible(boolean visible) {
-		System.out.println("Visible?");
-		super.setVisible(visible);
-		_list.setVisible(visible);
-		if (visible) {
-			_updateListView();
-			_updateLocation();
-		}
-	}
+        regexpCB.setFont(new java.awt.Font("Dialog", 1, 10));
+        regexpCB.setMargin(new Insets(0, 0, 0, 0));
+        regexpCB.setText(Local.getString("Regular expressions"));
+        wholeWCB.setText(Local.getString("Whole words only"));
+        wholeWCB.setMargin(new Insets(0, 0, 0, 0));
+        wholeWCB.setFont(new java.awt.Font("Dialog", 1, 10));
+        searchB.setEnabled(false);
+        searchB.setFont(new java.awt.Font("Dialog", 1, 11));
+        searchB.setMaximumSize(new Dimension(72, 25));
+        searchB.setMinimumSize(new Dimension(2, 25));
+        searchB.setPreferredSize(new Dimension(70, 25));
+        searchB.setMargin(new Insets(0, 0, 0, 0));
+        searchB.setText(Local.getString("Search"));
+        searchB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                searchB_actionPerformed(e);
+            }
+        });
+        jPanel4.setLayout(borderLayout4);
+        this.add(scrollPane, BorderLayout.CENTER);
+        this.add(jPanel1, BorderLayout.NORTH);
+        scrollPane.getViewport().add(notesList);
+        jPanel1.add(jPanel2, BorderLayout.NORTH);
+        jPanel2.add(searchField, BorderLayout.CENTER);
+        jPanel1.add(jPanel3, BorderLayout.CENTER);
+        jPanel3.add(jPanel4, BorderLayout.NORTH);
+        jPanel4.add(caseSensCB, BorderLayout.SOUTH);
+        jPanel4.add(wholeWCB, BorderLayout.NORTH);
+        jPanel4.add(regexpCB, BorderLayout.CENTER);
+        jPanel3.add(searchB, BorderLayout.SOUTH);
+        CurrentProject.addProjectListener(new ProjectListener() {
+            public void projectChange(Project p, NoteList nl, TaskList tl, ResourcesList rl) {
+                notesList.update(new Vector());
+            }
+            public void projectWasChanged() {}
+        });
+        //notesList.update(new Vector());
 
-	private void _setOffset(Point offset) {
-		this._offsetX = offset.x;
-		this._offsetY = offset.y;
-	}
+    }
 
-	private void _setAnchorComponentListener() {
-		_anchor.addComponentListener(new ComponentAdapter() {
+    Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
 
-			@Override
-			public void componentResized(ComponentEvent e) {
-				_setOffset(new Point(0, _anchor.getHeight()));
-				_updateListView();
-			}
+    void searchB_actionPerformed(ActionEvent e) {
+        Cursor cur = App.getFrame().getCursor();
+        App.getFrame().setCursor(waitCursor);
+        doSearch();
+        App.getFrame().setCursor(cur);
+    }
 
-			@Override
-			public void componentMoved(ComponentEvent e) {
-				// If the component is moved
-				_updateLocation();
-			}
+    void searchField_caretUpdate(CaretEvent e) {
+        searchB.setEnabled(searchField.getText().length() > 0);
+    }
+    
+    
+    void doSearch() {
+        Pattern pattern;
+        //this.add(progressBar, BorderLayout.SOUTH);
+        int flags = Pattern.DOTALL;
+        if (!caseSensCB.isSelected())
+            flags = flags + Pattern.CASE_INSENSITIVE + Pattern.UNICODE_CASE;
+        String _find = searchField.getText();
+        if (!regexpCB.isSelected())
+            _find = "\\Q" + _find + "\\E";
+        if (wholeWCB.isSelected())
+            _find = "[\\s\\p{Punct}]" + _find + "[\\s\\p{Punct}]";
+        try {
+            pattern = Pattern.compile(_find, flags);
+        }
+        catch (Exception ex) {
+            new ExceptionDialog(ex, "Error in regular expression", "Check the regular expression syntax");
+            return;
+        }
+        /*progressBar.setMinimum(0);
+        progressBar.setStringPainted(true);*/
+        Vector notes = (Vector) CurrentProject.getNoteList().getAllNotes();
+        Vector found = new Vector();
+        /*progressBar.setMaximum(notes.size()-1);
+        progressBar.setIndeterminate(false);
+        this.add(progressBar, BorderLayout.SOUTH);*/
+        for (int i = 0; i < notes.size(); i++) {
+            //progressBar.setValue(i);
+            Note note = (Note) notes.get(i);
+            Document doc = CurrentStorage.get().openNote(note);
+            try {
+                String txt = doc.getText(0, doc.getLength());
+                Matcher matcher = pattern.matcher(txt);
+                if (matcher.find())
+                    found.add(note);
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        //this.remove(progressBar);
+        this.notesList.update(found);
+    }
 
-		});
-	}
-
-	private void _setPairFocusListener() {
-		final FocusListener focusListener = new FocusListener() {
-
-			@Override
-			public void focusGained(FocusEvent e) {}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				if (!_isPairFocused()) {
-					setVisible(false);
-				}
-			}
-		};
-
-		_anchor.addFocusListener(focusListener);
-		this.addFocusListener(focusListener);
-	}
-
-	private boolean _isPairFocused() {
-		boolean focused = false;
-		if (_list.isFocusOwner() || _anchor.isFocusOwner()) {
-			focused = true;
-		}
-		return focused;
-	}
-
-	private void _setListRowFilterListener() {
-		_list.getRowSorter().addRowSorterListener(new RowSorterListener() {
-
-			@Override
-			public void sorterChanged(RowSorterEvent e) {
-				if (e.getType() == RowSorterEvent.Type.SORTED) {
-					_updateListView();
-				}
-			}
-
-		});
-	}
-
-	private void _updateLocation() {
-		if (_anchor.isVisible() && isVisible()) {
-			Point point = _anchor.getLocation();
-			point = SwingUtilities.convertPoint(_anchor.getParent(), point, _pane);
-			point.x = point.x + _offsetX;
-			point.y = point.y + _offsetY;
-			setLocation(point);
-		}
-	}
-
-	@SuppressWarnings("rawtypes")
-	private void _updateListView() {
-		if (isVisible()) {
-			final IncrementingRowFilter filter = (IncrementingRowFilter) _list.getRowFilter();
-			int displayedRows = _maxVisibleRows;
-			if (filter != null) {
-				// Set the panel size based on number of possible rows up to
-				// maximum viewable rows
-				final int possibleRows = filter.getPossibleRows();
-				if (possibleRows < _maxVisibleRows) {
-					displayedRows = possibleRows;
-				}
-				// Reset the row counter for the next filtering
-				filter.resetPossibleRowsCounter();
-			}
-			_list.setVisibleRowCount(displayedRows);
-			_list.setPreferredSize(new Dimension(_anchor.getWidth(), displayedRows * _list.getFixedCellHeight()));
-			this.setSize(_list.getPreferredSize());
-			_pane.moveToFront(this);
-		}
-	}
 }

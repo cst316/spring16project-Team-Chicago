@@ -34,14 +34,14 @@ import net.sf.memoranda.ContactManager;
 @SuppressWarnings("serial")
 public class ContactSearchTextField extends JTextField {
 
-	private SearchPanel _searchPanel;
+	private SearchTextFieldPanel _searchPanel;
 	private DefaultListModel<ComparableKeyPair<String, Contact>> _contactsListModel;
 	private NameFilter<DefaultListModel<?>, Integer> _searchListFilter;
 	private JXList _contactsList;
 	private JLayeredPane _layeredPane;
 
 	/**
-	 * Constructs the SearchableContactTextField.
+	 * Constructs the ContactSearchTextField.
 	 * 
 	 * @param layeredPane A layered pane which will hold the search list
 	 * @param maxContactsShown The maximum number of contacts to be displayed in
@@ -57,7 +57,7 @@ public class ContactSearchTextField extends JTextField {
 		_contactsList = new JXList(_contactsListModel, true);
 		_contactsList.setFixedCellHeight(25);
 
-		_searchPanel = new SearchPanel(_contactsList, this, _layeredPane, 10);
+		_searchPanel = new SearchTextFieldPanel(_contactsList, this, _layeredPane, 10);
 		_searchPanel.setLayout(new BorderLayout());
 		_searchPanel.add(_contactsList, BorderLayout.CENTER);
 
