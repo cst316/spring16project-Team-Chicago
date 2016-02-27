@@ -124,8 +124,6 @@ public class JNCalendarPanel extends JPanel {
   };
       
   void jbInit() throws Exception {
-    //dayBackAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, KeyEvent.ALT_MASK));
-    //dayForwardAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, KeyEvent.ALT_MASK));
     todayAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.ALT_MASK));
     
     monthsCB.setRequestFocusEnabled(false);
@@ -244,12 +242,7 @@ public class JNCalendarPanel extends JPanel {
         setCurrentDateDay(jnCalendar.get(), jnCalendar.get().getDay());
       }
     });
-    /*CurrentDate.addChangeListener(new ActionListener()  {
-      public void actionPerformed(ActionEvent e) {
-        _date = CurrentDate.get();
-        refreshView();
-      }
-    });*/
+
     monthsCB.setFont(new java.awt.Font("Dialog", 0, 11));
 
     monthsCB.addActionListener(new java.awt.event.ActionListener() {
