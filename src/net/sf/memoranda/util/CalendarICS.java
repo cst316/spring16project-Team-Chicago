@@ -32,9 +32,9 @@ public class CalendarICS {
 	@SuppressWarnings("deprecation")
 	public static void importCalendar(File f){
 		try {
-			FileInputStream file = new FileInputStream(f);
-			List<ICalendar> icals = Biweekly.parse(file).all();
-			int eventCount = icals.get(0).getEvents().size();
+			final FileInputStream file = new FileInputStream(f);
+			final List<ICalendar> icals = Biweekly.parse(file).all();
+			final int eventCount = icals.get(0).getEvents().size();
 			for(int i=0;i<eventCount;i++){
 				VEvent event = icals.get(0).getEvents().get(i);
 				ICalDate iDate = event.getDateStart().getValue();
@@ -46,7 +46,8 @@ public class CalendarICS {
 				CurrentStorage.get().storeEventsManager();
 				
 			} 
-		}catch (IOException e) {
+		}
+		catch (IOException e) {
 			new ExceptionDialog(e, "Failed to read from "+f, "Make sure that this file is a .ics file.");
 		}
 		
@@ -54,7 +55,7 @@ public class CalendarICS {
 	
 	/**
 	 * Exports a project's events and tasks to an ics file 
-	 * @param prj project to be exported
+	 * @param proj project to be exported
 	 * @param f name of file to save to
 	 */
 	public static void exportCal(Project proj,File f){
@@ -86,7 +87,7 @@ public class CalendarICS {
 	}
 	
 	private static ICalDate _convertDate(CalendarDate d){
-		 ICalDate iDate =new ICalDate();
+		 final ICalDate iDate =new ICalDate();
 		 iDate.setDate(d.getDay());
 		 iDate.setYear(d.getYear()-YEAR);
 		 iDate.setMonth(d.getMonth());
