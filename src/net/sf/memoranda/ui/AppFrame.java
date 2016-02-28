@@ -1135,8 +1135,7 @@ public class AppFrame extends JFrame {
             catch (ClassCastException cce) {
                 lastSel = new File(System.getProperty("user.dir") + File.separator);
             }
-            //---------------------------------------------------------------------
-
+            
             if (lastSel != null){
                 chooser.setCurrentDirectory(lastSel);
             }
