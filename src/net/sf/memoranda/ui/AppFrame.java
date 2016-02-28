@@ -792,114 +792,14 @@ public class AppFrame extends JFrame {
     }
 
     public void doPrjPack() {
-        // Fix until Sun's JVM supports more locales...
-        UIManager.put("FileChooser.saveInLabelText", Local.getString("Save in:"));
-        UIManager.put("FileChooser.upFolderToolTipText", Local.getString(
-                "Up One Level"));
-        UIManager.put("FileChooser.newFolderToolTipText", Local.getString(
-                "Create New Folder"));
-        UIManager.put("FileChooser.listViewButtonToolTipText", Local.getString("List"));
-        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local.getString("Details"));
-        UIManager.put("FileChooser.fileNameLabelText", Local.getString(
-                "File Name:"));
-        UIManager.put("FileChooser.filesOfTypeLabelText", Local.getString(
-                "Files of Type:"));
-        UIManager.put("FileChooser.saveButtonText", Local.getString("Save"));
-        UIManager.put("FileChooser.saveButtonToolTipText", Local.getString(
-                "Save selected file"));
-        UIManager.put("FileChooser.cancelButtonText", Local.getString("Cancel"));
-        UIManager.put("FileChooser.cancelButtonToolTipText", Local.getString(
-                "Cancel"));
-
-        final JFileChooser chooser = new JFileChooser();
-        chooser.setFileHidingEnabled(false);
-        chooser.setDialogTitle(Local.getString("Pack project"));
-        chooser.setAcceptAllFileFilterUsed(false);
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        //chooser.addChoosableFileFilter(new AllFilesFilter(AllFilesFilter.RTF));
-        chooser.addChoosableFileFilter(new AllFilesFilter(AllFilesFilter.ZIP));
-        // fixes XP style look cosmetical problems JVM 1.4.2 and 1.4.2_01
-        chooser.setPreferredSize(new Dimension(550, 375));
-
-        //Added to fix the problem with packing a file then deleting that file.
-        //(jcscoobyrs) 17-Nov-2003 at 14:57:06 PM
-        //---------------------------------------------------------------------
-        File lastSel = null;
-
-        try {
-            lastSel = (java.io.File) Context.get("LAST_SELECTED_PACK_FILE");
-        }
-        catch (ClassCastException cce) {
-            lastSel = new File(System.getProperty("user.dir") + File.separator);
-        }
-        //---------------------------------------------------------------------
-
-        if (lastSel != null){
-            chooser.setCurrentDirectory(lastSel);
-        }
-        if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION){
-            return;
-        }
-        Context.put("LAST_SELECTED_PACK_FILE", chooser.getSelectedFile());        
-        final java.io.File f = chooser.getSelectedFile();
+              
+        final java.io.File f = _exportFile("Pack Project",new AllFilesFilter(AllFilesFilter.ZIP),"LAST_SELECTED_PACK_FILE");
         ProjectPackager.pack(CurrentProject.get(), f);
     }
 
     public void doPrjUnPack() {
-        // Fix until Sun's JVM supports more locales...
-        UIManager.put("FileChooser.lookInLabelText", Local
-                .getString("Look in:"));
-        UIManager.put("FileChooser.upFolderToolTipText", Local.getString(
-                "Up One Level"));
-        UIManager.put("FileChooser.newFolderToolTipText", Local.getString(
-                "Create New Folder"));
-        UIManager.put("FileChooser.listViewButtonToolTipText", Local
-                .getString("List"));
-        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local
-                .getString("Details"));
-        UIManager.put("FileChooser.fileNameLabelText", Local.getString(
-                "File Name:"));
-        UIManager.put("FileChooser.filesOfTypeLabelText", Local.getString(
-                "Files of Type:"));
-        UIManager.put("FileChooser.openButtonText", Local.getString("Open"));
-        UIManager.put("FileChooser.openButtonToolTipText", Local.getString(
-                "Open selected file"));
-        UIManager
-                .put("FileChooser.cancelButtonText", Local.getString("Cancel"));
-        UIManager.put("FileChooser.cancelButtonToolTipText", Local.getString(
-                "Cancel"));
-
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileHidingEnabled(false);
-        chooser.setDialogTitle(Local.getString("Unpack project"));
-        chooser.setAcceptAllFileFilterUsed(false);
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.addChoosableFileFilter(new AllFilesFilter(AllFilesFilter.ZIP));
-        //chooser.addChoosableFileFilter(new AllFilesFilter(AllFilesFilter.RTF));
-        // fixes XP style look cosmetical problems JVM 1.4.2 and 1.4.2_01
-        chooser.setPreferredSize(new Dimension(550, 375));
-
-        //Added to fix the problem with packing a file then deleting that file.
-        //(jcscoobyrs) 17-Nov-2003 at 14:57:06 PM
-        //---------------------------------------------------------------------
-        File lastSel = null;
-
-        try {
-            lastSel = (java.io.File) Context.get("LAST_SELECTED_PACK_FILE");
-        }
-        catch (ClassCastException cce) {
-            lastSel = new File(System.getProperty("user.dir") + File.separator);
-        }
-        //---------------------------------------------------------------------
-
-        if (lastSel != null){
-            chooser.setCurrentDirectory(lastSel);
-        }
-        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION){
-            return;
-        }
-        Context.put("LAST_SELECTED_PACK_FILE", chooser.getSelectedFile());        
-        java.io.File f = chooser.getSelectedFile();
+               
+        java.io.File f = _importFile("Unpack Project",new AllFilesFilter(AllFilesFilter.ZIP),"LAST_SELECTED_PACK_FILE");
         ProjectPackager.unpack(f);
         projectsPanel.prjTablePanel.updateUI();
     }
@@ -907,52 +807,8 @@ public class AppFrame extends JFrame {
      * Assembles file browser for importing ics file
      */
     public void doImportCal() {
-    	UIManager.put("FileChooser.lookInLabelText", Local.getString("Look in:"));
-        UIManager.put("FileChooser.upFolderToolTipText", Local.getString(
-                "Up One Level"));
-        UIManager.put("FileChooser.newFolderToolTipText", Local.getString(
-                "Create New Folder"));
-        UIManager.put("FileChooser.listViewButtonToolTipText", Local.getString("List"));
-        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local.getString("Details"));
-        UIManager.put("FileChooser.fileNameLabelText", Local.getString(
-                "File Name:"));
-        UIManager.put("FileChooser.filesOfTypeLabelText", Local.getString(
-                "Files of Type:"));
-        UIManager.put("FileChooser.openButtonText", Local.getString("Open"));
-        UIManager.put("FileChooser.openButtonToolTipText", Local.getString(
-                "Open selected file"));
-        UIManager.put("FileChooser.cancelButtonText", Local.getString("Cancel"));
-        UIManager.put("FileChooser.cancelButtonToolTipText", Local.getString(
-                "Cancel"));
-
-        final JFileChooser chooser = new JFileChooser();
-        chooser.setFileHidingEnabled(false);
-        chooser.setDialogTitle(Local.getString("Import Calendar"));
-        chooser.setAcceptAllFileFilterUsed(false);
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.addChoosableFileFilter(new AllFilesFilter(AllFilesFilter.ICS));
-        
-        chooser.setPreferredSize(new Dimension(550, 375));
-
-        
-        File lastSel = null;
-
-        try {
-            lastSel = (java.io.File) Context.get("LAST_SELECTED_ICS_FILE");
-        }
-        catch (ClassCastException cce) {
-            lastSel = new File(System.getProperty("user.dir") + File.separator);
-        }
-        //---------------------------------------------------------------------
-
-        if (lastSel != null){
-            chooser.setCurrentDirectory(lastSel);
-        }
-        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION){
-            return;
-        }
-        Context.put("LAST_SELECTED_ICS_FILE", chooser.getSelectedFile());        
-        final java.io.File f = chooser.getSelectedFile();
+    	       
+        final java.io.File f = _importFile("Import Calendar",new AllFilesFilter(AllFilesFilter.ICS),"LAST_SELECTED_ICS_FILE");
         CalendarICS.importCalendar(f);
         projectsPanel.prjTablePanel.updateUI();
 		
@@ -962,53 +818,8 @@ public class AppFrame extends JFrame {
      * Assembles browser for exporting project as ics file
      */
     public void doExportCal(){
-    	UIManager.put("FileChooser.saveInLabelText", Local.getString("Save in:"));
-        UIManager.put("FileChooser.upFolderToolTipText", Local.getString(
-                "Up One Level"));
-        UIManager.put("FileChooser.newFolderToolTipText", Local.getString(
-                "Create New Folder"));
-        UIManager.put("FileChooser.listViewButtonToolTipText", Local.getString("List"));
-        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local.getString("Details"));
-        UIManager.put("FileChooser.fileNameLabelText", Local.getString(
-                "File Name:"));
-        UIManager.put("FileChooser.filesOfTypeLabelText", Local.getString(
-                "Files of Type:"));
-        UIManager.put("FileChooser.saveButtonText", Local.getString("Save"));
-        UIManager.put("FileChooser.saveButtonToolTipText", Local.getString(
-                "Save selected file"));
-        UIManager.put("FileChooser.cancelButtonText", Local.getString("Cancel"));
-        UIManager.put("FileChooser.cancelButtonToolTipText", Local.getString(
-                "Cancel"));
-
-        final JFileChooser chooser = new JFileChooser();
-        chooser.setFileHidingEnabled(false);
-        chooser.setDialogTitle(Local.getString("Export Project Calendar"));
-        chooser.setAcceptAllFileFilterUsed(false);
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        
-        chooser.addChoosableFileFilter(new AllFilesFilter(AllFilesFilter.ICS));
-        
-        chooser.setPreferredSize(new Dimension(550, 375));
-
-        
-        File lastSel = null;
-
-        try {
-            lastSel = (java.io.File) Context.get("LAST_SELECTED_ICS_FILE");
-        }
-        catch (ClassCastException cce) {
-            lastSel = new File(System.getProperty("user.dir") + File.separator);
-        }
-        //---------------------------------------------------------------------
-
-        if (lastSel != null){
-            chooser.setCurrentDirectory(lastSel);
-        }
-        if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION){
-            return;
-        }
-        Context.put("LAST_SELECTED_ICS_FILE", chooser.getSelectedFile());        
-        final java.io.File f = chooser.getSelectedFile();
+    	
+    	final java.io.File f  = _exportFile("Export Calendar",new AllFilesFilter(AllFilesFilter.ICS),"LAST_SELECTED_ICS_FILE");
         CalendarICS.exportCal(CurrentProject.get(), f);
     }
     
@@ -1286,5 +1097,109 @@ public class AppFrame extends JFrame {
                     exc.printStackTrace();
             }
         }
+            
+        private File _importFile(String title,AllFilesFilter ftype, String c){
+        	UIManager.put("FileChooser.lookInLabelText", Local.getString("Look in:"));
+            UIManager.put("FileChooser.upFolderToolTipText", Local.getString(
+                    "Up One Level"));
+            UIManager.put("FileChooser.newFolderToolTipText", Local.getString(
+                    "Create New Folder"));
+            UIManager.put("FileChooser.listViewButtonToolTipText", Local.getString("List"));
+            UIManager.put("FileChooser.detailsViewButtonToolTipText", Local.getString("Details"));
+            UIManager.put("FileChooser.fileNameLabelText", Local.getString(
+                    "File Name:"));
+            UIManager.put("FileChooser.filesOfTypeLabelText", Local.getString(
+                    "Files of Type:"));
+            UIManager.put("FileChooser.openButtonText", Local.getString("Open"));
+            UIManager.put("FileChooser.openButtonToolTipText", Local.getString(
+                    "Open selected file"));
+            UIManager.put("FileChooser.cancelButtonText", Local.getString("Cancel"));
+            UIManager.put("FileChooser.cancelButtonToolTipText", Local.getString(
+                    "Cancel"));
 
+            final JFileChooser chooser = new JFileChooser();
+            chooser.setFileHidingEnabled(false);
+            chooser.setDialogTitle(Local.getString(title));
+            chooser.setAcceptAllFileFilterUsed(false);
+            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            chooser.addChoosableFileFilter(ftype);
+            
+            chooser.setPreferredSize(new Dimension(550, 375));
+
+            
+            File lastSel = null;
+
+            try {
+                lastSel = (java.io.File) Context.get(c);
+            }
+            catch (ClassCastException cce) {
+                lastSel = new File(System.getProperty("user.dir") + File.separator);
+            }
+            //---------------------------------------------------------------------
+
+            if (lastSel != null){
+                chooser.setCurrentDirectory(lastSel);
+            }
+            if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION){
+                return null;
+            }
+            Context.put(c, chooser.getSelectedFile());        
+            final java.io.File f = chooser.getSelectedFile();
+            return f;
+    		
+    	}
+        
+        
+        private File _exportFile(String title,AllFilesFilter ftype,String c){
+        	UIManager.put("FileChooser.saveInLabelText", Local.getString("Save in:"));
+            UIManager.put("FileChooser.upFolderToolTipText", Local.getString(
+                    "Up One Level"));
+            UIManager.put("FileChooser.newFolderToolTipText", Local.getString(
+                    "Create New Folder"));
+            UIManager.put("FileChooser.listViewButtonToolTipText", Local.getString("List"));
+            UIManager.put("FileChooser.detailsViewButtonToolTipText", Local.getString("Details"));
+            UIManager.put("FileChooser.fileNameLabelText", Local.getString(
+                    "File Name:"));
+            UIManager.put("FileChooser.filesOfTypeLabelText", Local.getString(
+                    "Files of Type:"));
+            UIManager.put("FileChooser.saveButtonText", Local.getString("Save"));
+            UIManager.put("FileChooser.saveButtonToolTipText", Local.getString(
+                    "Save selected file"));
+            UIManager.put("FileChooser.cancelButtonText", Local.getString("Cancel"));
+            UIManager.put("FileChooser.cancelButtonToolTipText", Local.getString(
+                    "Cancel"));
+
+            final JFileChooser chooser = new JFileChooser();
+            chooser.setFileHidingEnabled(false);
+            chooser.setDialogTitle(Local.getString(title));
+            chooser.setAcceptAllFileFilterUsed(false);
+            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            
+            chooser.addChoosableFileFilter(ftype);
+            
+            chooser.setPreferredSize(new Dimension(550, 375));
+
+            
+            File lastSel = null;
+
+            try {
+                lastSel = (java.io.File) Context.get(c);
+            }
+            catch (ClassCastException cce) {
+                lastSel = new File(System.getProperty("user.dir") + File.separator);
+            }
+            //---------------------------------------------------------------------
+
+            if (lastSel != null){
+                chooser.setCurrentDirectory(lastSel);
+            }
+            if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION){
+                return null;
+            }
+            Context.put(c, chooser.getSelectedFile());
+            final java.io.File f = chooser.getSelectedFile();
+            return f;
+        }
+
+            
 }
