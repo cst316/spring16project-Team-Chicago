@@ -493,15 +493,17 @@ public class EventsManager {
 		el.addAttribute(new Attribute("min", String.valueOf(mm)));
 		el.appendChild(text);
 		
-		final Element contacts = new Element("contacts");
-		for (int i = 0; i < contactIDs.length; i++) {
-			final Element contact = new Element("contact");
-			contact.addAttribute(new Attribute("id", contactIDs[i]));
-			contacts.appendChild(contact);
-		}
-		
-		if (contactIDs.length > 0) {
-			el.appendChild(contacts);
+		if (contactIDs != null) { 
+			final Element contacts = new Element("contacts");
+			for (int i = 0; i < contactIDs.length; i++) {
+				final Element contact = new Element("contact");
+				contact.addAttribute(new Attribute("id", contactIDs[i]));
+				contacts.appendChild(contact);
+			}
+			
+			if (contactIDs.length > 0) {
+				el.appendChild(contacts);
+			}
 		}
 		
 		return el;
