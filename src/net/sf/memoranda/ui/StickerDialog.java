@@ -86,11 +86,11 @@ public class StickerDialog extends JDialog {
 			Local.getString("Pink"),
 			Local.getString("Custom")+"..."};
 	String[] priorities = {
-			Local.getString("HIGHEST"),
-			Local.getString("HIGH"),
-			Local.getString("NORMAL"),
+			Local.getString("LOWEST"),
 			Local.getString("LOW"),
-			Local.getString("LOWEST")};
+			Local.getString("NORMAL"),
+			Local.getString("HIGH"),
+			Local.getString("HIGHEST")};
 	int[] font={10,15,20};
 	String[] fontLabels= {"10px","15px","20px"};
 	JComboBox stickerColor = new JComboBox(colorLabels);

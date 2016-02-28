@@ -733,6 +733,12 @@ public class TaskPanel extends JPanel {
 		//taskTable.updateUI();
 	}
 	
+	/**
+	 * Takes a task and creates a sticky 
+	 * with date and priority status
+	 * 
+	 *       
+	 */
 	void ppToStickyTask_actionPerformed(ActionEvent e) {
 		CalendarDate time = new CalendarDate();
 		String task;
@@ -741,12 +747,14 @@ public class TaskPanel extends JPanel {
 		String msg2;
 		String thisTaskId = taskTable.getModel().getValueAt(taskTable.getSelectedRow(), TaskTable.TASK_ID).toString();
 		Task t = CurrentProject.getTaskList().getTask(thisTaskId);
-		String date = time.getFullDateString();
+		String date = time.getFullDateString(); 
+		int priortity = t.getPriority();
+		System.out.println(priortity);
 		msg = "<div style=\"background-color:#FFFF00;font-size:10;color:#0;\">";
 		msg1 = "<br>";
 		msg2 = "</div>";
 	    task = msg + date + msg1 + t.getText() + msg2;
-		EventsManager.createSticker(task, 1);
+		EventsManager.createSticker(task, priortity);
 	    JOptionPane.showMessageDialog(null,Local.getString("Sticky Created"));
 	}
 
