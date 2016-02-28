@@ -46,7 +46,7 @@ public class EventsPanel extends JPanel {
 	private final String _DAY_BUTTON = "Today";
 	private final String _WEEK_BUTTON = "7 Days";
 	private final String _MONTH_BUTTON = "30 Days";
-	private final String _CUSTOM_BUTTON = "Custom Rage";
+	private final String _CUSTOM_BUTTON = "Custom Range";
 	private final String _GO_BUTTON = "Go";
 	
     BorderLayout borderLayout1 = new BorderLayout();
@@ -372,8 +372,9 @@ public class EventsPanel extends JPanel {
         dlg.setLocation((frmSize.width - dlg.getSize().width) / 2 + loc.x, (frmSize.height - dlg.getSize().height) / 2 + loc.y);
         dlg.setVisible(true);
         if (dlg.CANCELLED)
-            return;
-        EventsManager.removeEvent(ev);
+            return; 
+        
+        EventsManager.removeEvent(ev, true);
         
 		Calendar calendar = new GregorianCalendar(Local.getCurrentLocale()); //Fix deprecated methods to get hours
 		//by (jcscoobyrs) 14-Nov-2003 at 10:24:38 AM
@@ -386,13 +387,23 @@ public class EventsPanel extends JPanel {
         
         //int hh = ((Date) dlg.timeSpin.getModel().getValue()).getHours();
         //int mm = ((Date) dlg.timeSpin.getModel().getValue()).getMinutes();
+		
         String text = dlg.textField.getText();
         Date schedDate = dlg.getEventDate();	//US-53
-        if (dlg.noRepeatRB.isSelected())
-   	    EventsManager.createEvent(CurrentDate.get(), hh, mm, text, schedDate);
+        if (schedDate == null) {
+        	int newDay = DailyItemsPanel.currentDate.getDay();
+        	int newMonth = DailyItemsPanel.currentDate.getMonth();
+        	int newYear = DailyItemsPanel.currentDate.getYear();
+        	Date newSchedDate = CalendarDate.toDate(newDay, newMonth, newYear);
+        	schedDate = newSchedDate;
+        }
+        
+        if (dlg.noRepeatRB.isSelected()) {
+        	EventsManager.createEvent(CurrentDate.get(), hh, mm, text, schedDate);
+        }
         else {
-	    updateEvents(dlg,hh,mm,text);
-	}    
+        	updateEvents(dlg,hh,mm,text);
+        }    
 	saveEvents();
     }
     
@@ -451,13 +462,22 @@ public class EventsPanel extends JPanel {
         dlg.setVisible(true);
         if (dlg.CANCELLED)
             return;
-        EventsManager.removeEvent(ev);
+        EventsManager.removeEvent(ev, true);
         
 		Calendar calendar = new GregorianCalendar(Local.getCurrentLocale()); //Fix deprecated methods to get hours
 		calendar.setTime(((Date)dlg.timeSpin.getModel().getValue()));//Fix deprecated methods to get hours
 		int hh = calendar.get(Calendar.HOUR_OF_DAY);//Fix deprecated methods to get hours
 		int mm = calendar.get(Calendar.MINUTE);//Fix deprecated methods to get hours
-		Date schedDate = dlg.getEventDate();	
+		
+		Date schedDate = dlg.getEventDate();
+        if (schedDate == null) {
+        	int newDay = DailyItemsPanel.currentDate.getDay();
+        	int newMonth = DailyItemsPanel.currentDate.getMonth();
+        	int newYear = DailyItemsPanel.currentDate.getYear();
+        	Date newSchedDate = CalendarDate.toDate(newDay, newMonth, newYear);
+        	schedDate = newSchedDate;
+        }
+        
         String text = dlg.textField.getText();
         if (dlg.noRepeatRB.isSelected())
    	    EventsManager.createEvent(CurrentDate.get(), hh, mm, text, schedDate);
@@ -559,30 +579,41 @@ public class EventsPanel extends JPanel {
     void removeEventB_actionPerformed(ActionEvent e) {
 		String msg;
 		net.sf.memoranda.Event ev;
+		boolean displayMessage = true;
 
-		if(_eventsTable.getSelectedRows().length > 1) 
+		if(_eventsTable.getSelectedRows().length > 1) { 
 			msg = Local.getString("Remove") + " " + _eventsTable.getSelectedRows().length 
 				+ " " + Local.getString("events") + "\n" + Local.getString("Are you sure?");
+		}
 		else {
 			ev = (net.sf.memoranda.Event) _eventsTable.getModel().getValueAt(
                 _eventsTable.getSelectedRow(),
                 EventsTable.EVENT);
+			
+			if (ev.isRepeatable()) {
+				displayMessage = false;
+			}
 			msg = Local.getString("Remove event") + "\n'" 
 				+ ev.getText() + "'\n" + Local.getString("Are you sure?");
 		}
-
-        int n =
-            JOptionPane.showConfirmDialog(
-                App.getFrame(),
-                msg,
-                Local.getString("Remove event"),
-                JOptionPane.YES_NO_OPTION);
-        if (n != JOptionPane.YES_OPTION) return;
+		
+		// bypasses the confirmation popup if deleting one selected repeating event
+		if (displayMessage) {
+			final int n =
+					JOptionPane.showConfirmDialog(
+					App.getFrame(),
+					msg,
+					Local.getString("Remove event"),
+					JOptionPane.YES_NO_OPTION);
+			if (n != JOptionPane.YES_OPTION) {
+				return;
+			}
+		}
 
         for(int i=0; i< _eventsTable.getSelectedRows().length;i++) {
 			ev = (net.sf.memoranda.Event) _eventsTable.getModel().getValueAt(
                   _eventsTable.getSelectedRows()[i], EventsTable.EVENT);
-        EventsManager.removeEvent(ev);
+        EventsManager.removeEvent(ev, false);
 		}
         _eventsTable.getSelectionModel().clearSelection();
 /*        CurrentStorage.get().storeEventsManager();
@@ -600,7 +631,7 @@ public class EventsPanel extends JPanel {
      * @param ev Event object
      */
     static void removeEventB_actionPerformed(ActionEvent e, Event ev) {
-        EventsManager.removeEvent(ev);
+        EventsManager.removeEvent(ev, false);
         saveEvents();  
     }
     
