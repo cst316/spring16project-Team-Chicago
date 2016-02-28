@@ -14,11 +14,15 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -29,13 +33,16 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 //import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.JCheckBox;
 
+import net.sf.memoranda.Contact;
 import net.sf.memoranda.CurrentProject;
 import net.sf.memoranda.date.CalendarDate;
 import net.sf.memoranda.util.Local;
@@ -59,6 +66,8 @@ public class TaskDialog extends JDialog {
 //    Border border6;
     JPanel jPanel2 = new JPanel(new GridLayout(3, 2));
     JTextField todoField = new JTextField();
+    private Vector<Contact> _contacts = new Vector<Contact>();
+    private ContactSearchTextField _txtContactSearch;
     
     // added by rawsushi
     JTextField effortField = new JTextField();
@@ -106,6 +115,8 @@ public class TaskDialog extends JDialog {
 	CalendarDate startDateMax = CurrentProject.get().getEndDate();
 	CalendarDate endDateMin = startDateMin;
 	CalendarDate endDateMax = startDateMax;
+	private JPanel _contactGroupPanel;
+	private AssociatedContactsPanel _contactListPanel;
     
     public TaskDialog(Frame frame, String title) {
         super(frame, title, true);
@@ -324,7 +335,7 @@ public class TaskDialog extends JDialog {
 
         priorityCB.setFont(new java.awt.Font("Dialog", 0, 11));
         jPanel4.add(jLabel7, null);
-        getContentPane().add(mPanel);
+        getContentPane().add(mPanel, BorderLayout.SOUTH);
         mPanel.add(areaPanel, BorderLayout.CENTER);
         mPanel.add(buttonsPanel, BorderLayout.SOUTH);
         buttonsPanel.add(okB, null);
@@ -377,6 +388,45 @@ public class TaskDialog extends JDialog {
                 endDate.getModel().setValue(endCalFrame.cal.get().getCalendar().getTime());
             }
         });
+        
+        _contactGroupPanel = new JPanel();
+        _contactGroupPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        _contactGroupPanel.setLayout(new BorderLayout());
+        
+        final JLabel contactLabel = new JLabel("Add Contacts to Task:");
+        _contactGroupPanel.add(contactLabel, BorderLayout.NORTH);
+        
+        _contactListPanel = new AssociatedContactsPanel();
+        _contactListPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+        _contactListPanel.initialize(this.getLayeredPane());
+        _contactListPanel.setListItemHeight(24);
+        _contactListPanel.getInternalTextField().setPreferredSize(
+        		new Dimension((int)_contactListPanel.getInternalTextField().getPreferredSize().getWidth(), 24));
+        _contactListPanel.getInternalTextField().getList().setFixedCellHeight(24);
+        _contactListPanel.getObservable().addObserver(new Observer() {
+
+			@Override
+			public void update(Observable o, Object arg) {
+				SwingUtilities.invokeLater(new Runnable() {
+
+					@Override
+					public void run() {
+						pack();
+					}
+					
+				});
+			}
+        	
+        });
+        
+        _contactGroupPanel.add(_contactListPanel, BorderLayout.CENTER);
+        
+        this.getContentPane().add(_contactGroupPanel, BorderLayout.CENTER);
+        this.pack();
+    }
+    
+    public AssociatedContactsPanel getAssociatedContactsPanel() {
+    	return _contactListPanel;
     }
 
 	public void setStartDate(CalendarDate d) {

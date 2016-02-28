@@ -3,6 +3,7 @@ package net.sf.memoranda.ui;
  * This file contains the SearchPanel class.
  */
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
@@ -10,6 +11,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
@@ -61,6 +63,7 @@ class SearchTextFieldPanel extends JPanel {
 		_setAnchorComponentListener();
 		_setPairFocusListener();
 		_setListRowFilterListener();
+		this.setBorder(BorderFactory.createLineBorder(Color.gray));
 
 		_pane.add(this, JLayeredPane.POPUP_LAYER);
 		setVisible(false);
@@ -68,9 +71,8 @@ class SearchTextFieldPanel extends JPanel {
 
 	@Override
 	public void setVisible(boolean visible) {
-		System.out.println("Visible?");
 		super.setVisible(visible);
-		_list.setVisible(visible);
+		//_list.setVisible(visible);
 		if (visible) {
 			_updateListView();
 			_updateLocation();

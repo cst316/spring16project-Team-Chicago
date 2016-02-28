@@ -86,4 +86,6 @@ public interface Task {
 	long getRate();
     
     nu.xom.Element getContent();
+	public void setContactIDs(String[] idArray);
+	public String[] getContactIDs();
 }

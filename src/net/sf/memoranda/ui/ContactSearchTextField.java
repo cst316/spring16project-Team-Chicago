@@ -39,6 +39,7 @@ public class ContactSearchTextField extends JTextField {
 	private NameFilter<DefaultListModel<?>, Integer> _searchListFilter;
 	private JXList _contactsList;
 	private JLayeredPane _layeredPane;
+	private ComparableKeyPair<String, Contact> _selection = null;
 
 	/**
 	 * Constructs the ContactSearchTextField.
@@ -65,6 +66,14 @@ public class ContactSearchTextField extends JTextField {
 
 		_setSelectionListener();
 		_setDocumentListener();
+	}
+
+	public JXList getList() {
+		return _contactsList;
+	}
+
+	public ComparableKeyPair<String, Contact> getSelection() {
+		return _selection;
 	}
 
 	private static DefaultListModel<ComparableKeyPair<String, Contact>> _createContactsListModel() {
@@ -110,12 +119,18 @@ public class ContactSearchTextField extends JTextField {
 	private void _setSelectionListener() {
 		_contactsList.addListSelectionListener(new ListSelectionListener() {
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				final ComparableKeyPair<?, ?> pair = (ComparableKeyPair<?, ?>) _contactsList.getSelectedValue();
 				if (pair != null) {
+					_contactsList.clearSelection();
+					_selection = (ComparableKeyPair<String, Contact>) pair;
 					setText(pair.toString());
 					_searchPanel.setVisible(false);
+				}
+				else if (_searchPanel.isVisible()) {
+					_selection = null;
 				}
 			}
 		});
@@ -140,7 +155,9 @@ public class ContactSearchTextField extends JTextField {
 
 	private void _togglePanel() {
 		if (getText().length() > 0) {
-			_searchPanel.setVisible(true);
+			if (!_searchPanel.isVisible()) {
+				_searchPanel.setVisible(true);
+			}
 			_searchListFilter._filterString = getText();
 			_contactsList.setRowFilter(_searchListFilter);
 		}
