@@ -186,7 +186,7 @@ public abstract class AbstractSplitEvent {
 			if (this.getCreateRepeating()) {
 				EventsManager.createRepeatableEvent(ev.getRepeat(), this.getNewStartDate(), 
 						this.getNewEndDate(), ev.getPeriod(), ev.getHour(), ev.getMinute(), 
-						ev.getText(), ev.getWorkingDays());
+						ev.getText(), ev.getWorkingDays(), ev.getContactIDs());
 			}
 			else {	
 				if (/*this.getNewStartDate() == null || */this.getNewStartDate().equals(this.getNewEndDate())) {
@@ -194,7 +194,7 @@ public abstract class AbstractSplitEvent {
 				}
 				
 				EventsManager.createEvent(this.getNewStartDate(), ev.getHour(), ev.getMinute(),
-						ev.getText(), this._newSchedDate);
+						ev.getText(), this._newSchedDate, ev.getContactIDs());
 			}
 		}
 	}

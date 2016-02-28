@@ -10,14 +10,24 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -34,10 +44,15 @@ import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.JSpinner.DateEditor;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import net.sf.memoranda.Contact;
+import net.sf.memoranda.ContactManager;
 import net.sf.memoranda.EventsManager;
 import net.sf.memoranda.date.CalendarDate;
 import net.sf.memoranda.util.Local;
@@ -85,6 +100,8 @@ public class EventDialog extends JDialog implements WindowListener {
     CalendarFrame startCalFrame = new CalendarFrame();
     private Date eventDate;
     private boolean editCheck = true;
+    private AssociatedContactsPanel _contactListPanel;
+    private JPanel _contactGroupPanel;
     
     public EventDialog(Frame frame, String title) {
         super(frame, title, true);
@@ -391,6 +408,7 @@ public class EventDialog extends JDialog implements WindowListener {
         topPanel.add(eventPanel, BorderLayout.SOUTH);
         bottomPanel.add(repeatPanel, BorderLayout.NORTH);
         bottomPanel.add(buttonsPanel, BorderLayout.SOUTH);
+        // _contactPanel.add(comp);
         this.getContentPane().add(topPanel, BorderLayout.NORTH);
         this.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
         
@@ -412,6 +430,33 @@ public class EventDialog extends JDialog implements WindowListener {
         ((JSpinner.DateEditor) timeSpin.getEditor()).getFormat().applyPattern("HH:mm");
         enableEndDateCB_actionPerformed(null);
         
+        _contactGroupPanel = new JPanel();
+        _contactGroupPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        _contactGroupPanel.setLayout(new BorderLayout());
+        
+        final JLabel contactLabel = new JLabel("Add Contacts to Event:");
+        _contactGroupPanel.add(contactLabel, BorderLayout.NORTH);
+        
+        _contactListPanel = new AssociatedContactsPanel();
+        _contactListPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+        _contactListPanel.initialize(this.getLayeredPane());
+        _contactListPanel.setListItemHeight(24);
+        _contactListPanel.getInternalTextField().setPreferredSize(
+        		new Dimension((int)_contactListPanel.getInternalTextField().getPreferredSize().getWidth(), 24));
+        _contactListPanel.getInternalTextField().getList().setFixedCellHeight(24);
+        _contactListPanel.getObservable().addObserver(new Observer() {
+
+			@Override
+			public void update(Observable o, Object arg) {
+				pack();
+			}
+        	
+        });
+        
+        _contactGroupPanel.add(_contactListPanel, BorderLayout.CENTER);
+        
+        this.getContentPane().add(_contactGroupPanel, BorderLayout.CENTER);
+        this.pack();
     }
 
     void disableElements() {
@@ -427,6 +472,10 @@ public class EventDialog extends JDialog implements WindowListener {
 		enableEndDateCB.setSelected(false);
 		workingDaysOnlyCB.setEnabled(false);
 		workingDaysOnlyCB.setSelected(false);		
+    }
+    
+    public AssociatedContactsPanel getAssociatedContactsPanel() {
+    	return _contactListPanel;
     }
     
     public void yearlyRepeatRB_actionPerformed(ActionEvent e) {

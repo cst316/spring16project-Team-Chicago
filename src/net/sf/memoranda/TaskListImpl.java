@@ -103,7 +103,14 @@ public class TaskListImpl implements TaskList {
         return filterActiveTasks(allTasks,date);
     }
 
-    public Task createTask(CalendarDate startDate, CalendarDate endDate, String text, int priority, long effort, String description, String parentTaskId) {
+    public Task createTask(
+    		CalendarDate startDate,
+    		CalendarDate endDate,
+    		String text, int priority,
+    		long effort,
+    		String description,
+    		String parentTaskId,
+    		String[] contactIDs) {
         Element el = new Element("task");
         el.addAttribute(new Attribute("startDate", startDate.toString()));
         el.addAttribute(new Attribute("endDate", endDate != null? endDate.toString():""));
@@ -112,7 +119,7 @@ public class TaskListImpl implements TaskList {
         el.addAttribute(new Attribute("progress", "0"));
         el.addAttribute(new Attribute("effort", String.valueOf(effort)));
         el.addAttribute(new Attribute("priority", String.valueOf(priority)));
-                
+        
         Element txt = new Element("text");
         txt.appendChild(text);
         el.appendChild(txt);
@@ -128,6 +135,17 @@ public class TaskListImpl implements TaskList {
             Element parent = getTaskElement(parentTaskId);
             parent.appendChild(el);
         }
+        
+        final Element contacts = new Element("contacts");
+		for (int i = 0; i < contactIDs.length; i++) {
+			final Element contact = new Element("contact");
+			contact.addAttribute(new Attribute("id", contactIDs[i]));
+			contacts.appendChild(contact);
+		}
+		
+		if (contactIDs.length > 0) {
+			el.appendChild(contacts);
+		}
         
 		elements.put(id, el);
 		

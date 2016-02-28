@@ -302,23 +302,22 @@ public class EventsManager {
 		int hh,
 		int mm,
 		String text,
-		Date schedDate) { 
+		Date schedDate,
+		String[] contactIDs) { 
+		
+		Element el = _createEventElement(hh, mm, text, contactIDs);
 		
 		// US-53 gets the scheduled date of the events, converts to string, then adds it.
-		String dateText;
-		DateFormat sdf = new SimpleDateFormat("M/dd/yy");
-		dateText = sdf.format(schedDate);				
-
-		Element el = new Element("event");
-		el.addAttribute(new Attribute("id", Util.generateId()));
-		el.addAttribute(new Attribute("hour", String.valueOf(hh)));
-		el.addAttribute(new Attribute("min", String.valueOf(mm)));
-		el.appendChild(text);
+		final DateFormat sdf = new SimpleDateFormat("M/dd/yy");
+		final String dateText = sdf.format(schedDate);
+		
 		el.addAttribute(new Attribute("schedDate", String.valueOf(dateText)));
-		Day d = getDay(date);
-		if (d == null)
-			d = createDay(date);
-		d.getElement().appendChild(el);
+		
+		Day day = getDay(date);
+		if (day == null) {
+			day = createDay(date);
+		}
+		day.getElement().appendChild(el);
 		return new EventImpl(el);
 	}
 
@@ -330,8 +329,10 @@ public class EventsManager {
 		int hh,
 		int mm,
 		String text,
-		boolean workDays) {
-		Element el = new Element("event");
+		boolean workDays,
+		String[] contactIDs) {
+		
+		final Element el = _createEventElement(hh, mm, text, contactIDs);
 		Element rep = _root.getFirstChildElement("repeatable");
 		if (rep == null) {
 			rep = new Element("repeatable");
@@ -339,14 +340,12 @@ public class EventsManager {
 		}
 		
 		el.addAttribute(new Attribute("repeat-type", String.valueOf(type)));
-		el.addAttribute(new Attribute("id", Util.generateId()));
-		el.addAttribute(new Attribute("hour", String.valueOf(hh)));
-		el.addAttribute(new Attribute("min", String.valueOf(mm)));
 		el.addAttribute(new Attribute("startDate", startDate.toString()));
-		if (endDate != null)
+		if (endDate != null) {
 			el.addAttribute(new Attribute("endDate", endDate.toString()));
+		}
 		el.addAttribute(new Attribute("period", String.valueOf(period)));
-		// new attribute for wrkin days - ivanrise
+		// new attribute for working days - ivanrise
 		el.addAttribute(new Attribute("workingDays",String.valueOf(workDays)));
 		el.appendChild(text);
 		rep.appendChild(el);
@@ -482,6 +481,34 @@ public class EventsManager {
 		parent.removeChild(ev.getContent());
 	}
 	
+	private static Element _createEventElement(
+			int hh,
+			int mm,
+			String text,
+			String[] contactIDs) { 		
+
+		final Element el = new Element("event");
+		el.addAttribute(new Attribute("id", Util.generateId()));
+		el.addAttribute(new Attribute("hour", String.valueOf(hh)));
+		el.addAttribute(new Attribute("min", String.valueOf(mm)));
+		el.appendChild(text);
+		
+		if (contactIDs != null) { 
+			final Element contacts = new Element("contacts");
+			for (int i = 0; i < contactIDs.length; i++) {
+				final Element contact = new Element("contact");
+				contact.addAttribute(new Attribute("id", contactIDs[i]));
+				contacts.appendChild(contact);
+			}
+			
+			if (contactIDs.length > 0) {
+				el.appendChild(contacts);
+			}
+		}
+		
+		return el;
+	}
+
 	/**
 	 * Takes the split event and creates new events for each half.
 	 * 

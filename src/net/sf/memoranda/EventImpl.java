@@ -11,10 +11,13 @@ package net.sf.memoranda;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Vector;
+
 import net.sf.memoranda.date.CalendarDate;
 import net.sf.memoranda.util.Local;
 import nu.xom.Attribute;
 import nu.xom.Element;
+import nu.xom.Elements;
 
 /**
  * 
@@ -121,6 +124,23 @@ public class EventImpl implements Event, Comparable {
         Attribute a = _elem.getAttribute("repeat-type");
         if (a != null) return new Integer(a.getValue()).intValue();
         return 0;
+    }
+    
+    public String[] getContactIDs() {
+    	final Vector<String> contactIDs = new Vector<String>();
+    	final Element contactRootEl = _elem.getFirstChildElement("contacts");
+    	if (contactRootEl != null) {
+    		final Elements contactIDEls = contactRootEl.getChildElements("contact");
+    		final int size = contactIDEls.size();
+    		for (int i = 0; i < size; i++) {
+    			final String id = contactIDEls.get(i).getAttributeValue("id");
+    			if (id != null) {
+    				contactIDs.add(id);
+    			}
+    		}
+    	}
+    	final String[] sContactIDs = new String[contactIDs.size()];
+    	return contactIDs.toArray(sContactIDs);
     }
     /**
      * @see net.sf.memoranda.Event#getTime()

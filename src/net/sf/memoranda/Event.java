@@ -50,5 +50,6 @@ public interface Event {
     
 	boolean getWorkingDays();
 	
+	public String[] getContactIDs();
     
 }

@@ -42,7 +42,7 @@ public class CalendarICS {
 				int hour = iDate.getHours();
 				int minute = iDate.getMinutes();
 				Date date = new Date(iDate.getDate(),iDate.getMonth(),iDate.getYear()+1900);
-				EventsManager.createEvent(cdate,hour,minute,event.getSummary().getValue(),date);
+				EventsManager.createEvent(cdate,hour,minute,event.getSummary().getValue(),date, null);
 				CurrentStorage.get().storeEventsManager();
 				
 			} 

@@ -11,7 +11,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -328,6 +330,7 @@ public class EventsPanel extends JPanel {
         ((SpinnerDateModel)dlg.timeSpin.getModel()).setStart(CalendarDate.today().getDate());
         ((SpinnerDateModel)dlg.timeSpin.getModel()).setEnd(CalendarDate.tomorrow().getDate());*/    
         dlg.textField.setText(ev.getText());
+        dlg.getAssociatedContactsPanel().populateContactPanel(ev.getContactIDs());
         int rep = ev.getRepeat();
         if (rep > 0) {
             dlg.startDate.getModel().setValue(ev.getStartDate().getDate());
@@ -390,6 +393,9 @@ public class EventsPanel extends JPanel {
 		
         String text = dlg.textField.getText();
         Date schedDate = dlg.getEventDate();	//US-53
+        
+        String[] contactIDs = _getContactIDs(dlg);
+        
         if (schedDate == null) {
         	int newDay = DailyItemsPanel.currentDate.getDay();
         	int newMonth = DailyItemsPanel.currentDate.getMonth();
@@ -399,11 +405,11 @@ public class EventsPanel extends JPanel {
         }
         
         if (dlg.noRepeatRB.isSelected()) {
-        	EventsManager.createEvent(CurrentDate.get(), hh, mm, text, schedDate);
+        	EventsManager.createEvent(CurrentDate.get(), hh, mm, text, schedDate, contactIDs);
         }
         else {
-        	updateEvents(dlg,hh,mm,text);
-        }    
+	    _updateEvents(dlg,hh,mm,text, contactIDs);
+	}    
 	saveEvents();
     }
     
@@ -479,10 +485,13 @@ public class EventsPanel extends JPanel {
         }
         
         String text = dlg.textField.getText();
+        
+        String[] contactIDs = _getContactIDs(dlg);
+        
         if (dlg.noRepeatRB.isSelected())
-   	    EventsManager.createEvent(CurrentDate.get(), hh, mm, text, schedDate);
+   	    EventsManager.createEvent(CurrentDate.get(), hh, mm, text, schedDate, contactIDs);
         else {
-	     updateEvents(dlg,hh,mm,text);
+	     _updateEvents(dlg,hh,mm,text, contactIDs);
 	}    
 	saveEvents();
     }
@@ -528,12 +537,26 @@ public class EventsPanel extends JPanel {
     	Date schedDate = dlg.getEventDate();  			
 		CalendarDate eventCalendarDate = new CalendarDate(dlg.getEventDate());
 		
+		String[] contactIDs = _getContactIDs(dlg);
+		
     	if (dlg.noRepeatRB.isSelected())
-    		EventsManager.createEvent(eventCalendarDate, hh, mm, text, schedDate);
+    		EventsManager.createEvent(eventCalendarDate, hh, mm, text, schedDate, contactIDs);
     	else {
-    		updateEvents(dlg,hh,mm,text);
+    		_updateEvents(dlg,hh,mm,text, contactIDs);
     	}
     	saveEvents();
+    }
+    
+    private static String[] _getContactIDs(EventDialog dlg) {
+    	Enumeration<String> contactIDEnum = dlg.getAssociatedContactsPanel().getContactIDs();
+        Vector<String> contactIDVector = new Vector<String>();
+        for (String id; contactIDEnum.hasMoreElements();) {
+        	id = contactIDEnum.nextElement();
+        	contactIDVector.add(id);
+        }
+        String[] contactIDArray = new String[contactIDVector.size()];
+        contactIDVector.toArray(contactIDArray);
+        return contactIDArray;
     }
 
     static private void saveEvents() {
@@ -544,37 +567,46 @@ public class EventsPanel extends JPanel {
         parentPanel.updateIndicators();
     }
 
-    static private void updateEvents(EventDialog dlg, int hh, int mm, String text) {
-	int rtype;
-        int period;
-        CalendarDate sd = new CalendarDate((Date) dlg.startDate.getModel().getValue());
-        CalendarDate ed = null;
-        if (dlg.enableEndDateCB.isSelected())
-            ed = new CalendarDate((Date) dlg.endDate.getModel().getValue());
-        if (dlg.dailyRepeatRB.isSelected()) {
-            rtype = EventsManager.REPEAT_DAILY;
-            period = ((Integer) dlg.daySpin.getModel().getValue()).intValue();
-        }
-        else if (dlg.weeklyRepeatRB.isSelected()) {
-            rtype = EventsManager.REPEAT_WEEKLY;
-            period = dlg.weekdaysCB.getSelectedIndex() + 1;
-	    if (Configuration.get("FIRST_DAY_OF_WEEK").equals("mon")) {
-		if(period==7) period=1;
-		else period++;
-	    }
-        }
-	else if (dlg.yearlyRepeatRB.isSelected()) {
-	    rtype = EventsManager.REPEAT_YEARLY;
-	    period = sd.getCalendar().get(Calendar.DAY_OF_YEAR);
-	    if((sd.getYear() % 4) == 0 && sd.getCalendar().get(Calendar.DAY_OF_YEAR) > 60) period--;
-	}
-        else {
-            rtype = EventsManager.REPEAT_MONTHLY;
-            period = ((Integer) dlg.dayOfMonthSpin.getModel().getValue()).intValue();
-        }
+	private static void _updateEvents(EventDialog dlg, int hh, int mm, String text, String[] contactIDs) {
+		int repeatType;
+		int period;
+		final CalendarDate startDate = new CalendarDate((Date) dlg.startDate.getModel().getValue());
+		CalendarDate endDate = null;
+		if (dlg.enableEndDateCB.isSelected()) {
+			endDate = new CalendarDate((Date) dlg.endDate.getModel().getValue());
+		}
+		if (dlg.dailyRepeatRB.isSelected()) {
+			repeatType = EventsManager.REPEAT_DAILY;
+			period = ((Integer) dlg.daySpin.getModel().getValue()).intValue();
+		}
+		else if (dlg.weeklyRepeatRB.isSelected()) {
+			repeatType = EventsManager.REPEAT_WEEKLY;
+			period = dlg.weekdaysCB.getSelectedIndex() + 1;
 
-        EventsManager.createRepeatableEvent(rtype, sd, ed, period, hh, mm, text, dlg.workingDaysOnlyCB.isSelected());
-    }
+			if (Configuration.get("FIRST_DAY_OF_WEEK").equals("mon")) {
+				if (period == 7) {
+					period = 1;
+				}
+				else {
+					period++;
+				}
+			}
+		}
+		else if (dlg.yearlyRepeatRB.isSelected()) {
+			repeatType = EventsManager.REPEAT_YEARLY;
+			period = startDate.getCalendar().get(Calendar.DAY_OF_YEAR);
+			if ((startDate.getYear() % 4) == 0 && startDate.getCalendar().get(Calendar.DAY_OF_YEAR) > 60) {
+				period--;
+			}
+		}
+		else {
+			repeatType = EventsManager.REPEAT_MONTHLY;
+			period = ((Integer) dlg.dayOfMonthSpin.getModel().getValue()).intValue();
+		}
+
+		EventsManager.createRepeatableEvent(repeatType, startDate, endDate, period, hh, mm, text, dlg.workingDaysOnlyCB.isSelected(),
+				contactIDs);
+	}
 
     void removeEventB_actionPerformed(ActionEvent e) {
 		String msg;
