@@ -28,15 +28,19 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.JTextArea;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.JSpinner.DateEditor;
+import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
 
 import net.sf.memoranda.EventsManager;
 import net.sf.memoranda.date.CalendarDate;
@@ -58,6 +62,10 @@ public class EventDialog extends JDialog implements WindowListener {
     public JSpinner timeSpin = new JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.MINUTE));
     JLabel lblText = new JLabel();
     public JTextField textField = new JTextField();
+    JLabel jLabelDescription = new JLabel();
+    public JTextArea description = new JTextArea();
+    JScrollPane descriptionScrollPane = new JScrollPane(description);
+    Border border8;
     TitledBorder repeatBorder;
     JPanel repeatPanel = new JPanel(new GridBagLayout());
     public JRadioButton noRepeatRB = new JRadioButton();
@@ -109,7 +117,9 @@ public class EventDialog extends JDialog implements WindowListener {
         header.setIcon(new ImageIcon(net.sf.memoranda.ui.EventDialog.class.getResource(
             "resources/icons/event48.png")));
         headerPanel.add(header);
-        
+        border8 = BorderFactory.createEtchedBorder(Color.white, 
+                new Color(178, 178, 178));
+        GridBagLayout gbLayout = (GridBagLayout) eventPanel.getLayout();
         // Build eventPanel
         lblTime.setText(Local.getString("Time"));
         lblTime.setMinimumSize(new Dimension(60, 24));
@@ -124,6 +134,7 @@ public class EventDialog extends JDialog implements WindowListener {
         gbc.insets = new Insets(10, 0, 5, 0);
         gbc.anchor = GridBagConstraints.WEST;
         eventPanel.add(timeSpin, gbc);
+        
         lblText.setText(Local.getString("Text"));
         lblText.setMinimumSize(new Dimension(120, 24));
         gbc = new GridBagConstraints();
@@ -132,6 +143,7 @@ public class EventDialog extends JDialog implements WindowListener {
         gbc.insets = new Insets(5, 10, 5, 10);
         gbc.anchor = GridBagConstraints.WEST;
         eventPanel.add(lblText, gbc);
+        
         textField.setMinimumSize(new Dimension(375, 24));
         textField.setPreferredSize(new Dimension(375, 24));
         gbc = new GridBagConstraints();
@@ -141,6 +153,31 @@ public class EventDialog extends JDialog implements WindowListener {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         eventPanel.add(textField, gbc);
+        
+        
+        jLabelDescription.setMinimumSize(new Dimension(120, 24));
+        jLabelDescription.setText(Local.getString("Description"));
+        gbc = new GridBagConstraints();
+        gbc.gridx =0;
+        gbc.gridy = 2;
+        gbc.insets = new Insets(45,10,5,10);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbLayout.setConstraints(jLabelDescription,gbc);
+        eventPanel.add(jLabelDescription,gbc);
+        
+        
+        description.setPreferredSize(new Dimension(375, 200)); // 3 additional pixels from 384 so that the last line is not cut off
+        description.setLineWrap(true);
+        description.setWrapStyleWord(true);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0; gbc.gridy = 3;
+        gbc.gridwidth = 6;
+        gbc.insets = new Insets(45, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.WEST;
+        descriptionScrollPane.setPreferredSize(new Dimension(375,96));
+        gbLayout.setConstraints(descriptionScrollPane,gbc);
+        eventPanel.add(description, gbc);
+        eventPanel.add(descriptionScrollPane, null);
         
         // Build RepeatPanel
         repeatBorder = new TitledBorder(BorderFactory.createLineBorder(

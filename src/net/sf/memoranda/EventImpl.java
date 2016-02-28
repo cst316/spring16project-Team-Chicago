@@ -144,15 +144,26 @@ public class EventImpl implements Event, Comparable {
     }
     
     public String getDescription(){
-    	Attribute a = _elem.getAttribute("description");
-    	if(a != null){
-    		return a.getValue();
+    	Element element = _elem.getFirstChildElement("description");
+    	if (element == null) {
+    		return null;
     	}
-    	return null;
+    	else {
+       		return element.getValue();
+    	}
     }
 	
-    public void setDescription(String desc){
-    	_elem.addAttribute(new Attribute("description",desc));
+    public void setDescription(String d){
+    	Element desc  = _elem.getFirstChildElement("description");
+    	if(desc == null){
+    		desc = new Element("description");
+    		desc.appendChild(d);
+            _elem.appendChild(desc);  
+    	}
+    	else{
+    		desc.removeChildren();
+            desc.appendChild(d); 
+    	}
     	
     }
 	/**

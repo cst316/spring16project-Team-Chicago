@@ -298,7 +298,8 @@ public class EventsManager {
 		int hh,
 		int mm,
 		String text,
-		Date schedDate) { 
+		Date schedDate,
+		String desc) { 
 		
 		// US-53 gets the scheduled date of the events, converts to string, then adds it.
 		String dateText;
@@ -314,7 +315,9 @@ public class EventsManager {
 		Day d = getDay(date);
 		if (d == null)
 			d = createDay(date);
+		el.addAttribute(new Attribute("description",desc));
 		d.getElement().appendChild(el);
+		
 		return new EventImpl(el);
 	}
 
@@ -326,6 +329,7 @@ public class EventsManager {
 		int hh,
 		int mm,
 		String text,
+		String desc,
 		boolean workDays) {
 		Element el = new Element("event");
 		Element rep = _root.getFirstChildElement("repeatable");
@@ -345,6 +349,7 @@ public class EventsManager {
 		// new attribute for wrkin days - ivanrise
 		el.addAttribute(new Attribute("workingDays",String.valueOf(workDays)));
 		el.appendChild(text);
+		el.appendChild(desc);
 		rep.appendChild(el);
 		return new EventImpl(el);
 	}
