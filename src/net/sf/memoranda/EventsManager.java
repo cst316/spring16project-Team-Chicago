@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
-
 import java.util.Map;
 import java.util.Collections;
 import java.util.Date;
@@ -23,6 +22,7 @@ import java.util.Date;
 import net.sf.memoranda.date.CalendarDate;
 import net.sf.memoranda.ui.DailyItemsPanel;
 import net.sf.memoranda.util.CurrentStorage;
+import net.sf.memoranda.util.Local;
 import net.sf.memoranda.util.Util;
 import nu.xom.Attribute;
 //import nu.xom.Comment;
@@ -39,11 +39,15 @@ public class EventsManager {
 /*	public static final String NS_JNEVENTS =
 		"http://www.openmechanics.org/2003/jnotes-events-file";
 */
+
 	public static final int NO_REPEAT = 0;
 	public static final int REPEAT_DAILY = 1;
 	public static final int REPEAT_WEEKLY = 2;
 	public static final int REPEAT_MONTHLY = 3;
 	public static final int REPEAT_YEARLY = 4;
+	private static final String REMOVE_SINGLE = "Remove single event";
+	private static final String REMOVE_SERIES = "Remove event series";
+	private static final String CANCEL = "Cancel";
 
 	public static Document _doc = null;
 	static Element _root = null;
@@ -298,23 +302,22 @@ public class EventsManager {
 		int hh,
 		int mm,
 		String text,
-		Date schedDate) { 
+		Date schedDate,
+		String[] contactIDs) { 
+		
+		Element el = _createEventElement(hh, mm, text, contactIDs);
 		
 		// US-53 gets the scheduled date of the events, converts to string, then adds it.
-		String dateText;
-		DateFormat sdf = new SimpleDateFormat("M/dd/yy");
-		dateText = sdf.format(schedDate);				
-
-		Element el = new Element("event");
-		el.addAttribute(new Attribute("id", Util.generateId()));
-		el.addAttribute(new Attribute("hour", String.valueOf(hh)));
-		el.addAttribute(new Attribute("min", String.valueOf(mm)));
-		el.appendChild(text);
+		final DateFormat sdf = new SimpleDateFormat("M/dd/yy");
+		final String dateText = sdf.format(schedDate);
+		
 		el.addAttribute(new Attribute("schedDate", String.valueOf(dateText)));
-		Day d = getDay(date);
-		if (d == null)
-			d = createDay(date);
-		d.getElement().appendChild(el);
+		
+		Day day = getDay(date);
+		if (day == null) {
+			day = createDay(date);
+		}
+		day.getElement().appendChild(el);
 		return new EventImpl(el);
 	}
 
@@ -326,8 +329,10 @@ public class EventsManager {
 		int hh,
 		int mm,
 		String text,
-		boolean workDays) {
-		Element el = new Element("event");
+		boolean workDays,
+		String[] contactIDs) {
+		
+		final Element el = _createEventElement(hh, mm, text, contactIDs);
 		Element rep = _root.getFirstChildElement("repeatable");
 		if (rep == null) {
 			rep = new Element("repeatable");
@@ -335,14 +340,12 @@ public class EventsManager {
 		}
 		
 		el.addAttribute(new Attribute("repeat-type", String.valueOf(type)));
-		el.addAttribute(new Attribute("id", Util.generateId()));
-		el.addAttribute(new Attribute("hour", String.valueOf(hh)));
-		el.addAttribute(new Attribute("min", String.valueOf(mm)));
 		el.addAttribute(new Attribute("startDate", startDate.toString()));
-		if (endDate != null)
+		if (endDate != null) {
 			el.addAttribute(new Attribute("endDate", endDate.toString()));
+		}
 		el.addAttribute(new Attribute("period", String.valueOf(period)));
-		// new attribute for wrkin days - ivanrise
+		// new attribute for working days - ivanrise
 		el.addAttribute(new Attribute("workingDays",String.valueOf(workDays)));
 		el.appendChild(text);
 		rep.appendChild(el);
@@ -433,16 +436,96 @@ public class EventsManager {
 		return null;
 	}
 
-	public static void removeEvent(CalendarDate date, int hh, int mm) {
-		Day d = getDay(date);
-		if (d == null)
-			d.getElement().removeChild(getEvent(date, hh, mm).getContent());
-	}
-
-	public static void removeEvent(Event ev) {
-		ParentNode parent = ev.getContent().getParent();
+	/**
+	 * Removes an event from the calendar as specified by the user. Provides options to the user
+	 * on how to delete a repeatable event.
+	 * 
+	 * @param ev	The event to be deleted
+	 * @param edit	Indicates if the event is being removed due to editing
+	 */
+	public static void removeEvent(Event ev, boolean edit) {
+		// skips nonrepeatable events and if editing an event
+		if (ev.isRepeatable()&& edit == false){ 	
+			
+			String endDate;
+			final Object[] options = { 
+					REMOVE_SINGLE,
+					REMOVE_SERIES,
+					CANCEL
+			};
+			
+			if (ev.getEndDate() == null) {
+				endDate = "Recurring";
+			}
+			else {
+				endDate = ev.getEndDate().getShortDateString();
+			}
+			
+			final int n = JOptionPane.showOptionDialog(null, "Do you wish to remove the following selected event"
+					+ " individually or the entire event series?\n\n" + "Event: " + ev.getText() + "\nStart Date:  " 
+					+ ev.getStartDate().getShortDateString() + "\nEnd Date:  " + endDate + "\nSelected"
+					+ " Date:  " + DailyItemsPanel.currentDate.getShortDateString() + "\n\n",
+					Local.getString("Remove event"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, 
+						null, options, options[JOptionPane.CANCEL_OPTION]);
+			
+			if (n == JOptionPane.YES_OPTION) {
+				_splitRepeatableEvent(ev);		
+			}
+			else if (n == JOptionPane.CLOSED_OPTION || n == JOptionPane.CANCEL_OPTION) {
+				return;
+			}
+		}		
+		
+		// removes entire series
+		final ParentNode parent = ev.getContent().getParent();
 		parent.removeChild(ev.getContent());
 	}
+	
+	private static Element _createEventElement(
+			int hh,
+			int mm,
+			String text,
+			String[] contactIDs) { 		
+
+		final Element el = new Element("event");
+		el.addAttribute(new Attribute("id", Util.generateId()));
+		el.addAttribute(new Attribute("hour", String.valueOf(hh)));
+		el.addAttribute(new Attribute("min", String.valueOf(mm)));
+		el.appendChild(text);
+		
+		if (contactIDs != null) { 
+			final Element contacts = new Element("contacts");
+			for (int i = 0; i < contactIDs.length; i++) {
+				final Element contact = new Element("contact");
+				contact.addAttribute(new Attribute("id", contactIDs[i]));
+				contacts.appendChild(contact);
+			}
+			
+			if (contactIDs.length > 0) {
+				el.appendChild(contacts);
+			}
+		}
+		
+		return el;
+	}
+
+	/**
+	 * Takes the split event and creates new events for each half.
+	 * 
+	 * @param ev The event to be split
+	 */
+	private static void _splitRepeatableEvent(Event ev) {
+	
+		final FrontSplitEvent frontSplit = new FrontSplitEvent(ev.getRepeat(), ev.getStartDate(),
+				ev.getEndDate(), DailyItemsPanel.currentDate, ev.getPeriod());
+		
+		final BackSplitEvent backSplit = new BackSplitEvent(ev.getRepeat(), ev.getStartDate(),
+				ev.getEndDate(), DailyItemsPanel.currentDate, ev.getPeriod());
+		
+		frontSplit.newSplitEvent(ev);
+		backSplit.newSplitEvent(ev);
+	}
+	
 
 	private static Day createDay(CalendarDate date) {
 		Year y = getYear(date.getYear());

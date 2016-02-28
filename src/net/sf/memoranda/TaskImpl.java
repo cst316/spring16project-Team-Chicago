@@ -426,5 +426,41 @@ public class TaskImpl implements Task, Comparable {
 		return false;
 	}
 
+	@Override
+	public void setContactIDs(String[] idArray) {
+		Element oldContacts = _element.getFirstChildElement("contacts");
+		Element newContacts = new Element("contacts");
+		
+		for (int i = 0; i < idArray.length; i++) {
+			Element contact = new Element("contact");
+			contact.addAttribute(new Attribute("id", idArray[i]));
+			newContacts.appendChild(contact);
+		}
+		
+		if (oldContacts != null) {
+			_element.replaceChild(oldContacts, newContacts);
+		}
+		else {
+			_element.appendChild(newContacts);
+		}
+	}
+	
+	public String[] getContactIDs() {
+		String[] ids = null;
+		Element contacts = _element.getFirstChildElement("contacts");
+		if (contacts != null) {
+			Elements allContacts = contacts.getChildElements("contact");
+			final int size = allContacts.size();
+			ids = new String[size];
+			for (int i = 0; i < size; i++) {
+				Element contact = allContacts.get(i);
+				if (contact != null) {
+					ids[i] = contact.getAttributeValue("id");
+				}
+			}
+		}
+		return ids;
+	}
+
 	
 }

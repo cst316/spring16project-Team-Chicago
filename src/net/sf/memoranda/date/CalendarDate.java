@@ -11,6 +11,8 @@ package net.sf.memoranda.date;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+
 import net.sf.memoranda.util.Local;
 import net.sf.memoranda.util.Util;
 
@@ -93,6 +95,16 @@ public class CalendarDate {
     	Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, addDays);
         return new CalendarDate(cal);
+    }
+    
+    /**
+     * Converts CalendarDate to Calendar for use in modifying dates.
+     * @param date Date to be converted
+     * @return cal The parameter date converted to Calender
+     */
+    public static Calendar convertCalendarDateToCalendar(CalendarDate date) {
+    	final Calendar cal = date.getCalendar();
+    	return cal;
     }
 
     public static Calendar toCalendar(int day, int month, int year) {

@@ -288,6 +288,14 @@ public class ContactManager {
 		return _listeners.remove(listener);
 	}
 
+	public static Contact getContact(String id) {
+		Contact contact = _masterContactList.get(id);
+		if (contact != null) {
+			contact = contact.copy();
+		}
+		return contact;
+	}
+
 	private static void _buildElements(Document doc) {
 		final Element root = doc.getRootElement();
 

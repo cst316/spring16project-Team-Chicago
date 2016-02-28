@@ -18,7 +18,7 @@ public class PriorityQueue {
         public void insertar(Pair x){
                 ++n;
                 a[n]=x;
-                for(int j=n; j>1 && a[j].getPriority() < a[j/2].getPriority(); j/=2)
+                for(int j=n; j>1 && a[j].getPriority() > a[j/2].getPriority(); j/=2)
                 {
                         Pair t = a[j];
                         a[j] = a[j/2];
@@ -35,9 +35,9 @@ public class PriorityQueue {
                         while(2*j<=n)
                         {
                                 int k=2*j;
-                                if(k+1<=n && a[k+1].getPriority() < a[k].getPriority())
+                                if(k+1<=n && a[k+1].getPriority() > a[k].getPriority())
                                         k=k+1;  
-                                if(a[j].getPriority() < a[k].getPriority())
+                                if(a[j].getPriority() > a[k].getPriority())
                                         break;
                                 Pair t = a[j]; 
                                 a[j] = a[k];

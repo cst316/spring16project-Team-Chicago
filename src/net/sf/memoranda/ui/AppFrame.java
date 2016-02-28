@@ -73,6 +73,10 @@ import nu.xom.Elements;
 
 /*$Id: AppFrame.java,v 1.33 2005/07/05 08:17:24 alexeya Exp $*/
 
+/**
+ * @author michaelholmes
+ *
+ */
 public class AppFrame extends JFrame {
 
     JPanel contentPane;
@@ -101,13 +105,13 @@ public class AppFrame extends JFrame {
 
     static Vector exitListeners = new Vector();
 
-    public Action prjPackAction = new AbstractAction("Pack current project") {
+    private Action _prjPackAction = new AbstractAction("Pack current project") {
         public void actionPerformed(ActionEvent e) {
             doPrjPack();
         }
     };
 
-    public Action prjUnpackAction = new AbstractAction("Unpack project") {
+    private Action _prjUnpackAction = new AbstractAction("Unpack project") {
         public void actionPerformed(ActionEvent e) {
             doPrjUnPack();
         }
@@ -118,6 +122,12 @@ public class AppFrame extends JFrame {
     		doImportCal();
     	}
     };	
+    
+    private Action _exportCalAction = new AbstractAction("Export Calendar"){
+    	public void actionPerformed(ActionEvent e){
+    		doExportCal();
+    	}
+    };	
   
     
     private Action _minimizeToSystemTrayAction = new AbstractAction("Close the window") {
@@ -126,13 +136,13 @@ public class AppFrame extends JFrame {
         }
     };
 
-    public Action preferencesAction = new AbstractAction("Preferences") {
+    private Action _preferencesAction = new AbstractAction("Preferences") {
         public void actionPerformed(ActionEvent e) {
             showPreferences();
         }
     };
     
-    public Action exportNotesAction =
+    private Action _exportNotesAction =
                 new AbstractAction(Local.getString("Export notes") + "...") {
 
                 public void actionPerformed(ActionEvent e) {
@@ -140,14 +150,14 @@ public class AppFrame extends JFrame {
                 }
         };
         
-        public Action importNotesAction =
+        private Action _importNotesAction =
                         new AbstractAction(Local.getString("Import multiple notes")) {
 
                         public void actionPerformed(ActionEvent e) {
                                 ppImport_actionPerformed(e);
                         }
                 };
-        public Action importOneNoteAction =
+        private Action _importOneNoteAction =
                 new AbstractAction(Local.getString("Import one note")) {
 
                 public void actionPerformed(ActionEvent e) {
@@ -156,14 +166,14 @@ public class AppFrame extends JFrame {
         };
     
     JMenuItem jMenuFileNewPrj = new JMenuItem();
-        JMenuItem jMenuFileNewNote = new JMenuItem(workPanel.dailyItemsPanel.editorPanel.newAction);
-    JMenuItem jMenuFilePackPrj = new JMenuItem(prjPackAction);
-    JMenuItem jMenuFileUnpackPrj = new JMenuItem(prjUnpackAction);
+    JMenuItem jMenuFileNewNote = new JMenuItem(workPanel.dailyItemsPanel.editorPanel.newAction);
+    JMenuItem jMenuFilePackPrj = new JMenuItem(_prjPackAction);
+    JMenuItem jMenuFileUnpackPrj = new JMenuItem(_prjUnpackAction);
     JMenuItem jMenuImportCalendar = new JMenuItem(_importCalAction);
-    
-    JMenuItem jMenuFileExportPrj = new JMenuItem(exportNotesAction);
-    JMenuItem jMenuFileImportPrj = new JMenuItem(importNotesAction);
-    JMenuItem jMenuFileImportNote = new JMenuItem(importOneNoteAction);
+    JMenuItem jMenuExportCalendar = new JMenuItem(_exportCalAction);
+    JMenuItem jMenuFileExportPrj = new JMenuItem(_exportNotesAction);
+    JMenuItem jMenuFileImportPrj = new JMenuItem(_importNotesAction);
+    JMenuItem jMenuFileImportNote = new JMenuItem(_importOneNoteAction);
     JMenuItem jMenuFileExportNote = new JMenuItem(
             workPanel.dailyItemsPanel.editorPanel.exportAction);
     JMenuItem jMenuFileMin = new JMenuItem(_minimizeToSystemTrayAction);
@@ -247,12 +257,16 @@ public class AppFrame extends JFrame {
 
     JMenuItem jMenuGoDayBack = new JMenuItem(
             workPanel.dailyItemsPanel.calendar.dayBackAction);
+    JMenuItem jMenuGoMonthBack = new JMenuItem(
+            workPanel.dailyItemsPanel.calendar.monthBackAction);
     JMenuItem jMenuGoDayFwd = new JMenuItem(
             workPanel.dailyItemsPanel.calendar.dayForwardAction);
+    JMenuItem jMenuGoMonthFwd = new JMenuItem(
+            workPanel.dailyItemsPanel.calendar.monthForwardAction);
     JMenuItem jMenuGoToday = new JMenuItem(
             workPanel.dailyItemsPanel.calendar.todayAction);
 
-    JMenuItem jMenuEditPref = new JMenuItem(preferencesAction);
+    JMenuItem jMenuEditPref = new JMenuItem(_preferencesAction);
 
     JMenu jMenuInsertSpecial = new JMenu();
     
@@ -487,7 +501,9 @@ public class AppFrame extends JFrame {
         jMenuGoFwd.setText(Local.getString("History forward"));
         jMenuGoFwd.setToolTipText(Local.getString("History forward"));
         jMenuGoDayBack.setText(Local.getString("One day back"));
+        jMenuGoMonthBack.setText(Local.getString("One month back"));
         jMenuGoDayFwd.setText(Local.getString("One day forward"));
+        jMenuGoMonthFwd.setText(Local.getString("One month forward"));
         jMenuGoToday.setText(Local.getString("To today"));
 
         jMenuInsertSpecial.setText(Local.getString("Special"));
@@ -503,6 +519,7 @@ public class AppFrame extends JFrame {
         jMenuFile.add(jMenuFilePackPrj);
         jMenuFile.add(jMenuFileUnpackPrj);
         jMenuFile.add(jMenuImportCalendar);
+        jMenuFile.add(jMenuExportCalendar);
         jMenuFile.addSeparator();
         jMenuFile.add(jMenuFileExportPrj);
         jMenuFile.add(jMenuFileExportNote);
@@ -604,7 +621,9 @@ public class AppFrame extends JFrame {
         jMenuGo.add(jMenuGoFwd);
         jMenuGo.addSeparator();
         jMenuGo.add(jMenuGoDayBack);
+        jMenuGo.add(jMenuGoMonthBack);
         jMenuGo.add(jMenuGoDayFwd);
+        jMenuGo.add(jMenuGoMonthFwd);
         jMenuGo.add(jMenuGoToday);
 
         splitPane.setBorder(null);
@@ -782,16 +801,13 @@ public class AppFrame extends JFrame {
 
     public void doPrjPack() {
         // Fix until Sun's JVM supports more locales...
-        UIManager.put("FileChooser.saveInLabelText", Local
-                .getString("Save in:"));
+        UIManager.put("FileChooser.saveInLabelText", Local.getString("Save in:"));
         UIManager.put("FileChooser.upFolderToolTipText", Local.getString(
                 "Up One Level"));
         UIManager.put("FileChooser.newFolderToolTipText", Local.getString(
                 "Create New Folder"));
-        UIManager.put("FileChooser.listViewButtonToolTipText", Local
-                .getString("List"));
-        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local
-                .getString("Details"));
+        UIManager.put("FileChooser.listViewButtonToolTipText", Local.getString("List"));
+        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local.getString("Details"));
         UIManager.put("FileChooser.fileNameLabelText", Local.getString(
                 "File Name:"));
         UIManager.put("FileChooser.filesOfTypeLabelText", Local.getString(
@@ -799,12 +815,11 @@ public class AppFrame extends JFrame {
         UIManager.put("FileChooser.saveButtonText", Local.getString("Save"));
         UIManager.put("FileChooser.saveButtonToolTipText", Local.getString(
                 "Save selected file"));
-        UIManager
-                .put("FileChooser.cancelButtonText", Local.getString("Cancel"));
+        UIManager.put("FileChooser.cancelButtonText", Local.getString("Cancel"));
         UIManager.put("FileChooser.cancelButtonToolTipText", Local.getString(
                 "Cancel"));
 
-        JFileChooser chooser = new JFileChooser();
+        final JFileChooser chooser = new JFileChooser();
         chooser.setFileHidingEnabled(false);
         chooser.setDialogTitle(Local.getString("Pack project"));
         chooser.setAcceptAllFileFilterUsed(false);
@@ -827,12 +842,14 @@ public class AppFrame extends JFrame {
         }
         //---------------------------------------------------------------------
 
-        if (lastSel != null)
+        if (lastSel != null){
             chooser.setCurrentDirectory(lastSel);
-        if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+        }
+        if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION){
             return;
+        }
         Context.put("LAST_SELECTED_PACK_FILE", chooser.getSelectedFile());        
-        java.io.File f = chooser.getSelectedFile();
+        final java.io.File f = chooser.getSelectedFile();
         ProjectPackager.pack(CurrentProject.get(), f);
     }
 
@@ -883,10 +900,12 @@ public class AppFrame extends JFrame {
         }
         //---------------------------------------------------------------------
 
-        if (lastSel != null)
+        if (lastSel != null){
             chooser.setCurrentDirectory(lastSel);
-        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
+        }
+        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION){
             return;
+        }
         Context.put("LAST_SELECTED_PACK_FILE", chooser.getSelectedFile());        
         java.io.File f = chooser.getSelectedFile();
         ProjectPackager.unpack(f);
@@ -896,16 +915,13 @@ public class AppFrame extends JFrame {
      * Assembles file browser for importing ics file
      */
     public void doImportCal() {
-    	UIManager.put("FileChooser.lookInLabelText", Local
-                .getString("Look in:"));
+    	UIManager.put("FileChooser.lookInLabelText", Local.getString("Look in:"));
         UIManager.put("FileChooser.upFolderToolTipText", Local.getString(
                 "Up One Level"));
         UIManager.put("FileChooser.newFolderToolTipText", Local.getString(
                 "Create New Folder"));
-        UIManager.put("FileChooser.listViewButtonToolTipText", Local
-                .getString("List"));
-        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local
-                .getString("Details"));
+        UIManager.put("FileChooser.listViewButtonToolTipText", Local.getString("List"));
+        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local.getString("Details"));
         UIManager.put("FileChooser.fileNameLabelText", Local.getString(
                 "File Name:"));
         UIManager.put("FileChooser.filesOfTypeLabelText", Local.getString(
@@ -913,12 +929,11 @@ public class AppFrame extends JFrame {
         UIManager.put("FileChooser.openButtonText", Local.getString("Open"));
         UIManager.put("FileChooser.openButtonToolTipText", Local.getString(
                 "Open selected file"));
-        UIManager
-                .put("FileChooser.cancelButtonText", Local.getString("Cancel"));
+        UIManager.put("FileChooser.cancelButtonText", Local.getString("Cancel"));
         UIManager.put("FileChooser.cancelButtonToolTipText", Local.getString(
                 "Cancel"));
 
-        JFileChooser chooser = new JFileChooser();
+        final JFileChooser chooser = new JFileChooser();
         chooser.setFileHidingEnabled(false);
         chooser.setDialogTitle(Local.getString("Import Calendar"));
         chooser.setAcceptAllFileFilterUsed(false);
@@ -931,7 +946,7 @@ public class AppFrame extends JFrame {
         File lastSel = null;
 
         try {
-            lastSel = (java.io.File) Context.get("LAST_SELECTED_PACK_FILE");
+            lastSel = (java.io.File) Context.get("LAST_SELECTED_ICS_FILE");
         }
         catch (ClassCastException cce) {
             lastSel = new File(System.getProperty("user.dir") + File.separator);
@@ -944,12 +959,66 @@ public class AppFrame extends JFrame {
         if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION){
             return;
         }
-        Context.put("LAST_SELECTED_PACK_FILE", chooser.getSelectedFile());        
-        java.io.File f = chooser.getSelectedFile();
+        Context.put("LAST_SELECTED_ICS_FILE", chooser.getSelectedFile());        
+        final java.io.File f = chooser.getSelectedFile();
         CalendarICS.importCalendar(f);
         projectsPanel.prjTablePanel.updateUI();
 		
 	}
+    
+    /**
+     * Assembles browser for exporting project as ics file
+     */
+    public void doExportCal(){
+    	UIManager.put("FileChooser.saveInLabelText", Local.getString("Save in:"));
+        UIManager.put("FileChooser.upFolderToolTipText", Local.getString(
+                "Up One Level"));
+        UIManager.put("FileChooser.newFolderToolTipText", Local.getString(
+                "Create New Folder"));
+        UIManager.put("FileChooser.listViewButtonToolTipText", Local.getString("List"));
+        UIManager.put("FileChooser.detailsViewButtonToolTipText", Local.getString("Details"));
+        UIManager.put("FileChooser.fileNameLabelText", Local.getString(
+                "File Name:"));
+        UIManager.put("FileChooser.filesOfTypeLabelText", Local.getString(
+                "Files of Type:"));
+        UIManager.put("FileChooser.saveButtonText", Local.getString("Save"));
+        UIManager.put("FileChooser.saveButtonToolTipText", Local.getString(
+                "Save selected file"));
+        UIManager.put("FileChooser.cancelButtonText", Local.getString("Cancel"));
+        UIManager.put("FileChooser.cancelButtonToolTipText", Local.getString(
+                "Cancel"));
+
+        final JFileChooser chooser = new JFileChooser();
+        chooser.setFileHidingEnabled(false);
+        chooser.setDialogTitle(Local.getString("Export Project Calendar"));
+        chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        
+        chooser.addChoosableFileFilter(new AllFilesFilter(AllFilesFilter.ICS));
+        
+        chooser.setPreferredSize(new Dimension(550, 375));
+
+        
+        File lastSel = null;
+
+        try {
+            lastSel = (java.io.File) Context.get("LAST_SELECTED_ICS_FILE");
+        }
+        catch (ClassCastException cce) {
+            lastSel = new File(System.getProperty("user.dir") + File.separator);
+        }
+        //---------------------------------------------------------------------
+
+        if (lastSel != null){
+            chooser.setCurrentDirectory(lastSel);
+        }
+        if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION){
+            return;
+        }
+        Context.put("LAST_SELECTED_ICS_FILE", chooser.getSelectedFile());        
+        final java.io.File f = chooser.getSelectedFile();
+        CalendarICS.exportCal(CurrentProject.get(), f);
+    }
     
 
     public void showPreferences() {

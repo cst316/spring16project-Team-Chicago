@@ -73,7 +73,7 @@ public class DailyItemsPanel extends JPanel {
     boolean expanded = true;
 
     Note currentNote;
-	static CalendarDate currentDate;
+	public static CalendarDate currentDate;
 
     boolean calendarIgnoreChange = false;
     boolean dateChangedByCalendar = false;

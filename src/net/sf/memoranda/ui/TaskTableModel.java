@@ -128,12 +128,12 @@ public class TaskTableModel extends AbstractTreeTableModel implements TreeTableM
 
     String getPriorityString(int p) {
         switch (p) {
-        case Task.PRIORITY_NORMAL:
-            return Local.getString("Normal");
-        case Task.PRIORITY_LOW:
-            return Local.getString("Low");
         case Task.PRIORITY_LOWEST:
             return Local.getString("Lowest");
+        case Task.PRIORITY_LOW:
+            return Local.getString("Low");
+        case Task.PRIORITY_NORMAL:
+            return Local.getString("Normal");
         case Task.PRIORITY_HIGH:
             return Local.getString("High");
         case Task.PRIORITY_HIGHEST:

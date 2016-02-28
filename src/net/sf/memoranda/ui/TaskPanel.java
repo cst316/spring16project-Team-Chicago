@@ -1,5 +1,6 @@
 package net.sf.memoranda.ui;
 
+import java.util.Calendar;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -10,6 +11,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -39,6 +41,8 @@ import net.sf.memoranda.util.Context;
 import net.sf.memoranda.util.CurrentStorage;
 import net.sf.memoranda.util.Local;
 import net.sf.memoranda.util.Util;
+import net.sf.memoranda.EventsManager;
+import net.sf.memoranda.date.CalendarDate;
 
 /*$Id: TaskPanel.java,v 1.27 2007/01/17 20:49:12 killerjoe Exp $*/
 public class TaskPanel extends JPanel {
@@ -51,6 +55,7 @@ public class TaskPanel extends JPanel {
     JButton editTaskB = new JButton();
     JButton removeTaskB = new JButton();
     JButton completeTaskB = new JButton();
+    JButton toStickyB = new JButton();
     
 	JCheckBoxMenuItem ppShowActiveOnlyChB = new JCheckBoxMenuItem();
 		
@@ -61,6 +66,7 @@ public class TaskPanel extends JPanel {
 	JMenuItem ppRemoveTask = new JMenuItem();
 	JMenuItem ppNewTask = new JMenuItem();
 	JMenuItem ppCompleteTask = new JMenuItem();
+	JMenuItem ppToStickyTask = new JMenuItem();
 	//JMenuItem ppSubTasks = new JMenuItem();
 	//JMenuItem ppParentTask = new JMenuItem();
 	JMenuItem ppAddSubTask = new JMenuItem();
@@ -161,6 +167,21 @@ public class TaskPanel extends JPanel {
         removeTaskB.setMaximumSize(new Dimension(24, 24));
         removeTaskB.setIcon(
             new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/todo_remove.png")));
+        
+        toStickyB.setBorderPainted(false);
+        toStickyB.setFocusable(false);
+        toStickyB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	ppToStickyTask_actionPerformed(e);
+            }
+        });
+        toStickyB.setPreferredSize(new Dimension(24, 24));
+        toStickyB.setRequestFocusEnabled(false);
+        toStickyB.setToolTipText(Local.getString("Create sticky"));
+        toStickyB.setMinimumSize(new Dimension(24, 24));
+        toStickyB.setMaximumSize(new Dimension(24, 24));
+        toStickyB.setIcon(
+            new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/to_sticky.png")));
         
         completeTaskB.setBorderPainted(false);
         completeTaskB.setFocusable(false);
@@ -309,6 +330,16 @@ public class TaskPanel extends JPanel {
 		});
 	ppCalcTask.setIcon(new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/todo_complete.png")));
 	ppCalcTask.setEnabled(false);
+	
+	ppToStickyTask.setFont(new java.awt.Font("Dialog", 1, 11));
+	ppToStickyTask.setText(Local.getString("Create Stikcy"));
+	ppToStickyTask.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ppToStickyTask_actionPerformed(e);
+			}
+		});
+	ppToStickyTask.setIcon(new ImageIcon(net.sf.memoranda.ui.AppFrame.class.getResource("resources/icons/to_sticky.png")));
+	ppToStickyTask.setEnabled(false);
 
     scrollPane.getViewport().add(taskTable, null);
         this.add(scrollPane, BorderLayout.CENTER);
@@ -322,6 +353,7 @@ public class TaskPanel extends JPanel {
         tasksToolBar.addSeparator(new Dimension(8, 24));
         tasksToolBar.add(editTaskB, null);
         tasksToolBar.add(completeTaskB, null);
+        tasksToolBar.add(toStickyB, null);
 
 		//tasksToolBar.add(showActiveOnly, null);
         
@@ -356,6 +388,8 @@ public class TaskPanel extends JPanel {
 				
 				ppCompleteTask.setEnabled(enbl);
 				completeTaskB.setEnabled(enbl);
+				toStickyB.setEnabled(enbl);
+				ppToStickyTask.setEnabled(enbl);
 				ppAddSubTask.setEnabled(enbl);
 				//ppSubTasks.setEnabled(enbl); // default value to be over-written later depending on whether it has sub tasks
 				ppCalcTask.setEnabled(enbl); // default value to be over-written later depending on whether it has sub tasks
@@ -386,6 +420,7 @@ public class TaskPanel extends JPanel {
         editTaskB.setEnabled(false);
         removeTaskB.setEnabled(false);
 		completeTaskB.setEnabled(false);
+		toStickyB.setEnabled(false);
 		ppAddSubTask.setEnabled(false);
 		//ppSubTasks.setEnabled(false);
 		//ppParentTask.setEnabled(false);
@@ -399,6 +434,7 @@ public class TaskPanel extends JPanel {
     taskPPMenu.addSeparator();
 	taskPPMenu.add(ppCompleteTask);
 	taskPPMenu.add(ppCalcTask);
+	taskPPMenu.add(ppToStickyTask);
 	
     //taskPPMenu.addSeparator();
     
@@ -447,6 +483,7 @@ public class TaskPanel extends JPanel {
             CurrentProject.getTaskList().getTask(
                 taskTable.getModel().getValueAt(taskTable.getSelectedRow(), TaskTable.TASK_ID).toString());
         TaskDialog dlg = new TaskDialog(App.getFrame(), Local.getString("Edit task"));
+        dlg.getAssociatedContactsPanel().populateContactPanel(t.getContactIDs());
         Dimension frmSize = App.getFrame().getSize();
         Point loc = App.getFrame().getLocation();
         dlg.setLocation((frmSize.width - dlg.getSize().width) / 2 + loc.x, (frmSize.height - dlg.getSize().height) / 2 + loc.y);
@@ -480,6 +517,10 @@ public class TaskPanel extends JPanel {
         t.setEffort(Util.getMillisFromHours(dlg.effortField.getText()));
         t.setProgress(((Integer)dlg.progress.getValue()).intValue());
         
+        String[] idArray = getContactIDs(dlg);
+        
+        t.setContactIDs(idArray);
+        
 //		CurrentProject.getTaskList().adjustParentTasks(t);
 
         CurrentStorage.get().storeTaskList(CurrentProject.getTaskList(), CurrentProject.get());
@@ -510,7 +551,8 @@ public class TaskPanel extends JPanel {
  			ed = null;
         long effort = Util.getMillisFromHours(dlg.effortField.getText());
 		//XXX Task newTask = CurrentProject.getTaskList().createTask(sd, ed, dlg.todoField.getText(), dlg.priorityCB.getSelectedIndex(),effort, dlg.descriptionField.getText(),parentTaskId);
-		Task newTask = CurrentProject.getTaskList().createTask(sd, ed, dlg.todoField.getText(), dlg.priorityCB.getSelectedIndex(),effort, dlg.descriptionField.getText(),null);
+        String[] idArray = getContactIDs(dlg);
+        Task newTask = CurrentProject.getTaskList().createTask(sd, ed, dlg.todoField.getText(), dlg.priorityCB.getSelectedIndex(),effort, dlg.descriptionField.getText(),null,idArray);
 //		CurrentProject.getTaskList().adjustParentTasks(newTask);
 		newTask.setProgress(((Integer)dlg.progress.getValue()).intValue());
         CurrentStorage.get().storeTaskList(CurrentProject.getTaskList(), CurrentProject.get());
@@ -551,7 +593,7 @@ public class TaskPanel extends JPanel {
  		else
  			ed = null;
         long effort = Util.getMillisFromHours(dlg.effortField.getText());
-		Task newTask = CurrentProject.getTaskList().createTask(sd, ed, dlg.todoField.getText(), dlg.priorityCB.getSelectedIndex(),effort, dlg.descriptionField.getText(),parentTaskId);
+		Task newTask = CurrentProject.getTaskList().createTask(sd, ed, dlg.todoField.getText(), dlg.priorityCB.getSelectedIndex(),effort, dlg.descriptionField.getText(),parentTaskId,null);
         newTask.setProgress(((Integer)dlg.progress.getValue()).intValue());
 //		CurrentProject.getTaskList().adjustParentTasks(newTask);
 
@@ -697,6 +739,31 @@ public class TaskPanel extends JPanel {
 		parentPanel.updateIndicators();
 		//taskTable.updateUI();
 	}
+	
+	/**
+	 * Takes a task and creates a sticky 
+	 * with date and priority status
+	 * 
+	 *       
+	 */
+	void ppToStickyTask_actionPerformed(ActionEvent e) {
+		CalendarDate time = new CalendarDate();
+		String task;
+		String msg; 
+		String msg1;
+		String msg2;
+		String thisTaskId = taskTable.getModel().getValueAt(taskTable.getSelectedRow(), TaskTable.TASK_ID).toString();
+		Task t = CurrentProject.getTaskList().getTask(thisTaskId);
+		String date = time.getFullDateString(); 
+		int priortity = t.getPriority();
+		System.out.println(priortity);
+		msg = "<div style=\"background-color:#FFFF00;font-size:10;color:#0;\">";
+		msg1 = "<br>";
+		msg2 = "</div>";
+	    task = msg + date + msg1 + t.getText() + msg2;
+		EventsManager.createSticker(task, priortity);
+	    JOptionPane.showMessageDialog(null,Local.getString("Sticky Created"));
+	}
 
 	// toggle "show active only"
 	void toggleShowActiveOnly_actionPerformed(ActionEvent e) {
@@ -704,6 +771,17 @@ public class TaskPanel extends JPanel {
 			"SHOW_ACTIVE_TASKS_ONLY",
 			new Boolean(ppShowActiveOnlyChB.isSelected()));
 		taskTable.tableChanged();
+	}
+	
+	private String[] getContactIDs(TaskDialog dlg) {
+		Enumeration<String> idEnum = dlg.getAssociatedContactsPanel().getContactIDs();
+        Vector<String> idVector = new Vector<String>();
+        for (; idEnum.hasMoreElements();) {
+        	idVector.add(idEnum.nextElement());
+        }
+        String[] idArray = new String[idVector.size()];
+        idVector.toArray(idArray);
+        return idArray;
 	}
 
     class PopupListener extends MouseAdapter {
@@ -758,5 +836,6 @@ public class TaskPanel extends JPanel {
   void ppCalcTask_actionPerformed(ActionEvent e) {
       calcTask_actionPerformed(e);
   }
-
+  
+  
 }
