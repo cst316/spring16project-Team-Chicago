@@ -50,7 +50,7 @@ public class TaskImpl implements Task, Comparable {
 
     public CalendarDate getEndDate() {
 		String ed = _element.getAttribute("endDate").getValue();
-		if (ed != "")
+		if (!ed.equals(""))
 			return new CalendarDate(_element.getAttribute("endDate").getValue());
 		Task parent = this.getParentTask();
 		if (parent != null)
@@ -63,9 +63,12 @@ public class TaskImpl implements Task, Comparable {
     }
 
     public void setEndDate(CalendarDate date) {
-		if (date == null)
+		if (date == null) {
 			setAttr("endDate", "");
-		setAttr("endDate", date.toString());
+		}
+		else {
+			setAttr("endDate", date.toString());
+		}
     }
 
     public long getEffort() {
@@ -344,9 +347,44 @@ public class TaskImpl implements Task, Comparable {
 				return 0;
 	 }
 	 
-	 public boolean equals(Object o) {
-	     return ((o instanceof Task) && (((Task)o).getID().equals(this.getID())));
-	 }
+	 /* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final String id = getID();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		final String id = getID();
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Task)) {
+			return false;
+		}
+		final Task other = (Task) obj;
+		if (_tl == null) {
+			if (other.getID() != null) {
+				return false;
+			}
+		}
+		else if (!id.equals(other.getID())) {
+			return false;
+		}
+		return true;
+	}
 
 	/* 
 	 * @see net.sf.memoranda.Task#getSubTasks()

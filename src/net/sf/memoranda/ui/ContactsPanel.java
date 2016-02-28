@@ -322,8 +322,7 @@ public class ContactsPanel extends JPanel {
 				if (canImport(support)) {
 					try {
 						final String id = (String) support.getTransferable().getTransferData(DataFlavor.stringFlavor);
-						final Contact contact = new Contact("", "");
-						contact.setID(id);
+						final Contact contact = ContactManager.getContact(id);
 						final Contact removed = ContactManager.removeContact(contact);
 						removed.addProjectID(CurrentProject.get().getID());
 						ContactManager.addContact(removed);
