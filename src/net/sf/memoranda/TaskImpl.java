@@ -446,7 +446,7 @@ public class TaskImpl implements Task, Comparable {
 	}
 	
 	public String[] getContactIDs() {
-		String[] ids = null;
+		String[] ids = new String[0];
 		Element contacts = _element.getFirstChildElement("contacts");
 		if (contacts != null) {
 			Elements allContacts = contacts.getChildElements("contact");
