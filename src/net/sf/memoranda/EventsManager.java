@@ -347,7 +347,6 @@ public class EventsManager {
 		el.addAttribute(new Attribute("period", String.valueOf(period)));
 		// new attribute for working days - ivanrise
 		el.addAttribute(new Attribute("workingDays",String.valueOf(workDays)));
-		el.appendChild(text);
 		rep.appendChild(el);
 		return new EventImpl(el);
 	}
